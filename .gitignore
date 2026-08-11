@@ -12,6 +12,9 @@ dist
 dist-ssr
 .vite
 *.local
+supabase/.env
+supabase/functions/.env
+supabase/.temp/
 
 # Editor directories and files
 .vscode/*

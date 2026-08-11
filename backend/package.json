@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "node --watch src/server.js",
+    "hash-password": "node src/utils/hashPasswordCli.js",
+    "provision-admins": "node src/utils/provisionAdminsCli.js",
     "start": "node src/server.js"
   }
 }

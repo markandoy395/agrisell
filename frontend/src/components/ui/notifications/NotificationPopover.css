@@ -1,0 +1,129 @@
+.notification-wrap {
+  position: relative;
+}
+.notification-button {
+  position: relative;
+}
+.notification-badge {
+  position: absolute;
+  top: -3px;
+  right: -7px;
+  min-width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  padding: 0 3px;
+  color: #fff;
+  border: 1.5px solid #fff;
+  border-radius: 10px;
+  background: #d9774c;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+}
+.notifications {
+  position: absolute;
+  z-index: 4;
+  top: 38px;
+  right: -40px;
+  width: 340px;
+  max-height: min(490px, calc(100vh - 105px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 25px #203b2920;
+}
+.notifications-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 15px 15px 12px;
+  border-bottom: 1px solid #edf1ed;
+}
+.notifications-heading strong {
+  display: block;
+  color: #284435;
+  font-size: 13px;
+}
+.notifications-heading span {
+  display: block;
+  margin-top: 2px;
+  color: #86928b;
+  font-size: 10px;
+}
+.notifications-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.notifications-heading-actions > button:first-child {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  padding: 0;
+  color: #4d9060;
+  border: 0;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+}
+.notification-list {
+  display: grid;
+}
+.notification-item {
+  display: flex;
+  gap: 9px;
+  padding: 12px 15px;
+  border-bottom: 1px solid #edf1ed;
+}
+.notification-item:last-child {
+  border-bottom: 0;
+}
+.notification-item.unread {
+  background: #f5faf4;
+}
+.notification-indicator {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #d5ded7;
+}
+.notification-item.unread .notification-indicator {
+  background: var(--brand-forest-green);
+}
+.notification-content {
+  min-width: 0;
+  flex: 1;
+}
+.notification-item strong {
+  display: block;
+  color: #365342;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.notification-item p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.notification-item time {
+  display: block;
+  margin-top: 5px;
+  color: #9aa59e;
+  font-size: 9px;
+}
+.notification-item-close {
+  margin: -5px -6px 0 0;
+}
+.notifications-empty {
+  margin: 0;
+  padding: 20px 15px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}

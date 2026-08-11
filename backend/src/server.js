@@ -1,38 +1,55 @@
 const http = require('node:http');
-const { rejectMobileDevice } = require('./middleware/rejectMobileDevice');
+const { config } = require('./config/environment');
+const {
+  applyCorsHeaders,
+  handleCorsPreflight,
+  rejectDisallowedOrigin,
+} = require('./middleware/cors');
+const { enforceHttps } = require('./middleware/enforceHttps');
+const { rejectPhoneDevice } = require('./middleware/rejectPhoneDevice');
+const { applySecurityHeaders } = require('./middleware/securityHeaders');
+const { routeRequest } = require('./routes');
+const { sendJson } = require('./utils/http');
 
-const port = Number.parseInt(process.env.PORT ?? '3001', 10);
+const handleRequest = async (request, response) => {
+  if (handleCorsPreflight(request, response)) {
+    return;
+  }
 
-if (!Number.isInteger(port) || port < 1 || port > 65535) {
-  throw new Error('PORT must be an integer between 1 and 65535.');
-}
+  if (
+    enforceHttps(request, response) ||
+    rejectDisallowedOrigin(request, response) ||
+    rejectPhoneDevice(request, response)
+  ) {
+    return;
+  }
 
-const sendJson = (response, statusCode, body) => {
-  response.writeHead(statusCode, {
-    'Content-Type': 'application/json; charset=utf-8',
-  });
-  response.end(JSON.stringify(body));
+  await routeRequest(request, response);
 };
 
 const server = http.createServer((request, response) => {
-  if (rejectMobileDevice(request, response)) {
-    return;
-  }
+  applySecurityHeaders(response);
+  applyCorsHeaders(request, response);
 
-  if (request.method === 'GET' && request.url === '/api/health') {
-    sendJson(response, 200, {
-      status: 'ok',
-      service: 'agrisell-backend',
-    });
-    return;
-  }
+  handleRequest(request, response).catch((error) => {
+    console.error('Unhandled backend request error.', error);
 
-  sendJson(response, 404, { message: 'Route not found.' });
+    if (!response.headersSent) {
+      sendJson(response, 500, {
+        message: 'Internal server error.',
+      });
+      return;
+    }
+
+    response.destroy(error);
+  });
 });
 
 server.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
-    console.error(`Port ${port} is already in use. Choose another PORT value.`);
+    console.error(
+      `Port ${config.port} is already in use. Choose another PORT value.`,
+    );
   } else {
     console.error('The backend server could not start.', error);
   }
@@ -40,8 +57,8 @@ server.on('error', (error) => {
   process.exitCode = 1;
 });
 
-server.listen(port, () => {
-  console.log(`Agrisell backend is running at http://localhost:${port}`);
+server.listen(config.port, () => {
+  console.log(`Agrisell backend is running at http://localhost:${config.port}`);
 });
 
 const stopServer = (signal) => {

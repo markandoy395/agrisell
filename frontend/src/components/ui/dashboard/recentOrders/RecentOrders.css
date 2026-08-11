@@ -1,0 +1,126 @@
+.orders-table-wrap {
+  margin: 14px -20px -20px;
+  overflow-x: auto;
+}
+.orders-table-wrap table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+}
+.orders-table-wrap th {
+  height: 32px;
+  color: #98a29c;
+  border-top: 1px solid #f0f2f0;
+  border-bottom: 1px solid #edf0ed;
+  background: #fafbfa;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.55px;
+  text-align: left;
+}
+.orders-table-wrap th:first-child,
+.orders-table-wrap td:first-child {
+  padding-left: 20px;
+}
+.orders-table-wrap th:last-child,
+.orders-table-wrap td:last-child {
+  padding-right: 15px;
+}
+.orders-table-wrap td {
+  height: 57px;
+  color: #506157;
+  border-bottom: 1px solid #eff2ef;
+  font-size: 10.5px;
+}
+.orders-table-wrap tr:last-child td {
+  border-bottom: 0;
+}
+.orders-table-wrap td > strong {
+  color: #344a3d;
+  font-size: 10.5px;
+}
+.orders-table-wrap td small,
+.commodity-cell small {
+  display: block;
+  margin-top: 2px;
+  color: #9ca69f;
+  font-size: 9px;
+}
+.customer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.customer-avatar {
+  width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  color: #5c7666;
+  border-radius: 50%;
+  background: #e1eee3;
+  font-size: 7px;
+  font-weight: 700;
+}
+.orders-table-wrap tbody tr:nth-child(2) .customer-avatar {
+  color: #a36b3d;
+  background: #fae9d8;
+}
+.orders-table-wrap tbody tr:nth-child(3) .customer-avatar {
+  color: #82669c;
+  background: #eee6f5;
+}
+.orders-table-wrap tbody tr:nth-child(4) .customer-avatar {
+  color: #527e8a;
+  background: #e1eff1;
+}
+.commodity-cell {
+  color: #56675e;
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px;
+  border-radius: 12px;
+  font-size: 9px;
+  font-weight: 700;
+}
+.status i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status.blue {
+  color: #5a8db0;
+  background: #edf5fa;
+}
+.status.orange {
+  color: #c78a44;
+  background: #fff5e7;
+}
+.status.green {
+  color: #579464;
+  background: #edf8ef;
+}
+.status.purple {
+  color: #886ca8;
+  background: #f3eef8;
+}
+.table-more {
+  width: 28px;
+  height: 28px;
+  color: #9ca69f;
+}
+.no-orders {
+  padding: 26px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+@media (max-width: 700px) {
+  .orders-table-wrap {
+    margin: 12px -16px -16px;
+  }
+}

@@ -1,0 +1,221 @@
+.sales-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 19px;
+}
+.sales-summary strong {
+  color: #283e31;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+.sales-summary span {
+  color: #8b958f;
+  font-size: 10px;
+}
+.sales-summary b {
+  color: var(--brand-forest-green);
+}
+.chart-wrap {
+  height: 213px;
+  display: flex;
+  margin-top: 12px;
+}
+.chart-y {
+  width: 37px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 24px;
+  color: #a1aaa4;
+  font-size: 9px;
+}
+.line-chart {
+  position: relative;
+  flex: 1;
+  margin-bottom: 23px;
+  cursor: crosshair;
+}
+.line-chart svg {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+.grid-line {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: #eff2ef;
+}
+.line-1 {
+  top: 0;
+}
+.line-2 {
+  top: 25%;
+}
+.line-3 {
+  top: 50%;
+}
+.line-4 {
+  top: 75%;
+}
+.line-5 {
+  bottom: 0;
+}
+.chart-x {
+  position: absolute;
+  top: calc(100% + 9px);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  color: #a1aaa4;
+  font-size: 9px;
+}
+.chart-tooltip {
+  position: absolute;
+  z-index: 2;
+}
+.dynamic-chart-tooltip {
+  width: 148px;
+  display: flex;
+  align-items: stretch;
+  padding: 8px;
+  color: #213a2b;
+  border: 1px solid #e4ebe5;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 8px 18px #20402b1f;
+  pointer-events: none;
+  transform: translate(-50%, -116%);
+  transition:
+    left 0.12s ease,
+    top 0.12s ease;
+}
+.dynamic-chart-tooltip.tooltip-below {
+  transform: translate(-50%, 10%);
+}
+.tooltip-rail {
+  width: 3px;
+  flex: 0 0 3px;
+  margin-right: 8px;
+  border-radius: 3px;
+  background: #36ab6b;
+}
+.dynamic-chart-tooltip > div {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 1px;
+}
+.dynamic-chart-tooltip strong {
+  color: #1e3025;
+  font-size: 9px;
+  line-height: 1.25;
+}
+.dynamic-chart-tooltip span {
+  color: #87948b;
+  font-size: 8px;
+  line-height: 1.2;
+}
+.dynamic-chart-tooltip b {
+  margin-top: 4px;
+  padding: 3px 5px;
+  color: #263c2e;
+  border-radius: 4px;
+  background: #f1f5f1;
+  font-size: 8px;
+  line-height: 1;
+}
+.dynamic-chart-tooltip p {
+  margin: 3px 0 0;
+  color: #89958e;
+  font-size: 7px;
+  white-space: nowrap;
+}
+.dynamic-chart-tooltip em {
+  margin-right: 3px;
+  padding: 2px 4px;
+  color: #1d9a56;
+  border-radius: 4px;
+  background: #ebf8ef;
+  font-style: normal;
+  font-weight: 700;
+}
+.chart-point-marker {
+  position: absolute;
+  z-index: 3;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #57a76c;
+  box-shadow: 0 0 0 2px #57a76c60;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition:
+    left 0.12s ease,
+    top 0.12s ease;
+}
+.overview-dashboard .sales-area-path {
+  animation: sales-area-in 0.72s ease-out 520ms backwards;
+}
+.overview-dashboard .sales-reveal-rect {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: sales-chart-reveal 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) 520ms
+    backwards;
+}
+.overview-dashboard .sales-line-point {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sales-point-in 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) 1.42s
+    backwards;
+}
+
+@keyframes sales-area-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sales-chart-reveal {
+  from {
+    width: 0;
+    transform: scaleX(0);
+  }
+  to {
+    width: 650px;
+    transform: scaleX(1);
+  }
+}
+@keyframes sales-point-in {
+  from {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overview-dashboard .sales-area-path,
+  .overview-dashboard .sales-reveal-rect,
+  .overview-dashboard .sales-line-point {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+@media (max-width: 700px) {
+  .sales-panel {
+    padding-bottom: 14px;
+  }
+  .chart-wrap {
+    height: 185px;
+  }
+}

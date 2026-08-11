@@ -1,0 +1,334 @@
+.location-map-panel {
+  margin-top: 17px;
+  padding: 15px;
+  border: 1px solid #e4ece5;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f7fbf4, #fff);
+}
+
+.location-map-copy {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 13px;
+}
+
+.location-map-copy h3 {
+  margin: 5px 0 4px;
+  color: #31493a;
+  font-size: 15px;
+}
+
+.location-map-copy p {
+  max-width: 620px;
+  margin: 0;
+  color: #7c8981;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.location-map-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  gap: 7px;
+  min-width: 286px;
+}
+
+.location-map-stats span {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #e8efe9;
+  border-radius: 9px;
+  background: #fff;
+  color: #87958d;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.location-map-stats strong {
+  display: block;
+  color: #31533f;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.location-map-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, .36fr);
+  gap: 12px;
+}
+
+.location-map-canvas {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  border: 1px solid #dfe9e1;
+  border-radius: 11px;
+  background: #d7e3d8;
+}
+
+.location-map-canvas:focus-visible {
+  outline: 3px solid rgb(69 141 60 / 30%);
+  outline-offset: 3px;
+}
+
+.location-map-tiles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.location-map-tile {
+  position: absolute;
+  width: 256px;
+  height: 256px;
+  display: block;
+  user-select: none;
+}
+
+.location-map-controls {
+  position: absolute;
+  z-index: 6;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  gap: 5px;
+}
+
+.location-map-controls button {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: #30483a;
+  border: 1px solid #d3dfd5;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 7px 14px rgb(30 58 38 / 14%);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.location-map-controls button:disabled {
+  color: #9aa69f;
+  cursor: not-allowed;
+}
+
+.location-map-attribution {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  z-index: 6;
+  padding: 2px 5px;
+  color: #3a5d45;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 84%);
+  font-size: 9px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.location-pin {
+  --pin-size: 22px;
+  position: absolute;
+  z-index: 2;
+  width: var(--pin-size);
+  height: var(--pin-size);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 4px;
+  background: var(--brand-forest-green);
+  box-shadow: 0 7px 14px rgb(33 70 43 / 22%);
+  font-size: 8px;
+  font-weight: 800;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.location-pin span {
+  transform: rotate(45deg);
+}
+
+.location-pin:hover,
+.location-pin:focus-visible,
+.location-pin.is-selected {
+  z-index: 4;
+  box-shadow: 0 10px 18px rgb(33 70 43 / 32%);
+  transform: translate(-50%, -50%) rotate(-45deg) scale(1.18);
+}
+
+.location-pin:focus-visible {
+  outline: 3px solid rgb(69 141 60 / 35%);
+  outline-offset: 3px;
+}
+
+.location-pin-user {
+  background: #2c7ec4;
+}
+
+.location-pin-farmer {
+  background: #0f743b;
+}
+
+.location-pin-farm {
+  background: #d58127;
+}
+
+.location-map-detail {
+  position: absolute;
+  z-index: 5;
+  left: 13px;
+  bottom: 13px;
+  width: min(290px, calc(100% - 26px));
+  padding: 12px;
+  border: 1px solid #dfe8df;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 14px 28px rgb(29 66 39 / 16%);
+}
+
+.location-map-detail strong,
+.location-map-detail small {
+  display: block;
+}
+
+.location-map-detail strong {
+  margin-top: 7px;
+  color: #31483b;
+  font-size: 12px;
+}
+
+.location-map-detail small {
+  margin-top: 2px;
+  color: #839087;
+  font-size: 9.5px;
+}
+
+.location-map-detail p {
+  margin: 7px 0 9px;
+  color: #5b6e62;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.location-map-detail a {
+  color: var(--brand-forest-green);
+  font-size: 10px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.location-map-detail a:hover {
+  color: var(--brand-forest-green-dark);
+}
+
+.location-map-list {
+  max-height: 360px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+
+.location-map-list button {
+  width: 100%;
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: 11px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  color: #596b60;
+  border: 1px solid #e2ebe3;
+  border-radius: 9px;
+  background: #fff;
+  text-align: left;
+}
+
+.location-map-list button:hover,
+.location-map-list button.is-selected {
+  border-color: #b9d7ad;
+  background: #f2f8ee;
+}
+
+.location-map-list strong,
+.location-map-list small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.location-map-list strong {
+  color: #324a3d;
+  font-size: 10.5px;
+}
+
+.location-map-list small {
+  margin-top: 2px;
+  color: #87958d;
+  font-size: 9px;
+}
+
+.location-map-list em {
+  color: #8c9b92;
+  font-size: 8.5px;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.location-pin-dot {
+  width: 9px;
+  height: 9px;
+  display: block;
+  border-radius: 50%;
+}
+
+@media (max-width: 1050px) {
+  .location-map-copy,
+  .location-map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .location-map-copy {
+    display: grid;
+  }
+
+  .location-map-stats {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .location-map-panel {
+    padding: 11px;
+  }
+
+  .location-map-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .location-map-canvas {
+    min-height: 320px;
+  }
+
+  .location-map-detail {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: auto;
+    margin: 220px 10px 10px;
+  }
+}

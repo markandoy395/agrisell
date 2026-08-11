@@ -1,0 +1,88 @@
+.farmer-workspace .user-table {
+  min-width: 1120px;
+}
+
+.farmer-col-select {
+  width: 42px;
+}
+
+.farmer-col-name {
+  width: 210px;
+}
+
+.farmer-col-specialty {
+  width: 165px;
+}
+
+.farmer-col-farms {
+  width: 150px;
+}
+
+.farmer-col-location {
+  width: 210px;
+}
+
+.farmer-col-commodities {
+  width: 215px;
+}
+
+.farmer-col-status {
+  width: 128px;
+}
+
+.farmer-col-actions {
+  width: 138px;
+}
+
+.farmer-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.farmer-row-approve {
+  min-height: 28px;
+  padding: 5px 8px;
+  color: #fff;
+  border: 1px solid var(--brand-forest-green);
+  border-radius: 7px;
+  background: var(--brand-forest-green);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.farmer-row-approve:hover:not(:disabled) {
+  background: var(--brand-forest-green-dark);
+}
+
+.farmer-row-approve:disabled {
+  color: #66806c;
+  border-color: #d7e6d8;
+  background: #edf5ed;
+  cursor: default;
+}
+
+.farmer-workspace .user-status.green {
+  color: var(--brand-forest-green);
+  background: var(--brand-forest-green-soft);
+}
+
+.farmer-workspace .user-status.orange {
+  color: #a15d13;
+  background: #fff3e0;
+}
+
+.farmer-workspace .user-status.blue {
+  color: #245f8f;
+  background: #edf6fb;
+}
+
+.farmer-workspace .user-status.red {
+  color: #a33a2f;
+  background: #fff0ee;
+}
+
+.farmer-workspace .user-status.purple {
+  color: #6a4a8f;
+  background: #f4eef9;
+}
