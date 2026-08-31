@@ -31,7 +31,7 @@ const getLiveHighlights = (
 ): ModuleHighlight[] => {
   if (section === "Reviews") {
     const ratings = records
-      .map((record) => Number(record.value.match(/[\d.]+/)?.[0]))
+      .map((record) => record.rating ?? Number(record.value.match(/[\d.]+/)?.[0]))
       .filter((rating) => Number.isFinite(rating));
     const averageRating =
       ratings.length === 0
@@ -97,51 +97,6 @@ const FALLBACK_TABLE_COLUMNS: EntityTableColumn[] = [
 
 const SECTIONS_WITH_LOCATION_MAP = new Set(["Farms"]);
 
-type ReviewMeta = {
-  comment: string;
-  date: string;
-  reviewCount: number;
-  spent: string;
-  avatarTone: string;
-  featured?: boolean;
-};
-
-const REVIEW_RATING_DISTRIBUTION = [
-  { rating: 5, count: 151, percent: 64 },
-  { rating: 4, count: 54, percent: 23 },
-  { rating: 3, count: 21, percent: 9 },
-  { rating: 2, count: 7, percent: 3 },
-  { rating: 1, count: 3, percent: 1 },
-] as const;
-
-const REVIEW_META: readonly ReviewMeta[] = [
-  {
-    comment:
-      "The romaine arrived crisp and clean, and the farmer packed it beautifully. Delivery updates were clear from pickup to doorstep.",
-    date: "24-06-2026",
-    reviewCount: 14,
-    spent: "PHP 8,420",
-    avatarTone: "green",
-    featured: true,
-  },
-  {
-    comment:
-      "Sweet mangoes and a quick handoff from the rider. I would love a little more detail on ripeness next time, but the order was still very good.",
-    date: "22-06-2026",
-    reviewCount: 9,
-    spent: "PHP 5,160",
-    avatarTone: "gold",
-  },
-  {
-    comment:
-      "The eggs were fresh, but one tray had a cracked piece. Please help me understand the replacement process for future orders.",
-    date: "19-06-2026",
-    reviewCount: 4,
-    spent: "PHP 2,760",
-    avatarTone: "orange",
-  },
-] as const;
-
 const getModuleClassName = (section: string) =>
   `module-${section.toLowerCase().replace(/\s+/g, "-")}`;
 
@@ -154,10 +109,38 @@ const getReviewInitials = (name: string) =>
     .slice(0, 2)
     .toUpperCase();
 
-const getReviewRating = (value: string) => {
-  const rating = Number(value.match(/\d+(?:\.\d+)?/)?.[0] ?? 5);
+const getReviewRating = (record: EntityRecord) => {
+  const rating = record.rating ?? Number(record.value.match(/\d+(?:\.\d+)?/)?.[0] ?? 0);
 
-  return Math.min(5, Math.max(1, Math.round(rating)));
+  return Math.min(5, Math.max(0, Math.round(rating)));
+};
+
+const formatReviewDate = (value?: string) => {
+  if (!value) return "Date not recorded";
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat("en-PH", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(date);
+};
+
+const getReviewDistribution = (records: EntityRecord[]) => {
+  const ratings = records.map(getReviewRating).filter((rating) => rating >= 1);
+
+  return [5, 4, 3, 2, 1].map((rating) => {
+    const count = ratings.filter((recordRating) => recordRating === rating).length;
+
+    return {
+      count,
+      percent: ratings.length === 0 ? 0 : Math.round((count / ratings.length) * 100),
+      rating,
+    };
+  });
 };
 
 const renderReviewStars = (rating: number, size = 13) =>
@@ -207,7 +190,7 @@ export function EntityWorkspace({
     return allRecords.filter((record) => {
       const matchesSearch =
         normalizedSearch.length === 0 ||
-        `${record.primary} ${record.secondary} ${record.category} ${record.value} ${record.status}`
+        `${record.primary} ${record.secondary} ${record.category} ${record.value} ${record.status} ${record.reviewedName ?? ""} ${record.referenceLabel ?? ""}`
           .toLowerCase()
           .includes(normalizedSearch);
 
@@ -219,11 +202,18 @@ export function EntityWorkspace({
   }, [activeOnly, allRecords, search]);
   const reviewCards = useMemo(
     () =>
-      records.map((record, index) => ({
+      records.map((record) => ({
+        avatarTone:
+          getReviewRating(record) <= 2
+            ? "orange"
+            : record.reviewedType === "Rider"
+              ? "gold"
+              : "green",
+        comment: record.comment ?? record.secondary,
+        date: formatReviewDate(record.reviewDate),
         record,
         initials: getReviewInitials(record.primary),
-        rating: getReviewRating(record.value),
-        ...REVIEW_META[index % REVIEW_META.length],
+        rating: getReviewRating(record),
       })),
     [records],
   );
@@ -232,9 +222,13 @@ export function EntityWorkspace({
     const averageRating =
       highlights.find((highlight) => highlight.label === "Average rating")
         ?.value ?? "4.8";
-    const needsReply =
-      highlights.find((highlight) => highlight.label === "Needs reply")
-        ?.value ?? "0";
+    const ratingDistribution = getReviewDistribution(allRecords);
+    const farmerReviewCount = allRecords.filter(
+      (record) => record.reviewedType === "Farmer",
+    ).length;
+    const riderReviewCount = allRecords.filter(
+      (record) => record.reviewedType === "Rider",
+    ).length;
 
     return (
       <section
@@ -256,9 +250,9 @@ export function EntityWorkspace({
         <div className="review-overview" aria-label="Review summary">
           <article className="review-metric">
             <span>Total Reviews</span>
-            <strong>{info.total.replace(" reviews", "")}</strong>
+            <strong>{allRecords.length}</strong>
             <small>
-              <b>21% up</b> Growth in reviews on this year
+              <b>{farmerReviewCount} farmer</b> and {riderReviewCount} rider reviews
             </small>
           </article>
           <article className="review-metric">
@@ -269,10 +263,10 @@ export function EntityWorkspace({
                 {renderReviewStars(Math.round(Number(averageRating)))}
               </span>
             </strong>
-            <small>Average rating on this year</small>
+            <small>Average across all database reviews</small>
           </article>
           <article className="review-distribution">
-            {REVIEW_RATING_DISTRIBUTION.map((item) => (
+            {ratingDistribution.map((item) => (
               <div className="review-rating-row" key={item.rating}>
                 <span>{item.rating}</span>
                 <div className="review-rating-track">
@@ -291,7 +285,7 @@ export function EntityWorkspace({
             type="button"
             onClick={onToggleFilter}
           >
-            {activeOnly ? "Showing published" : `${needsReply} need replies`}
+            {activeOnly ? "Showing published" : "Show published only"}
           </button>
         </div>
 
@@ -299,7 +293,7 @@ export function EntityWorkspace({
           {reviewCards.map((review) => (
             <article
               className="review-card"
-              key={`${review.record.primary}-${review.record.secondary}`}
+              key={review.record.entityId ?? `${review.record.primary}-${review.record.secondary}`}
             >
               <div
                 className={`review-avatar review-avatar-${review.avatarTone}`}
@@ -309,8 +303,10 @@ export function EntityWorkspace({
               </div>
               <div className="review-author">
                 <h3>{review.record.primary}</h3>
-                <span>Total Spent: {review.spent}</span>
-                <span>Total Review: {review.reviewCount}</span>
+                <span>
+                  Reviewed {review.record.reviewedType?.toLowerCase() ?? "account"}: {review.record.reviewedName ?? "Not recorded"}
+                </span>
+                <span>{review.record.referenceLabel ?? review.record.category}</span>
               </div>
               <div className="review-body">
                 <div className="review-card-meta">
@@ -345,9 +341,7 @@ export function EntityWorkspace({
                     Direct Message
                   </button>
                   <button
-                    className={`review-like-button ${
-                      review.featured ? "is-liked" : ""
-                    }`}
+                    className="review-like-button"
                     type="button"
                     onClick={() => onOpen(review.record)}
                     aria-label={`Mark ${review.record.primary}'s review as important`}

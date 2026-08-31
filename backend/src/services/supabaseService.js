@@ -125,6 +125,25 @@ const insertSupabaseRow = async (table, row) => {
   return body[0];
 };
 
+const insertSupabaseRows = async (table, rows) => {
+  if (!Array.isArray(rows) || rows.length === 0) return [];
+  const body = await requestSupabase(getSupabaseUrl(table), {
+    body: JSON.stringify(rows),
+    headers: {
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    },
+    method: 'POST',
+  });
+  if (!Array.isArray(body) || body.length !== rows.length) {
+    throw new SupabaseRequestError(
+      'DATABASE_INVALID_RESPONSE',
+      'Supabase did not return all inserted records.',
+    );
+  }
+  return body;
+};
+
 const updateSupabaseRows = async (table, filters, updates) => {
   const body = await requestSupabase(getSupabaseUrl(table, filters), {
     body: JSON.stringify(updates),
@@ -145,13 +164,29 @@ const updateSupabaseRows = async (table, filters, updates) => {
   return body;
 };
 
+const deleteSupabaseRows = async (table, filters) => {
+  const body = await requestSupabase(getSupabaseUrl(table, filters), {
+    headers: { Prefer: 'return=representation' },
+    method: 'DELETE',
+  });
+  if (!Array.isArray(body)) {
+    throw new SupabaseRequestError(
+      'DATABASE_INVALID_RESPONSE',
+      'Supabase did not return the deleted records.',
+    );
+  }
+  return body;
+};
+
 const requestSupabaseAuth = async (pathname, options = {}) =>
   requestSupabase(new URL(pathname, config.supabaseUrl), options);
 
 module.exports = {
   SupabaseRequestError,
+  deleteSupabaseRows,
   getSupabaseRows,
   insertSupabaseRow,
+  insertSupabaseRows,
   requestSupabaseAuth,
   updateSupabaseRows,
 };

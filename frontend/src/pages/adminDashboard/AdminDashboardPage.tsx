@@ -17,8 +17,8 @@ import {
 import { EntityWorkspace } from "../entityWorkspace/EntityWorkspace";
 import { Icon } from "../../components/ui/icon/Icon";
 import { SettingsWorkspace } from "../settingsWorkspace/SettingsWorkspace";
+import { SaleWorkspace } from "../saleWorkspace/SaleWorkspace";
 import {
-  chartPoints,
   initialAdminProfile,
   initialNotifications,
 } from "../../data/dashboardMock";
@@ -73,7 +73,7 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
   const [periodOpen, setPeriodOpen] = useState(false);
   const [metricOpen, setMetricOpen] = useState(false);
   const [metric, setMetric] = useState("Revenue");
-  const [chartHover, setChartHover] = useState<number | null>(4);
+  const [chartHover, setChartHover] = useState<number | null>(null);
   const [panelMenu, setPanelMenu] = useState<"commodity" | "delivery" | null>(
     null,
   );
@@ -201,13 +201,17 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
       title: `${user.firstName} ${user.lastName}`,
       message: `user_id: ${user.userId}\nemail: ${user.email}\ncontact_number: ${user.contactNumber}\naccount_status: ${user.accountStatus}\ncreated_at: ${user.createdAt}\nupdated_at: ${user.updatedAt}\ngender: ${user.gender}\ndate_of_birth: ${user.dateOfBirth}\ne_wallet_details: ${user.eWalletDetails}\n\nbuyer_user_id: ${user.buyerUserId ?? "Not a buyer"}\nshipping_address: ${user.shippingAddress ?? "Not set"}\nloyalty_points: ${user.loyaltyPoints ?? "Not set"}\npreferred_payment_method: ${user.preferredPaymentMethod ?? "Not set"}\nuser_type: ${user.userType}\nbusiness_name: ${user.businessName || "Not set"}`,
     });
-  const updateChartTooltip = (clientX: number, element: HTMLDivElement) => {
+  const updateChartTooltip = (
+    clientX: number,
+    element: HTMLDivElement,
+    pointCount: number,
+  ) => {
     const bounds = element.getBoundingClientRect();
     const progress = Math.min(
       1,
       Math.max(0, (clientX - bounds.left) / bounds.width),
     );
-    setChartHover(Math.round(progress * (chartPoints.length - 1)));
+    setChartHover(pointCount > 0 ? Math.round(progress * (pointCount - 1)) : null);
   };
 
   const pageTitle =
@@ -227,11 +231,8 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
     "Logistics Companies",
     "Deliveries",
     "Reviews",
+    "Sales & Discounts",
   ].includes(activeNav);
-  const activeChartPoint = chartHover === null ? null : chartPoints[chartHover];
-  const tooltipPlacement =
-    chartHover !== null && chartHover >= 3 ? " tooltip-below" : "";
-
   return (
     <div className="dashboard">
       <DashboardSidebar
@@ -405,8 +406,7 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
               metric={metric}
               metricOpen={metricOpen}
               panelMenu={panelMenu}
-              activeChartPoint={activeChartPoint}
-              tooltipPlacement={tooltipPlacement}
+              activeChartIndex={chartHover}
               onNavigate={navigate}
               onToggleMetric={() => setMetricOpen(!metricOpen)}
               onSelectMetric={(nextMetric) => {
@@ -500,6 +500,8 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
               onToggleFilter={() => setActiveOnly(!activeOnly)}
               onOpen={openRecord}
             />
+          ) : data && activeNav === "Sales & Discounts" ? (
+            <SaleWorkspace onNotice={showToast} />
           ) : data && activeNav === "Settings" ? (
             <SettingsWorkspace
               autoApprove={autoApprove}

@@ -1,4 +1,4 @@
-import type { ChartPoint, OrderRow } from '../../types/dashboard'
+import type { OrderRow } from '../../types/dashboard'
 import type { AdminOverviewData } from '../../types/adminData'
 import { Icon } from '../../components/ui/icon/Icon'
 import { CommodityMix } from '../../components/ui/dashboard/commodityMix/CommodityMix'
@@ -13,12 +13,11 @@ type OverviewDashboardProps = {
   metric: string
   metricOpen: boolean
   panelMenu: 'commodity' | 'delivery' | null
-  activeChartPoint: ChartPoint | null
-  tooltipPlacement: string
+  activeChartIndex: number | null
   onNavigate: (section: string) => void
   onToggleMetric: () => void
   onSelectMetric: (metric: string) => void
-  onChartPointer: (clientX: number, element: HTMLDivElement) => void
+  onChartPointer: (clientX: number, element: HTMLDivElement, pointCount: number) => void
   onChartLeave: () => void
   onTogglePanelMenu: (menu: 'commodity' | 'delivery') => void
   onExport: (message: string) => void
@@ -26,7 +25,7 @@ type OverviewDashboardProps = {
 }
 
 export function OverviewDashboard(props: OverviewDashboardProps) {
-  const { visibleOrders, overview, metric, metricOpen, panelMenu, activeChartPoint, tooltipPlacement, onNavigate, onToggleMetric, onSelectMetric, onChartPointer, onChartLeave, onTogglePanelMenu, onExport, onOpenOrder } = props
+  const { visibleOrders, overview, metric, metricOpen, panelMenu, activeChartIndex, onNavigate, onToggleMetric, onSelectMetric, onChartPointer, onChartLeave, onTogglePanelMenu, onExport, onOpenOrder } = props
 
   return <div className="overview-dashboard">
     <section className="stat-grid" aria-label="Marketplace summary">
@@ -37,7 +36,7 @@ export function OverviewDashboard(props: OverviewDashboardProps) {
     </section>
 
     <section className="insights-grid">
-      <SalesOverview metric={metric} metricOpen={metricOpen} activeChartPoint={activeChartPoint} tooltipPlacement={tooltipPlacement} totalOrders={overview.totalOrders} totalSales={overview.totalSales} onToggleMetric={onToggleMetric} onSelectMetric={onSelectMetric} onChartPointer={onChartPointer} onChartLeave={onChartLeave}/>
+      <SalesOverview metric={metric} metricOpen={metricOpen} activeChartIndex={activeChartIndex} salesTrend={overview.salesTrend} totalOrders={overview.totalOrders} totalSales={overview.totalSales} onToggleMetric={onToggleMetric} onSelectMetric={onSelectMetric} onChartPointer={onChartPointer} onChartLeave={onChartLeave}/>
       <CommodityMix items={overview.commodityMix} panelMenu={panelMenu} onNavigate={onNavigate} onToggleMenu={() => onTogglePanelMenu('commodity')} onExport={() => onExport('Commodity report downloaded.')}/>
     </section>
 

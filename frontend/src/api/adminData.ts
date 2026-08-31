@@ -56,10 +56,21 @@ const parseEntityRecord = (value: unknown): EntityRecord => {
     approvalStatus: getString(row.approvalStatus) || undefined,
     approvalTone: getString(row.approvalTone) || undefined,
     category: getString(row.category, "Not set"),
+    comment: getString(row.comment) || undefined,
     entityId: getString(row.entityId) || undefined,
     gpsLat: Number.isFinite(gpsLat) ? gpsLat : undefined,
     gpsLong: Number.isFinite(gpsLong) ? gpsLong : undefined,
     primary: getString(row.primary, "Unnamed record"),
+    rating: Number.isFinite(getNumber(row.rating, Number.NaN))
+      ? getNumber(row.rating)
+      : undefined,
+    referenceLabel: getString(row.referenceLabel) || undefined,
+    reviewDate: getString(row.reviewDate) || undefined,
+    reviewedName: getString(row.reviewedName) || undefined,
+    reviewedType:
+      getString(row.reviewedType) === "Farmer" || getString(row.reviewedType) === "Rider"
+        ? (getString(row.reviewedType) as "Farmer" | "Rider")
+        : undefined,
     secondary: getString(row.secondary, "Not recorded"),
     status: getString(row.status, "Pending"),
     tone: getString(row.tone, "blue"),
@@ -224,6 +235,13 @@ const parseDashboardData = (value: unknown): AdminDatabaseData => {
       paymentActivityBars: getArray(overview.paymentActivityBars).map((item) =>
         getNumber(item),
       ),
+      salesTrend: getArray(overview.salesTrend)
+        .filter(isRecord)
+        .map((item) => ({
+          date: getString(item.date),
+          orders: getNumber(item.orders),
+          revenue: getNumber(item.revenue),
+        })),
       totalOrders: getNumber(overview.totalOrders),
       totalSales: getNumber(overview.totalSales),
     },

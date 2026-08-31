@@ -10,6 +10,12 @@ export type EntityRecord = {
   tone: string
   gpsLat?: number
   gpsLong?: number
+  comment?: string
+  rating?: number
+  referenceLabel?: string
+  reviewDate?: string
+  reviewedName?: string
+  reviewedType?: 'Farmer' | 'Rider'
 }
 
 export type EntityRecordField =

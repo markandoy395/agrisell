@@ -35,8 +35,9 @@ export const navigation: NavigationItem[] = [
   { label: "Logistics Companies", icon: "rider" },
   { label: "Orders", icon: "cart", count: "18" },
   { label: "Deliveries", icon: "truck" },
-  { label: "Payments", icon: "card" },
-  { label: "Reviews", icon: "star" },
+    { label: "Payments", icon: "card" },
+    { label: "Sales & Discounts", icon: "trend" },
+    { label: "Reviews", icon: "star" },
 ];
 
 export const initialNotifications: NotificationItem[] = [

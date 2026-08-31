@@ -1,3 +1,38 @@
+.sales-panel-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+}
+.sales-period-tabs {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid #e4eae5;
+  border-radius: 8px;
+  background: #f6f8f6;
+}
+.sales-period-tabs button {
+  min-height: 28px;
+  padding: 0 8px;
+  color: #78857d;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sales-period-tabs button:hover,
+.sales-period-tabs button.active {
+  color: #285638;
+  background: #fff;
+  box-shadow: 0 1px 4px #203c2917;
+}
+.sales-period-tabs button:focus-visible {
+  outline: 2px solid #57a76c;
+  outline-offset: 1px;
+}
 .sales-summary {
   display: flex;
   align-items: baseline;
@@ -212,6 +247,13 @@
   }
 }
 @media (max-width: 700px) {
+  .sales-panel .panel-heading {
+    gap: 10px;
+  }
+  .sales-panel-actions {
+    flex-direction: column-reverse;
+    align-items: flex-end;
+  }
   .sales-panel {
     padding-bottom: 14px;
   }

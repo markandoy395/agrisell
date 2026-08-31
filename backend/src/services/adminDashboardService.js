@@ -156,6 +156,42 @@ const isCompletedPayment = (payment) => payment.status === 'Completed';
 
 const getPaymentAmount = (payment) => getNumber(payment.amountValue);
 
+const getDateKey = (date) => date.toISOString().slice(0, 10);
+
+const getSalesTrend = (payments) => {
+  const days = Array.from({ length: 365 }, (_, index) => {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    date.setUTCDate(date.getUTCDate() - (364 - index));
+    return date;
+  });
+  const totals = new Map(
+    days.map((day) => [getDateKey(day), { orders: new Set(), revenue: 0 }]),
+  );
+
+  payments.forEach((payment) => {
+    if (!isCompletedPayment(payment)) return;
+
+    const paidAt = new Date(getText(payment.paidAt));
+    if (Number.isNaN(paidAt.getTime())) return;
+
+    const day = totals.get(getDateKey(paidAt));
+    if (!day) return;
+
+    day.revenue += getPaymentAmount(payment);
+    day.orders.add(payment.order);
+  });
+
+  return days.map((day) => {
+    const total = totals.get(getDateKey(day));
+    return {
+      date: getDateKey(day),
+      orders: total?.orders.size ?? 0,
+      revenue: total?.revenue ?? 0,
+    };
+  });
+};
+
 const getDeliveryBucket = (status) => {
   const normalizedStatus = getText(status).toLowerCase();
 
@@ -387,6 +423,7 @@ const createEntityRows = ({
   orderItems,
   payments,
   reviews,
+  riderRatings,
   deliveries,
   logisticsCompanies,
   riders,
@@ -400,6 +437,86 @@ const createEntityRows = ({
   );
   const ordersById = createIndex(orders, 'order_id');
   const buyersById = createIndex(buyers, 'buyer_user_id');
+  const farmersById = createIndex(farmers, 'farmer_user_id');
+  const farmersByAuthId = createIndex(farmers, 'auth_user_id');
+  const ridersById = createIndex(riders, 'rider_id');
+  const deliveriesById = createIndex(deliveries, 'delivery_id');
+  const cartsById = createIndex(carts, 'cart_id');
+  const cartItemsById = createIndex(cartItems, 'cart_item_id');
+
+  const getBuyerName = (buyerId, fallback = 'Buyer') => {
+    const buyer = buyersById.get(getId(buyerId));
+    const user = buyer ? usersById.get(getId(buyer.user_id)) : undefined;
+
+    return user ? getName(user, fallback) : fallback;
+  };
+
+  const getOrderBuyerName = (orderId, fallback = 'Buyer') => {
+    const order = ordersById.get(getId(orderId));
+    const cartItem = order ? cartItemsById.get(getId(order.cart_item_id)) : undefined;
+    const cart = cartItem ? cartsById.get(getId(cartItem.cart_id)) : undefined;
+
+    return cart ? getBuyerName(cart.buyer_user_id, fallback) : fallback;
+  };
+
+  const reviewRows = [
+    ...reviews.map((review) => {
+      const farmerId = getId(review.farmer_user_id);
+      const farmer = farmersById.get(farmerId);
+      const rating = getNumber(review.rating);
+
+      return {
+        category: 'Farmer review',
+        comment: getText(review.comment, 'No written review'),
+        entityId: getId(review.review_id),
+        primary: getBuyerName(review.buyer_user_id, 'Buyer'),
+        rating,
+        referenceLabel: `Order #AG-${getId(review.order_id) || 'record'}`,
+        reviewDate: getText(review.created_at),
+        reviewedName: farmer
+          ? getName(farmer, `Farmer ${farmerId || 'record'}`)
+          : `Farmer ${farmerId || 'not recorded'}`,
+        reviewedType: 'Farmer',
+        secondary: getText(review.comment, 'No written review'),
+        status: 'Published',
+        tone: 'green',
+        value: `${rating} / 5 rating`,
+      };
+    }),
+    ...riderRatings.map((review) => {
+      const deliveryId = getId(review.delivery_id);
+      const delivery = deliveriesById.get(deliveryId);
+      const orderId = getId(delivery?.order_id);
+      const riderId = getId(review.rider_id);
+      const rider = ridersById.get(riderId);
+      const reviewerRole = getText(review.reviewer_role, 'Reviewer');
+      const reviewerFarmer = farmersByAuthId.get(getId(review.reviewer_auth_id));
+      const reviewerName = reviewerRole.toLowerCase() === 'farmer' && reviewerFarmer
+        ? getName(reviewerFarmer, 'Farmer')
+        : getOrderBuyerName(orderId, toDisplayText(reviewerRole, 'Reviewer'));
+      const rating = getNumber(review.rating);
+
+      return {
+        category: 'Rider review',
+        comment: getText(review.comment, 'No written review'),
+        entityId: getId(review.rating_id),
+        primary: reviewerName,
+        rating,
+        referenceLabel: orderId
+          ? `Delivery ${deliveryId || 'record'} · Order #AG-${orderId}`
+          : `Delivery ${deliveryId || 'record'}`,
+        reviewDate: getText(review.created_at),
+        reviewedName: rider
+          ? getText(rider.full_name, getName(rider, `Rider ${riderId || 'record'}`))
+          : `Rider ${riderId || 'not recorded'}`,
+        reviewedType: 'Rider',
+        secondary: getText(review.comment, 'No written review'),
+        status: 'Published',
+        tone: 'green',
+        value: `${rating} / 5 rating`,
+      };
+    }),
+  ].sort((current, next) => next.reviewDate.localeCompare(current.reviewDate));
 
   const createRiderRow = (rider) => {
     const company = logisticsCompaniesById.get(
@@ -563,14 +680,7 @@ const createEntityRows = ({
       tone: getTone(payment.collection_status ?? payment.payment_status),
       value: formatMoney(payment.amount),
     })),
-    Reviews: reviews.map((review) => ({
-      category: `Order #AG-${getId(review.order_id)}`,
-      primary: `Review ${getId(review.review_id)}`,
-      secondary: getText(review.comment, 'No written review'),
-      status: 'Published',
-      tone: 'green',
-      value: `${getNumber(review.rating)} / 5 rating`,
-    })),
+    Reviews: reviewRows,
     Riders: riders.map(createRiderRow),
     Users: users.map((user) => ({
       category: toDisplayText(user.account_role, 'User'),
@@ -598,6 +708,7 @@ const getDashboardData = async () => {
     orders,
     orderItems,
     reviews,
+    riderRatings,
     payments,
     deliveries,
     logisticsCompanies,
@@ -617,6 +728,7 @@ const getDashboardData = async () => {
       'orders',
       'order_items',
       'reviews',
+      'rider_ratings',
       'payments',
       'deliveries',
       'logistics_companies',
@@ -639,6 +751,7 @@ const getDashboardData = async () => {
     orders: asRows(orders),
     payments: asRows(payments),
     reviews: asRows(reviews),
+    riderRatings: asRows(riderRatings),
     riders: asRows(riders),
     users: asRows(users),
   };
@@ -741,6 +854,7 @@ const getDashboardData = async () => {
       })),
       lowStock,
       paymentActivityBars: getPaymentActivityBars(paymentRows),
+      salesTrend: getSalesTrend(paymentRows),
       totalOrders: orderRows.length,
       totalSales,
     },

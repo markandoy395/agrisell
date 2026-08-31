@@ -19,6 +19,12 @@ export type DeliveryStatusItem = {
   value: number;
 };
 
+export type SalesTrendPoint = {
+  date: string;
+  orders: number;
+  revenue: number;
+};
+
 export type AdminOverviewData = {
   activeFarmers: number;
   activeListings: number;
@@ -26,6 +32,7 @@ export type AdminOverviewData = {
   deliveryStatuses: DeliveryStatusItem[];
   lowStock: number;
   paymentActivityBars: number[];
+  salesTrend: SalesTrendPoint[];
   totalOrders: number;
   totalSales: number;
 };
