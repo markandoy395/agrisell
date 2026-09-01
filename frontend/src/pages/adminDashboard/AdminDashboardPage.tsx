@@ -247,9 +247,9 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
         }}
         onOpenHelp={() =>
           setModal({
-            title: "Agrisell help center",
+            title: "Help Center Coming Soon",
             message:
-              "Need a hand? Our support team can help with marketplace operations, seller verification, and delivery issues.",
+              "The Agrisell Help Center is currently under development. We're working to make support resources available soon. Thank you for your patience.",
           })
         }
         onOpenPreferences={() => {
