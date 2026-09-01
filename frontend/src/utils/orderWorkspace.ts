@@ -12,11 +12,6 @@ import type {
 
 type CreateOrderWorkspaceRowsParams = {
   orders: OrderRow[];
-  avatarTones: OrderAvatarTone[];
-  couriers: string[];
-  destinations: string[];
-  arrivals: string[];
-  dates: string[];
 };
 
 type OrderFilterParams = {
@@ -78,27 +73,27 @@ export function getOrderTrackingNumber(orderId: string) {
 
 export function createOrderWorkspaceRows({
   orders,
-  avatarTones,
-  couriers,
-  destinations,
-  arrivals,
-  dates,
 }: CreateOrderWorkspaceRowsParams): OrderWorkspaceRow[] {
   return orders.map((order, index) => {
-    const serviceType: OrderServiceType =
-      index % 5 === 4 ? "Regular" : "Express";
+    const statusGroup = getOrderStatusGroup(order.status);
+    const avatarTone: OrderAvatarTone = statusGroup === "Success"
+      ? "green"
+      : statusGroup === "Failed"
+        ? "red"
+        : "blue";
+    const serviceType: OrderServiceType = "Not recorded";
 
     return {
       order,
-      avatarTone: avatarTones[index % avatarTones.length] ?? "green",
-      courier: couriers[index % couriers.length] ?? "Unassigned courier",
-      courierTone: avatarTones[(index + 2) % avatarTones.length] ?? "green",
-      destination: destinations[index % destinations.length] ?? "No address",
-      estimatedArrival: arrivals[index % arrivals.length] ?? "Not scheduled",
-      orderDate: dates[index % dates.length] ?? "Not scheduled",
+      avatarTone,
+      courier: "Unassigned courier",
+      courierTone: "blue",
+      destination: "Not recorded",
+      estimatedArrival: "Not scheduled",
+      orderDate: order.time || "Not recorded",
       serviceType,
       sortIndex: index,
-      statusGroup: getOrderStatusGroup(order.status),
+      statusGroup,
       trackingNumber: getOrderTrackingNumber(order.id),
     };
   });

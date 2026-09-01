@@ -10,6 +10,11 @@ const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+const ADMIN_PERMISSIONS = [
+  "overview:view", "users:manage", "farmers:manage", "logistics:manage",
+  "orders:manage", "payments:view", "sales:manage", "reviews:manage",
+  "settings:manage",
+];
 
 const text = (value: unknown, fallback = "") =>
   typeof value === "string" && value.trim() ? value.trim() : fallback;
@@ -126,6 +131,17 @@ const getTable = async (table: string, filters: Record<string, string> = {}) => 
   const params = new URLSearchParams({ select: "*", limit: String(QUERY_LIMIT), ...filters });
   return rows(await requestSupabase(`/rest/v1/${table}?${params}`));
 };
+const newestUser = (users: Row[]) => [...users].sort((current, next) =>
+  number(next.user_id) - number(current.user_id)
+)[0];
+const getAuthUserByEmail = async (email: string) => {
+  const result = await requestSupabase("/auth/v1/admin/users?per_page=1000") as Row;
+  const users = Array.isArray(result?.users) ? result.users : [];
+  return users.find((user): user is Row =>
+    typeof user === "object" && user !== null &&
+    text((user as Row).email).toLowerCase() === email,
+  );
+};
 
 const createUserError = (code: string, message: string, status = 400) =>
   Object.assign(new Error(message), { code, status });
@@ -206,7 +222,17 @@ const createDashboardUser = async (payload: unknown) => {
   }
 };
 
-type Admin = { email: string; permissions: string[]; role: "admin" };
+type Admin = { email: string; name: string; permissions: string[]; role: "admin"; userId: string };
+
+const permissionsFromRole = (role: Row | undefined) => {
+  const description = text(role?.description);
+  if (!description.toLowerCase().startsWith("privileges:")) return undefined;
+  return description
+    .slice("privileges:".length)
+    .split(",")
+    .map((permission) => permission.trim())
+    .filter((permission) => ADMIN_PERMISSIONS.includes(permission));
+};
 
 const getAdmin = async (request: Request): Promise<Admin | null> => {
   const authorization = request.headers.get("authorization") ?? "";
@@ -227,12 +253,98 @@ const getAdmin = async (request: Request): Promise<Admin | null> => {
   const admins = await getTable("admins", { user_id: `eq.${userId}` });
   const role = text(admins[0]?.admin_role).toLowerCase();
   if (role !== "admin" && role !== "super_admin") return null;
+  const roleRecords = await getTable("admin_roles", { user_id: `eq.${userId}` });
+  const storedPermissions = Array.isArray(admins[0]?.permissions)
+    ? admins[0].permissions.filter((permission): permission is string =>
+        typeof permission === "string" && ADMIN_PERMISSIONS.includes(permission))
+    : permissionsFromRole(roleRecords[0]);
 
   return {
     email,
-    permissions: role === "super_admin" ? ["admin:read", "admin:write", "admin:manage"] : ["admin:read", "admin:write"],
+    name: name(users[0], display(email.split("@")[0], "Administrator")),
+    permissions: role === "super_admin"
+      ? [...ADMIN_PERMISSIONS, "admin:manage"]
+      : storedPermissions?.length
+        ? storedPermissions
+        : ADMIN_PERMISSIONS,
     role: "admin",
+    userId,
   };
+};
+
+const createAdministrator = async (payload: unknown, assigningAdmin: Admin) => {
+  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+    throw createUserError("INVALID_ADMIN_PAYLOAD", "Enter the new administrator details.");
+  }
+  const body = payload as Row;
+  const email = text(body.email).toLowerCase();
+  const password = typeof body.password === "string" ? body.password : "";
+  const firstName = optionalField(body.firstName, 100, "First name");
+  const lastName = optionalField(body.lastName, 100, "Last name");
+  const permissions = Array.isArray(body.permissions)
+    ? [...new Set(body.permissions.filter((item): item is string =>
+        typeof item === "string" && ADMIN_PERMISSIONS.includes(item)))]
+    : [];
+  if (!firstName || !lastName) throw createUserError("INVALID_ADMIN_PAYLOAD", "First and last names are required.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw createUserError("INVALID_ADMIN_PAYLOAD", "Enter a valid email address.");
+  if (password.length < 8 || password.length > 512) throw createUserError("INVALID_ADMIN_PAYLOAD", "Password must be between 8 and 512 characters.");
+  if (!permissions.length || permissions.length !== (Array.isArray(body.permissions) ? new Set(body.permissions).size : 0)) {
+    throw createUserError("INVALID_ADMIN_PRIVILEGES", "Select at least one valid administrator privilege.");
+  }
+  let authUser = await getAuthUserByEmail(email);
+  const resumedAuthUser = Boolean(authUser);
+  if (authUser && text((authUser.user_metadata as Row | undefined)?.requested_role) !== "admin") {
+    throw createUserError("ADMIN_ALREADY_EXISTS", "An account already uses this email address.", 409);
+  }
+  if (!authUser) {
+    const authResult = await requestSupabase("/auth/v1/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email, email_confirm: true, password,
+        user_metadata: { first_name: firstName, last_name: lastName, requested_role: "admin" },
+      }),
+    }) as Row;
+    authUser = (typeof authResult.user === "object" && authResult.user !== null ? authResult.user : authResult) as Row;
+  }
+  const authUserId = text(authUser.id);
+  if (!authUserId) throw createUserError("ADMIN_CREATION_FAILED", "Supabase did not return the new authentication user.", 502);
+  try {
+    const applicationUser = newestUser(await getTable("users", { email: `eq.${email}` }));
+    const userId = id(applicationUser?.user_id);
+    if (!userId) throw createUserError("ADMIN_PROFILE_NOT_CREATED", "The administrator profile was not created.", 502);
+    const existingAdmins = await getTable("admins", { user_id: `eq.${userId}` });
+    if (existingAdmins.length) throw createUserError("ADMIN_ALREADY_EXISTS", "This administrator account is already configured.", 409);
+    if (resumedAuthUser) {
+      await requestSupabase(`/auth/v1/admin/users/${encodeURIComponent(authUserId)}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+    }
+    await requestSupabase(`/rest/v1/users?user_id=eq.${encodeURIComponent(userId)}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ account_status: "active", first_name: firstName, last_name: lastName }),
+    });
+    await requestSupabase("/rest/v1/admins", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        admin_code: "AGRI-ADMIN", admin_role: "admin",
+        assigned_by_user_id: assigningAdmin.userId, date_assigned: new Date().toISOString(),
+        user_id: userId,
+      }),
+    });
+    await requestSupabase("/rest/v1/admin_roles", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        description: `Privileges: ${permissions.join(", ")}`,
+        role_level: 50, role_name: "Administrator", user_id: userId,
+      }),
+    });
+    return { email, permissions, userId };
+  } catch (error) {
+    await requestSupabase(`/auth/v1/admin/users/${encodeURIComponent(authUserId)}`, { method: "DELETE" }).catch(() => undefined);
+    throw error;
+  }
 };
 
 type SaleInput = {
@@ -616,19 +728,29 @@ Deno.serve(async (request) => {
     }
     if (request.method === "POST" && pathname === "/api/auth/logout") return response(request, 200, { authenticated: false });
     if (!admin) return response(request, 401, { code: "AUTHENTICATION_REQUIRED", message: "A valid admin session is required." });
+    if (request.method === "POST" && pathname === "/api/admin/administrators") {
+      if (!admin.permissions.includes("admin:manage")) {
+        return response(request, 403, { code: "SUPER_ADMIN_REQUIRED", message: "Only a super administrator can create administrator accounts." });
+      }
+      return response(request, 201, { admin: await createAdministrator(await request.json().catch(() => null), admin) });
+    }
     if (request.method === "GET" && pathname === "/api/admin/dashboard") return response(request, 200, await getDashboard());
     if (request.method === "GET" && pathname === "/api/admin/sales") {
+      if (!admin.permissions.includes("sales:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       return response(request, 200, await getSales());
     }
     if (request.method === "POST" && pathname === "/api/admin/sales") {
+      if (!admin.permissions.includes("sales:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       return response(request, 201, { sale: await createSale(await request.json().catch(() => null)) });
     }
     const saleRoute = pathname.match(/^\/api\/admin\/sales\/([^/]+)$/);
     if (request.method === "PATCH" && saleRoute) {
+      if (!admin.permissions.includes("sales:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       const saleId = decodeURIComponent(saleRoute[1]);
       return response(request, 200, { sale: await updateSale(saleId, await request.json().catch(() => null)) });
     }
     if (request.method === "DELETE" && saleRoute) {
+      if (!admin.permissions.includes("sales:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       const saleId = decodeURIComponent(saleRoute[1]);
       const removed = rows(await requestSupabase(`/rest/v1/product_sales?sale_id=eq.${encodeURIComponent(saleId)}`, {
         headers: { Prefer: "return=representation" }, method: "DELETE",
@@ -637,11 +759,13 @@ Deno.serve(async (request) => {
       return response(request, 200, {});
     }
     if (request.method === "POST" && pathname === "/api/admin/users") {
+      if (!admin.permissions.includes("users:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       const user = await createDashboardUser(await request.json().catch(() => null));
       return response(request, 201, { user });
     }
     const approval = pathname.match(/^\/api\/admin\/farmers\/([^/]+)\/approval$/);
     if (request.method === "PATCH" && approval) {
+      if (!admin.permissions.includes("farmers:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       const farmerId = decodeURIComponent(approval[1]);
       const updated = await requestSupabase(`/rest/v1/farmers?farmer_user_id=eq.${encodeURIComponent(farmerId)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=representation" }, body: JSON.stringify({ verification_status: "verified" }) });
       if (!rows(updated).length) return response(request, 404, { code: "FARMER_NOT_FOUND", message: "The farmer profile could not be found." });
@@ -649,6 +773,7 @@ Deno.serve(async (request) => {
     }
     const riderApproval = pathname.match(/^\/api\/admin\/riders\/([^/]+)\/approval$/);
     if (request.method === "PATCH" && riderApproval) {
+      if (!admin.permissions.includes("logistics:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       const riderId = decodeURIComponent(riderApproval[1]);
       const updated = await requestSupabase(`/rest/v1/riders?rider_id=eq.${encodeURIComponent(riderId)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=representation" }, body: JSON.stringify({ employment_status: "active" }) });
       if (!rows(updated).length) return response(request, 404, { code: "RIDER_NOT_FOUND", message: "The rider profile could not be found." });

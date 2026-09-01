@@ -8,6 +8,9 @@ const {
   createAdminUser,
 } = require('../services/adminUserService');
 const { SupabaseRequestError } = require('../services/supabaseService');
+const { getSupabaseRows } = require('../services/supabaseService');
+const { ADMIN_PERMISSIONS } = require('../services/sessionService');
+const { provisionAdminAccount } = require('../services/supabaseAdminAuthService');
 const {
   AdminSaleError,
   createSale,
@@ -131,6 +134,62 @@ const createDashboardUser = async (request, response) => {
   }
 };
 
+const createAdministrator = async (request, response) => {
+  const contentType = getHeaderValue(request.headers['content-type']) ?? '';
+  if (!contentType.includes('application/json')) {
+    sendJson(response, 415, { code: 'JSON_REQUIRED', message: 'Administrator creation requests must use application/json.' });
+    return;
+  }
+
+  try {
+    const body = await readJsonBody(request, { maxBytes: 12_000 });
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    const firstName = typeof body.firstName === 'string' ? body.firstName.trim() : '';
+    const lastName = typeof body.lastName === 'string' ? body.lastName.trim() : '';
+    const permissions = Array.isArray(body.permissions)
+      ? [...new Set(body.permissions.filter((item) => typeof item === 'string'))]
+      : [];
+    if (!firstName || !lastName || firstName.length > 100 || lastName.length > 100) {
+      sendJson(response, 400, { code: 'INVALID_ADMIN_PAYLOAD', message: 'Enter a valid first and last name.' });
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+      sendJson(response, 400, { code: 'INVALID_ADMIN_PAYLOAD', message: 'Enter a valid email address.' });
+      return;
+    }
+    if (password.length < 8 || password.length > 512) {
+      sendJson(response, 400, { code: 'INVALID_ADMIN_PAYLOAD', message: 'Password must be between 8 and 512 characters.' });
+      return;
+    }
+    if (!permissions.length || permissions.some((item) => !ADMIN_PERMISSIONS.includes(item))) {
+      sendJson(response, 400, { code: 'INVALID_ADMIN_PRIVILEGES', message: 'Select at least one valid administrator privilege.' });
+      return;
+    }
+    const assigningUsers = await getSupabaseRows('users', { email: `eq.${request.admin.email}` });
+    const admin = await provisionAdminAccount({
+      assignedByUserId: assigningUsers[0]?.user_id,
+      email,
+      firstName,
+      lastName,
+      password,
+      permissions,
+      role: 'admin',
+    });
+    sendJson(response, 201, { admin });
+  } catch (error) {
+    console.error('Unable to create the administrator.', error);
+    const duplicate = error instanceof SupabaseRequestError &&
+      (error.status === 409 || error.status === 422 || error.code === 'ADMIN_ALREADY_EXISTS');
+    sendJson(response, duplicate ? 409 : 502, {
+      code: duplicate ? 'ADMIN_ALREADY_EXISTS' : 'ADMIN_CREATION_FAILED',
+      message: duplicate
+        ? 'An account already uses this email address.'
+        : 'The administrator could not be created. Please try again.',
+    });
+  }
+};
+
 const saleError = (response, error) => {
   if (error instanceof AdminSaleError) {
     sendJson(response, error.statusCode, { code: 'SALE_INVALID', message: error.message });
@@ -172,6 +231,7 @@ module.exports = {
   approveAdminFarmer,
   approveAdminRider,
   createAdminSale,
+  createAdministrator,
   createDashboardUser,
   deleteAdminSale,
   getAdminSales,

@@ -1,13 +1,4 @@
 import { useMemo, useState } from "react";
-import {
-  orderArrivals,
-  orderAvatarTones,
-  orderCouriers,
-  orderDates,
-  orderDestinations,
-  orderFilters,
-  orderPageSize,
-} from "../data/orderWorkspaceMock";
 import type {
   OrderFilter,
   OrderRow,
@@ -25,6 +16,9 @@ type UseOrderWorkspaceParams = {
   orders: OrderRow[];
 };
 
+const orderFilters: OrderFilter[] = ["All", "Success", "Pending", "Failed"];
+const orderPageSize = 12;
+
 export function useOrderWorkspace({ orders }: UseOrderWorkspaceParams) {
   const [activeFilter, setActiveFilter] = useState<OrderFilter>("All");
   const [orderQuery, setOrderQuery] = useState("");
@@ -37,14 +31,7 @@ export function useOrderWorkspace({ orders }: UseOrderWorkspaceParams) {
 
   const displayRows = useMemo(
     () =>
-      createOrderWorkspaceRows({
-        orders,
-        avatarTones: orderAvatarTones,
-        couriers: orderCouriers,
-        destinations: orderDestinations,
-        arrivals: orderArrivals,
-        dates: orderDates,
-      }),
+      createOrderWorkspaceRows({ orders }),
     [orders],
   );
 

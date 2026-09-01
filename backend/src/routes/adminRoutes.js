@@ -3,36 +3,64 @@ const {
   approveAdminRider,
   createDashboardUser,
   createAdminSale,
+  createAdministrator,
   deleteAdminSale,
   getAdminSales,
   getAdminDashboard,
   updateAdminSaleEnabled,
 } = require('../controllers/adminDashboardController');
+const { sendJson } = require('../utils/http');
+
+const requirePermission = (request, response, permission) => {
+  if (request.admin.permissions.includes(permission) || request.admin.permissions.includes('admin:manage')) return true;
+  sendJson(response, 403, {
+    code: 'ADMIN_PRIVILEGE_REQUIRED',
+    message: 'Your administrator account does not have permission for this action.',
+  });
+  return false;
+};
 
 const routeAdminRequest = async (request, response, pathname) => {
+  if (pathname === '/api/admin/administrators' && request.method === 'POST') {
+    if (!request.admin.permissions.includes('admin:manage')) {
+      sendJson(response, 403, {
+        code: 'SUPER_ADMIN_REQUIRED',
+        message: 'Only a super administrator can create administrator accounts.',
+      });
+      return true;
+    }
+    await createAdministrator(request, response);
+    return true;
+  }
+
   if (pathname === '/api/admin/dashboard' && request.method === 'GET') {
     await getAdminDashboard(request, response);
     return true;
   }
 
   if (pathname === '/api/admin/users' && request.method === 'POST') {
+    if (!requirePermission(request, response, 'users:manage')) return true;
     await createDashboardUser(request, response);
     return true;
   }
   if (pathname === '/api/admin/sales' && request.method === 'GET') {
+    if (!requirePermission(request, response, 'sales:manage')) return true;
     await getAdminSales(request, response);
     return true;
   }
   if (pathname === '/api/admin/sales' && request.method === 'POST') {
+    if (!requirePermission(request, response, 'sales:manage')) return true;
     await createAdminSale(request, response);
     return true;
   }
   const saleMatch = pathname.match(/^\/api\/admin\/sales\/([^/]+)$/);
   if (saleMatch && request.method === 'PATCH') {
+    if (!requirePermission(request, response, 'sales:manage')) return true;
     await updateAdminSaleEnabled(request, response, decodeURIComponent(saleMatch[1]));
     return true;
   }
   if (saleMatch && request.method === 'DELETE') {
+    if (!requirePermission(request, response, 'sales:manage')) return true;
     await deleteAdminSale(request, response, decodeURIComponent(saleMatch[1]));
     return true;
   }
@@ -42,6 +70,7 @@ const routeAdminRequest = async (request, response, pathname) => {
   );
 
   if (approveFarmerMatch && request.method === 'PATCH') {
+    if (!requirePermission(request, response, 'farmers:manage')) return true;
     await approveAdminFarmer(
       request,
       response,
@@ -55,6 +84,7 @@ const routeAdminRequest = async (request, response, pathname) => {
   );
 
   if (approveRiderMatch && request.method === 'PATCH') {
+    if (!requirePermission(request, response, 'logistics:manage')) return true;
     await approveAdminRider(
       request,
       response,

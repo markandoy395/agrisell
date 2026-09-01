@@ -38,6 +38,6 @@ Build and deploy the `frontend` directory to GitHub Pages. Administrators can th
 
 ## 4. Add administrators
 
-Create the user's Supabase Auth account and ensure the normal Agrisell user profile is created in `public.users`. Then add their linked `user_id` to `public.admins` with `admin_role` set to `admin` or `super_admin`.
+A signed-in `super_admin` can create regular administrators from **Settings**, including their feature privileges. Privileges are stored with the administrator's existing `admin_roles` record, so no additional database column is required. The API deliberately does not allow a superadmin to grant the `admin:manage` privilege to a new regular administrator.
 
-The existing local command `npm run provision-admins` can provision the initial accounts while the Node backend configuration is available.
+The existing local command `npm run provision-admins` remains the bootstrap path for the initial admin and superadmin accounts while the Node backend configuration is available.

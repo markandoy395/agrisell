@@ -1,7 +1,18 @@
-import { navigation } from "../../data/dashboardMock";
-import type { AdminProfile } from "../../types/dashboard";
+import type { AdminProfile, NavigationItem } from "../../types/dashboard";
 import { Icon } from "../ui/icon/Icon";
 import "./DashboardSidebar.css";
+
+const navigation: NavigationItem[] = [
+  { label: "Overview", icon: "grid" },
+  { label: "Users", icon: "users" },
+  { label: "Farmers", icon: "sprout" },
+  { label: "Logistics Companies", icon: "rider" },
+  { label: "Orders", icon: "cart" },
+  { label: "Deliveries", icon: "truck" },
+  { label: "Payments", icon: "card" },
+  { label: "Sales & Discounts", icon: "trend" },
+  { label: "Reviews", icon: "star" },
+];
 
 type DashboardSidebarProps = {
   activeNav: string;
@@ -13,6 +24,19 @@ type DashboardSidebarProps = {
   onOpenHelp: () => void;
   onOpenPreferences: () => void;
   onSignOut: () => void;
+  permissions: string[];
+};
+
+const navigationPermission: Record<string, string> = {
+  Overview: "overview:view",
+  Users: "users:manage",
+  Farmers: "farmers:manage",
+  "Logistics Companies": "logistics:manage",
+  Orders: "orders:manage",
+  Deliveries: "logistics:manage",
+  Payments: "payments:view",
+  "Sales & Discounts": "sales:manage",
+  Reviews: "reviews:manage",
 };
 
 export function DashboardSidebar({
@@ -25,7 +49,12 @@ export function DashboardSidebar({
   onOpenHelp,
   onOpenPreferences,
   onSignOut,
+  permissions,
 }: DashboardSidebarProps) {
+  const visibleNavigation = navigation.filter((item) =>
+    permissions.includes(navigationPermission[item.label]),
+  );
+  const canOpenSettings = permissions.includes("settings:manage") || permissions.includes("admin:manage");
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -36,7 +65,7 @@ export function DashboardSidebar({
       </div>
       <div className="workspace-label">WORKSPACE</div>
       <nav className="nav-list" aria-label="Main navigation">
-        {navigation.map((item) => (
+        {visibleNavigation.map((item) => (
           <button
             className={`nav-item ${activeNav === item.label ? "active" : ""}`}
             type="button"
@@ -51,14 +80,14 @@ export function DashboardSidebar({
         ))}
       </nav>
       <div className="sidebar-bottom">
-        <button
+        {canOpenSettings && <button
           className={`nav-item ${activeNav === "Settings" ? "active" : ""}`}
           type="button"
           onClick={() => onNavigate("Settings")}
         >
           <Icon name="settings" size={19} />
           <span>Settings</span>
-        </button>
+        </button>}
         <button className="help-card" type="button" onClick={onOpenHelp}>
           <span className="help-leaf">
             <Icon name="leaf" size={18} />

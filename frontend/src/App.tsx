@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { LoginCredentials } from "./api/adminAuth";
+import type { AuthenticatedAdmin } from "./api/adminAuth";
 import { getAdminSession, loginAdmin, logoutAdmin } from "./api/adminAuth";
 import { SmallScreenAccessGuard } from "./components/layout/SmallScreenAccessGuard";
 import { AdminDashboardPage } from "./pages/adminDashboard/AdminDashboardPage";
@@ -10,6 +11,7 @@ type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
 function AdminAppShell() {
   const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
+  const [authenticatedAdmin, setAuthenticatedAdmin] = useState<AuthenticatedAdmin | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -18,9 +20,8 @@ function AdminAppShell() {
       .then((session) => {
         if (!isMounted) return;
 
-        setAuthStatus(
-          session.authenticated ? "authenticated" : "unauthenticated",
-        );
+        setAuthenticatedAdmin(session.authenticated ? session.admin : null);
+        setAuthStatus(session.authenticated ? "authenticated" : "unauthenticated");
       })
       .catch(() => {
         if (isMounted) setAuthStatus("unauthenticated");
@@ -34,11 +35,15 @@ function AdminAppShell() {
   const handleLogin = async (credentials: LoginCredentials) => {
     const session = await loginAdmin(credentials);
 
+    setAuthenticatedAdmin(session.authenticated ? session.admin : null);
     setAuthStatus(session.authenticated ? "authenticated" : "unauthenticated");
   };
 
   const handleSignOut = () => {
-    void logoutAdmin().finally(() => setAuthStatus("unauthenticated"));
+    void logoutAdmin().finally(() => {
+      setAuthenticatedAdmin(null);
+      setAuthStatus("unauthenticated");
+    });
   };
 
   return (
@@ -58,8 +63,8 @@ function AdminAppShell() {
             </div>
           </div>
         </main>
-      ) : authStatus === "authenticated" ? (
-        <AdminDashboardPage onSignOut={handleSignOut} />
+      ) : authStatus === "authenticated" && authenticatedAdmin ? (
+        <AdminDashboardPage admin={authenticatedAdmin} onSignOut={handleSignOut} />
       ) : (
         <LoginPage onLogin={handleLogin} />
       )}

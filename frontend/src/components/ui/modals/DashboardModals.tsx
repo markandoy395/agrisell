@@ -1,6 +1,6 @@
 import type { ChangeEvent, FormEventHandler } from "react";
 import { useState } from "react";
-import { entityInfo } from "../../../data/dashboardMock";
+import { getEntityInfo } from "../../../data/entityWorkspaceConfig";
 import type { CreateUserInput } from "../../../api/adminData";
 import type { AdminProfile, DashboardModal } from "../../../types/dashboard";
 import { CloseButton } from "../closeButton/CloseButton";
@@ -51,7 +51,7 @@ export function AddRecordModal({
   onSubmit,
 }: AddRecordModalProps) {
   if (!section) return null;
-  const info = entityInfo[section];
+  const info = getEntityInfo(section);
   return (
     <div className="modal-backdrop">
       <section

@@ -22,7 +22,7 @@ export type OrderAvatarTone = 'red' | 'blue' | 'purple' | 'green' | 'gold'
 
 export type OrderSortDirection = 'desc' | 'asc'
 
-export type OrderServiceType = 'Express' | 'Regular'
+export type OrderServiceType = 'Express' | 'Regular' | 'Not recorded'
 
 export type OrderWorkspaceRow = {
   order: OrderRow

@@ -1,12 +1,6 @@
 import { useMemo } from "react";
-import {
-  adminLocationPins,
-  entityInfo,
-  entityRows,
-  entityTableColumns,
-  moduleHighlights,
-} from "../../data/dashboardMock";
-import type { EntityRecord, EntityTableColumn } from "../../types/dashboard";
+import { getEntityInfo, getEntityTableColumns } from "../../data/entityWorkspaceConfig";
+import type { EntityRecord } from "../../types/dashboard";
 import type { LocationPin, ModuleHighlight } from "../../types/dashboard";
 import { Icon } from "../../components/ui/icon/Icon";
 import { LocationPinsMap } from "../../components/ui/locationPinsMap/LocationPinsMap";
@@ -88,13 +82,6 @@ const ACTIVE_RECORD_STATUSES = new Set([
   "On delivery",
 ]);
 
-const FALLBACK_TABLE_COLUMNS: EntityTableColumn[] = [
-  { label: "RECORD", field: "primary", helperField: "secondary" },
-  { label: "TYPE / CATEGORY", field: "category" },
-  { label: "DETAIL", field: "value" },
-  { label: "STATUS", field: "status", isStatus: true },
-];
-
 const SECTIONS_WITH_LOCATION_MAP = new Set(["Farms"]);
 
 const getModuleClassName = (section: string) =>
@@ -166,24 +153,18 @@ export function EntityWorkspace({
   onAdd,
   onOpen,
 }: EntityWorkspaceProps) {
-  const baseInfo = entityInfo[section];
-  const tableColumns = entityTableColumns[section] ?? FALLBACK_TABLE_COLUMNS;
+  const baseInfo = getEntityInfo(section);
+  const tableColumns = getEntityTableColumns(section);
   const showAdminLocationMap = SECTIONS_WITH_LOCATION_MAP.has(section);
   const allRecords = useMemo(
-    () => [...created, ...(liveRecords ?? entityRows[section] ?? [])],
-    [created, liveRecords, section],
+    () => [...created, ...(liveRecords ?? [])],
+    [created, liveRecords],
   );
-  const info =
-    liveRecords === undefined
-      ? baseInfo
-      : {
-          ...baseInfo,
-          total: `${allRecords.length} ${allRecords.length === 1 ? "record" : "records"}`,
-        };
-  const highlights =
-    liveRecords === undefined
-      ? moduleHighlights[section]
-      : getLiveHighlights(section, allRecords);
+  const info = {
+    ...baseInfo,
+    total: `${allRecords.length} ${allRecords.length === 1 ? "record" : "records"}`,
+  };
+  const highlights = getLiveHighlights(section, allRecords);
   const records = useMemo(() => {
     const normalizedSearch = search.toLowerCase().trim();
 
@@ -388,7 +369,7 @@ export function EntityWorkspace({
         <LocationPinsMap
           title="User and farmer pins"
           description="Agrisell user accounts and registered farmer farms across active service areas."
-          pins={locationPins ?? adminLocationPins}
+          pins={locationPins ?? []}
         />
       )}
       <div className="management-toolbar">

@@ -19,16 +19,14 @@ import { Icon } from "../../components/ui/icon/Icon";
 import { SettingsWorkspace } from "../settingsWorkspace/SettingsWorkspace";
 import { SaleWorkspace } from "../saleWorkspace/SaleWorkspace";
 import {
-  initialAdminProfile,
-  initialNotifications,
-} from "../../data/dashboardMock";
-import {
   approveFarmerProfile,
   approveRiderProfile,
   createAdminUser,
+  createAdministrator,
 } from "../../api/adminData";
 import type { CreateUserInput } from "../../api/adminData";
 import { getApiErrorMessage } from "../../api/adminAuth";
+import type { AuthenticatedAdmin } from "../../api/adminAuth";
 import { useAdminDatabase } from "../../hooks/useAdminDatabase";
 import type {
   AdminProfile,
@@ -53,23 +51,45 @@ function getInitials(name: string) {
   );
 }
 
+const sectionPermissions: Record<string, string> = {
+  Overview: "overview:view",
+  Users: "users:manage",
+  Farmers: "farmers:manage",
+  "Logistics Companies": "logistics:manage",
+  Deliveries: "logistics:manage",
+  Orders: "orders:manage",
+  Payments: "payments:view",
+  "Sales & Discounts": "sales:manage",
+  Reviews: "reviews:manage",
+  Settings: "settings:manage",
+};
+
+const getInitialSection = (permissions: string[]) =>
+  permissions.includes("admin:manage")
+    ? "Overview"
+    : Object.entries(sectionPermissions).find(([, permission]) =>
+        permissions.includes(permission),
+      )?.[0] ?? "Overview";
+
 type AdminDashboardPageProps = {
+  // The signed-in account determines both navigation and action access.
+  admin: AuthenticatedAdmin;
   onSignOut: () => void;
 };
 
-export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
+export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps) {
   const {
     data,
     error: databaseError,
     isLoading,
     refresh: refreshDatabase,
   } = useAdminDatabase();
-  const [activeNav, setActiveNav] = useState("Overview");
+  const [activeNav, setActiveNav] = useState(() => getInitialSection(admin.permissions));
   const [period, setPeriod] = useState("This month");
   const [search, setSearch] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] =
-    useState<NotificationItem[]>(initialNotifications);
+    useState<NotificationItem[]>([]);
   const [periodOpen, setPeriodOpen] = useState(false);
   const [metricOpen, setMetricOpen] = useState(false);
   const [metric, setMetric] = useState("Revenue");
@@ -80,8 +100,14 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
   const [sidebarProfileOpen, setSidebarProfileOpen] = useState(false);
   const [topProfileOpen, setTopProfileOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
-  const [adminProfile, setAdminProfile] =
-    useState<AdminProfile>(initialAdminProfile);
+  const [adminProfile, setAdminProfile] = useState<AdminProfile>(() => ({
+    email: admin.email,
+    initials: getInitials(admin.name),
+    name: admin.name,
+    role: admin.permissions.includes("admin:manage")
+      ? "Super administrator"
+      : "Administrator",
+  }));
   const [activeOnly, setActiveOnly] = useState(false);
   const [modal, setModal] = useState<DashboardModal>(null);
   const [addSection, setAddSection] = useState<string | null>(null);
@@ -150,6 +176,11 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
   };
 
   const navigate = (section: string) => {
+    const requiredPermission = sectionPermissions[section];
+    if (requiredPermission && !admin.permissions.includes(requiredPermission) && !admin.permissions.includes("admin:manage")) {
+      showToast("Your administrator account does not have access to that area.");
+      return;
+    }
     setActiveNav(section);
     setActiveOnly(false);
     setPanelMenu(null);
@@ -239,6 +270,7 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
         activeNav={activeNav}
         profile={adminProfile}
         profileOpen={sidebarProfileOpen}
+        permissions={admin.permissions}
         onNavigate={navigate}
         onToggleProfile={() => setSidebarProfileOpen((isOpen) => !isOpen)}
         onOpenProfile={() => {
@@ -504,6 +536,7 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
             <SaleWorkspace onNotice={showToast} />
           ) : data && activeNav === "Settings" ? (
             <SettingsWorkspace
+              canManageAdmins={admin.permissions.includes("admin:manage")}
               autoApprove={autoApprove}
               digest={digest}
               onToggleApprove={() => {
@@ -536,6 +569,13 @@ export function AdminDashboardPage({ onSignOut }: AdminDashboardPageProps) {
                   "Workspace preferences saved.",
                 )
               }
+              onCreateAdministrator={async (input) => {
+                await createAdministrator(input);
+                notifyUpdate(
+                  "Administrator created",
+                  `${input.firstName} ${input.lastName} can now sign in with the selected privileges.`,
+                );
+              }}
             />
           ) : data ? (
             <EntityWorkspace

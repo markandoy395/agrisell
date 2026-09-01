@@ -260,6 +260,21 @@ export const createAdminUser = async (input: CreateUserInput) => {
   });
 };
 
+export type CreateAdministratorInput = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  permissions: string[];
+};
+
+export const createAdministrator = async (input: CreateAdministratorInput) => {
+  await requestAdminApi("/api/admin/administrators", {
+    body: JSON.stringify(input),
+    method: "POST",
+  });
+};
+
 export const approveFarmerProfile = async (farmerId: string) => {
   if (!farmerId) {
     throw new ApiRequestError("A farmer ID is required for approval.", 400);

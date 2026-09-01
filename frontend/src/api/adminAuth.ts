@@ -3,8 +3,9 @@ export type LoginCredentials = {
   password: string;
 };
 
-type AuthenticatedAdmin = {
+export type AuthenticatedAdmin = {
   email: string;
+  name: string;
   role: "admin";
   permissions: string[];
 };
@@ -164,6 +165,9 @@ const parseAdminSession = (body: unknown): AdminSession => {
   return {
     admin: {
       email: admin.email,
+      name: typeof admin.name === "string" && admin.name.trim()
+        ? admin.name
+        : admin.email.split("@")[0].replace(/[._-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()),
       permissions: admin.permissions,
       role: admin.role,
     },
