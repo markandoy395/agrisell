@@ -6,6 +6,8 @@ const {
 } = require('./supabaseService');
 const {
   ADMIN_PERMISSIONS,
+  DEFAULT_ADMIN_PERMISSIONS,
+  SUPER_ADMIN_PERMISSIONS,
   getPermissionsForAdminRole,
   getPublicAdmin,
 } = require('./sessionService');
@@ -172,11 +174,13 @@ const provisionAdminAccount = async ({
     throw new Error('Only admin and super_admin accounts can be provisioned.');
   }
 
-  const selectedPermissions = Array.isArray(permissions)
-    ? [...new Set(permissions)].filter((permission) => ADMIN_PERMISSIONS.includes(permission))
-    : ADMIN_PERMISSIONS;
-  if (role === 'admin' && selectedPermissions.length === 0) {
-    throw new Error('Select at least one administrator privilege.');
+  const selectedPermissions = role === 'super_admin'
+    ? SUPER_ADMIN_PERMISSIONS
+    : Array.isArray(permissions)
+      ? [...new Set(permissions)].filter((permission) => ADMIN_PERMISSIONS.includes(permission))
+      : DEFAULT_ADMIN_PERMISSIONS;
+  if (role === 'admin' && selectedPermissions.length !== 3) {
+    throw new Error('Select exactly three administrator privileges.');
   }
 
   let authUser;

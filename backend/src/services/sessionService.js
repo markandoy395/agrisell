@@ -14,6 +14,11 @@ const ADMIN_PERMISSIONS = [
   'reviews:manage',
   'settings:manage',
 ];
+const DEFAULT_ADMIN_PERMISSIONS = [
+  'overview:view',
+  'users:manage',
+  'farmers:manage',
+];
 const SUPER_ADMIN_PERMISSIONS = [...ADMIN_PERMISSIONS, 'admin:manage'];
 
 const encodePayload = (payload) =>
@@ -28,26 +33,31 @@ const sign = (value) =>
     .update(value)
     .digest('base64url');
 
+const normalizeAdminPermissions = (permissions) => {
+  const selectedPermissions = Array.isArray(permissions)
+    ? [...new Set(permissions)].filter((permission) => ADMIN_PERMISSIONS.includes(permission))
+    : [];
+
+  return selectedPermissions.length === 3
+    ? selectedPermissions
+    : DEFAULT_ADMIN_PERMISSIONS;
+};
+
 const getPermissionsForAdminRole = (role, permissions) =>
   role === 'super_admin'
     ? SUPER_ADMIN_PERMISSIONS
-    : Array.isArray(permissions) && permissions.length
-      ? permissions.filter((permission) => ADMIN_PERMISSIONS.includes(permission))
-      : ADMIN_PERMISSIONS;
+    : normalizeAdminPermissions(permissions);
 
 const getPublicAdmin = (admin) => {
   const suppliedPermissions = Array.isArray(admin.permissions) ? admin.permissions : [];
   const usesLegacyPermissions = suppliedPermissions.some((permission) =>
     permission === 'admin:read' || permission === 'admin:write',
   );
-  const permissions = usesLegacyPermissions
-    ? [
-        ...ADMIN_PERMISSIONS,
-        ...(suppliedPermissions.includes('admin:manage') ? ['admin:manage'] : []),
-      ]
-    : suppliedPermissions.length
-      ? suppliedPermissions
-      : ADMIN_PERMISSIONS;
+  const permissions = suppliedPermissions.includes('admin:manage')
+    ? SUPER_ADMIN_PERMISSIONS
+    : usesLegacyPermissions
+      ? DEFAULT_ADMIN_PERMISSIONS
+      : normalizeAdminPermissions(suppliedPermissions);
 
   const emailName = String(admin.email ?? '').split('@')[0].replace(/[._-]+/g, ' ').trim();
   return {
@@ -115,6 +125,7 @@ const verifyAdminSession = (token) => {
 module.exports = {
   ADMIN_PERMISSIONS,
   ADMIN_ROLE,
+  DEFAULT_ADMIN_PERMISSIONS,
   SUPER_ADMIN_PERMISSIONS,
   createAdminSession,
   getPermissionsForAdminRole,

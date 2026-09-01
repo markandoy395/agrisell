@@ -15,6 +15,7 @@ const ADMIN_PERMISSIONS = [
   "orders:manage", "payments:view", "sales:manage", "reviews:manage",
   "settings:manage",
 ];
+const DEFAULT_ADMIN_PERMISSIONS = ["overview:view", "users:manage", "farmers:manage"];
 
 const text = (value: unknown, fallback = "") =>
   typeof value === "string" && value.trim() ? value.trim() : fallback;
@@ -234,6 +235,14 @@ const permissionsFromRole = (role: Row | undefined) => {
     .filter((permission) => ADMIN_PERMISSIONS.includes(permission));
 };
 
+const regularAdminPermissions = (permissions: string[] | undefined) => {
+  const selectedPermissions = [...new Set(permissions ?? [])]
+    .filter((permission) => ADMIN_PERMISSIONS.includes(permission));
+  return selectedPermissions.length === 3
+    ? selectedPermissions
+    : DEFAULT_ADMIN_PERMISSIONS;
+};
+
 const getAdmin = async (request: Request): Promise<Admin | null> => {
   const authorization = request.headers.get("authorization") ?? "";
   if (!authorization.startsWith("Bearer ")) return null;
@@ -264,9 +273,7 @@ const getAdmin = async (request: Request): Promise<Admin | null> => {
     name: name(users[0], display(email.split("@")[0], "Administrator")),
     permissions: role === "super_admin"
       ? [...ADMIN_PERMISSIONS, "admin:manage"]
-      : storedPermissions?.length
-        ? storedPermissions
-        : ADMIN_PERMISSIONS,
+      : regularAdminPermissions(storedPermissions),
     role: "admin",
     userId,
   };
@@ -288,8 +295,8 @@ const createAdministrator = async (payload: unknown, assigningAdmin: Admin) => {
   if (!firstName || !lastName) throw createUserError("INVALID_ADMIN_PAYLOAD", "First and last names are required.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw createUserError("INVALID_ADMIN_PAYLOAD", "Enter a valid email address.");
   if (password.length < 8 || password.length > 512) throw createUserError("INVALID_ADMIN_PAYLOAD", "Password must be between 8 and 512 characters.");
-  if (!permissions.length || permissions.length !== (Array.isArray(body.permissions) ? new Set(body.permissions).size : 0)) {
-    throw createUserError("INVALID_ADMIN_PRIVILEGES", "Select at least one valid administrator privilege.");
+  if (permissions.length !== 3 || permissions.length !== (Array.isArray(body.permissions) ? new Set(body.permissions).size : 0)) {
+    throw createUserError("INVALID_ADMIN_PRIVILEGES", "Select exactly three valid administrator privileges.");
   }
   let authUser = await getAuthUserByEmail(email);
   const resumedAuthUser = Boolean(authUser);

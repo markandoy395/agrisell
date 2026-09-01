@@ -19,6 +19,8 @@ const privileges = [
   { key: "settings:manage", label: "Settings", description: "Change regular workspace preferences." },
 ] as const;
 
+const defaultAdminPrivileges = ["overview:view", "users:manage", "farmers:manage"];
+
 type SettingsWorkspaceProps = {
   autoApprove: boolean;
   canManageAdmins: boolean;
@@ -31,7 +33,7 @@ type SettingsWorkspaceProps = {
 };
 
 const emptyForm: CreateAdministratorInput = {
-  email: "", firstName: "", lastName: "", password: "", permissions: ["overview:view"],
+  email: "", firstName: "", lastName: "", password: "", permissions: defaultAdminPrivileges,
 };
 
 export function SettingsWorkspace({ autoApprove, canManageAdmins, digest, onCreateAdministrator, onToggleApprove, onToggleDigest, onSave, onReset }: SettingsWorkspaceProps) {
@@ -52,8 +54,8 @@ export function SettingsWorkspace({ autoApprove, canManageAdmins, digest, onCrea
   const submitAdministrator = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
-    if (!form.permissions.length) {
-      setError("Select at least one privilege for the new administrator.");
+    if (form.permissions.length !== 3) {
+      setError("Select exactly three privileges for the new administrator.");
       return;
     }
     setIsSubmitting(true);
@@ -92,8 +94,8 @@ export function SettingsWorkspace({ autoApprove, canManageAdmins, digest, onCrea
           <label>Email address<input required type="email" autoComplete="off" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></label>
           <label>Temporary password<span className="admin-password-field"><input required minLength={8} type={showPassword ? "text" : "password"} autoComplete="new-password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} /><button type="button" onClick={() => setShowPassword((isVisible) => !isVisible)} aria-label={showPassword ? "Hide temporary password" : "Show temporary password"} aria-pressed={showPassword}><Icon name={showPassword ? "eyeOff" : "eye"} size={17} /></button></span></label>
         </div>
-        <fieldset className="privilege-fieldset"><legend>Administrator privileges</legend><p>Select at least one. The new administrator cannot create other admins.</p>
-          <div className="privilege-grid">{privileges.map((privilege) => <label className="privilege-option" key={privilege.key}><input type="checkbox" checked={form.permissions.includes(privilege.key)} onChange={() => togglePrivilege(privilege.key)} /><span><strong>{privilege.label}</strong><small>{privilege.description}</small></span></label>)}</div>
+        <fieldset className="privilege-fieldset"><legend>Administrator privileges</legend><p>Select exactly three. The new administrator cannot create other admins.</p>
+          <div className="privilege-grid">{privileges.map((privilege) => <label className="privilege-option" key={privilege.key}><input type="checkbox" checked={form.permissions.includes(privilege.key)} disabled={!form.permissions.includes(privilege.key) && form.permissions.length >= 3} onChange={() => togglePrivilege(privilege.key)} /><span><strong>{privilege.label}</strong><small>{privilege.description}</small></span></label>)}</div>
         </fieldset>
         {error && <p className="admin-form-error" role="alert">{error}</p>}
           <div className="modal-actions"><button type="button" className="outline-button" disabled={isSubmitting} onClick={closeAdminModal}>Cancel</button><button className="primary-button" disabled={isSubmitting} type="submit">{isSubmitting ? "Creating administrator..." : "Create administrator"}</button></div>

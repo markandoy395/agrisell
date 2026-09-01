@@ -162,8 +162,8 @@ const createAdministrator = async (request, response) => {
       sendJson(response, 400, { code: 'INVALID_ADMIN_PAYLOAD', message: 'Password must be between 8 and 512 characters.' });
       return;
     }
-    if (!permissions.length || permissions.some((item) => !ADMIN_PERMISSIONS.includes(item))) {
-      sendJson(response, 400, { code: 'INVALID_ADMIN_PRIVILEGES', message: 'Select at least one valid administrator privilege.' });
+    if (permissions.length !== 3 || permissions.some((item) => !ADMIN_PERMISSIONS.includes(item))) {
+      sendJson(response, 400, { code: 'INVALID_ADMIN_PRIVILEGES', message: 'Select exactly three valid administrator privileges.' });
       return;
     }
     const assigningUsers = await getSupabaseRows('users', { email: `eq.${request.admin.email}` });
