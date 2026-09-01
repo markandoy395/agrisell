@@ -269,13 +269,28 @@ export function CreateUserModal({
 }
 
 type ProfileModalProps = {
+  permissions: string[];
   profile: AdminProfile;
   onClose: () => void;
   onSave: (profile: AdminProfile) => void;
 };
 
-export function ProfileModal({ profile, onClose, onSave }: ProfileModalProps) {
+const permissionLabels: Record<string, string> = {
+  "admin:manage": "Administrator management",
+  "farmers:manage": "Farmers",
+  "logistics:manage": "Logistics and deliveries",
+  "orders:manage": "Orders",
+  "overview:view": "Overview",
+  "payments:view": "Payments",
+  "reviews:manage": "Reviews",
+  "sales:manage": "Sales and discounts",
+  "settings:manage": "Settings",
+  "users:manage": "Users",
+};
+
+export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileModalProps) {
   const [draft, setDraft] = useState(profile);
+  const hasFullAccess = permissions.includes("admin:manage");
 
   const updatePhoto = (event: ChangeEvent<HTMLInputElement>) => {
     const photo = event.target.files?.[0];
@@ -328,6 +343,24 @@ export function ProfileModal({ profile, onClose, onSave }: ProfileModalProps) {
             <span>{draft.email || "Add an email address"}</span>
           </div>
         </div>
+        <section className="profile-access" aria-labelledby="profile-access-title">
+          <div className="profile-access-heading">
+            <div>
+              <strong id="profile-access-title">Account privileges</strong>
+              <span>{hasFullAccess ? "Full system access" : `${permissions.length} assigned privileges`}</span>
+            </div>
+            <span className={`profile-access-role${hasFullAccess ? " is-superadmin" : ""}`}>
+              {hasFullAccess ? "Superadmin" : "Admin"}
+            </span>
+          </div>
+          <div className="profile-access-list" role="list">
+            {permissions.map((permission) => (
+              <span key={permission} role="listitem">
+                {permissionLabels[permission] ?? permission}
+              </span>
+            ))}
+          </div>
+        </section>
         <form onSubmit={saveProfile}>
           <div className="profile-fields">
             <label className="profile-photo-field">

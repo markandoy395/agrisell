@@ -617,6 +617,7 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
       )}
       {profileEditorOpen && (
         <ProfileModal
+          permissions={admin.permissions}
           profile={adminProfile}
           onClose={() => setProfileEditorOpen(false)}
           onSave={(profile) => {
