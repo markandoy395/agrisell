@@ -1,5 +1,5 @@
 import { ApiRequestError, requestAdminApi } from "./adminAuth";
-import type { AdminDatabaseData } from "../types/adminData";
+import type { AdminDatabaseData, AdministratorRecord } from "../types/adminData";
 import type {
   EntityRecord,
   FarmerFarm,
@@ -201,6 +201,21 @@ const parseEntityRows = (value: unknown) => {
   );
 };
 
+const parseAdministrator = (value: unknown): AdministratorRecord | null => {
+  if (!isRecord(value)) return null;
+  const role = getString(value.role);
+  const userId = getString(value.userId);
+  if ((role !== "admin" && role !== "super_admin") || !userId) return null;
+
+  return {
+    email: getString(value.email, "Email not recorded"),
+    name: getString(value.name, `Admin ${userId}`),
+    permissions: getStringArray(value.permissions),
+    role,
+    userId,
+  };
+};
+
 const parseDashboardData = (value: unknown): AdminDatabaseData => {
   if (!isRecord(value) || !isRecord(value.overview)) {
     throw new ApiRequestError("The server returned invalid dashboard data.", 500);
@@ -209,6 +224,9 @@ const parseDashboardData = (value: unknown): AdminDatabaseData => {
   const overview = value.overview;
 
   return {
+    administrators: getArray(value.administrators)
+      .map(parseAdministrator)
+      .filter((administrator): administrator is AdministratorRecord => administrator !== null),
     entityRows: parseEntityRows(value.entityRows),
     farmerFarms: getArray(value.farmerFarms).map(parseFarmerFarm),
     farmers: getArray(value.farmers).map(parseEntityRecord),
@@ -273,6 +291,39 @@ export const createAdministrator = async (input: CreateAdministratorInput) => {
     body: JSON.stringify(input),
     method: "POST",
   });
+};
+
+export const updateAdministratorPrivileges = async (userId: string, permissions: string[]) => {
+  await requestAdminApi(
+    `/api/admin/administrators/${encodeURIComponent(userId)}/privileges`,
+    {
+      body: JSON.stringify({ permissions }),
+      method: "PATCH",
+    },
+  );
+};
+
+export type UpdateAdminProfileInput = {
+  avatarUrl?: string;
+  name: string;
+};
+
+export const updateAdminProfile = async (input: UpdateAdminProfileInput) => {
+  const body = await requestAdminApi("/api/admin/profile", {
+    body: JSON.stringify(input),
+    method: "PATCH",
+  });
+  const profile = isRecord(body) && isRecord(body.profile) ? body.profile : null;
+
+  if (!profile || typeof profile.name !== "string" || typeof profile.email !== "string") {
+    throw new ApiRequestError("The server returned an invalid profile.", 500);
+  }
+
+  return {
+    avatarUrl: getString(profile.avatarUrl) || undefined,
+    email: profile.email,
+    name: profile.name,
+  };
 };
 
 export const approveFarmerProfile = async (farmerId: string) => {

@@ -51,9 +51,6 @@ export function DashboardSidebar({
   onSignOut,
   permissions,
 }: DashboardSidebarProps) {
-  const visibleNavigation = navigation.filter((item) =>
-    permissions.includes(navigationPermission[item.label]),
-  );
   const canOpenSettings = permissions.includes("settings:manage") || permissions.includes("admin:manage");
   return (
     <aside className="sidebar">
@@ -65,29 +62,36 @@ export function DashboardSidebar({
       </div>
       <div className="workspace-label">WORKSPACE</div>
       <nav className="nav-list" aria-label="Main navigation">
-        {visibleNavigation.map((item) => (
-          <button
-            className={`nav-item ${activeNav === item.label ? "active" : ""}`}
-            type="button"
-            key={item.label}
-            onClick={() => onNavigate(item.label)}
-            aria-current={activeNav === item.label ? "page" : undefined}
-          >
-            <Icon name={item.icon} size={19} />
-            <span>{item.label}</span>
-            {item.count && <span className="nav-count">{item.count}</span>}
-          </button>
-        ))}
+        {navigation.map((item) => {
+          const isDisabled = !permissions.includes(navigationPermission[item.label]);
+          return (
+            <button
+              className={`nav-item ${activeNav === item.label ? "active" : ""}`}
+              type="button"
+              key={item.label}
+              onClick={() => onNavigate(item.label)}
+              aria-current={activeNav === item.label ? "page" : undefined}
+              disabled={isDisabled}
+              title={isDisabled ? "Your administrator role cannot access this section" : undefined}
+            >
+              <span className="nav-icon"><Icon name={item.icon} size={18} /></span>
+              <span>{item.label}</span>
+              {item.count && <span className="nav-count">{item.count}</span>}
+            </button>
+          );
+        })}
       </nav>
       <div className="sidebar-bottom">
-        {canOpenSettings && <button
+        <button
           className={`nav-item ${activeNav === "Settings" ? "active" : ""}`}
           type="button"
           onClick={() => onNavigate("Settings")}
+          disabled={!canOpenSettings}
+          title={!canOpenSettings ? "Your administrator role cannot access this section" : undefined}
         >
-          <Icon name="settings" size={19} />
+          <span className="nav-icon"><Icon name="settings" size={18} /></span>
           <span>Settings</span>
-        </button>}
+        </button>
         <button className="help-card" type="button" onClick={onOpenHelp}>
           <span className="help-leaf">
             <Icon name="leaf" size={18} />

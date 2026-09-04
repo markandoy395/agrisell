@@ -2,12 +2,13 @@ import type { UserWorkspaceSummaryCard } from "../../../types/dashboard";
 import { Icon } from "../icon/Icon";
 
 type UserSummaryGridProps = {
+  ariaLabel?: string;
   cards: UserWorkspaceSummaryCard[];
 };
 
-export function UserSummaryGrid({ cards }: UserSummaryGridProps) {
+export function UserSummaryGrid({ ariaLabel = "Users summary", cards }: UserSummaryGridProps) {
   return (
-    <div className="user-summary-grid" aria-label="Users summary">
+    <div className="user-summary-grid" aria-label={ariaLabel}>
       {cards.map((card) => (
         <article className="user-summary-card" key={card.label}>
           <div className="user-summary-top">

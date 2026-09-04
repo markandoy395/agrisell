@@ -181,6 +181,49 @@ const deleteSupabaseRows = async (table, filters) => {
 const requestSupabaseAuth = async (pathname, options = {}) =>
   requestSupabase(new URL(pathname, config.supabaseUrl), options);
 
+const PROFILE_IMAGE_BUCKET = 'admin-profile-images';
+
+const uploadSupabaseProfileImage = async (userId, dataUrl) => {
+  try {
+    await requestSupabase(
+      new URL(`/storage/v1/bucket/${PROFILE_IMAGE_BUCKET}`, config.supabaseUrl),
+    );
+  } catch (error) {
+    if (!(error instanceof SupabaseRequestError) || ![400, 404].includes(error.status)) throw error;
+    try {
+      await requestSupabase(new URL('/storage/v1/bucket', config.supabaseUrl), {
+        body: JSON.stringify({
+          allowed_mime_types: ['image/webp'],
+          file_size_limit: 500_000,
+          id: PROFILE_IMAGE_BUCKET,
+          name: PROFILE_IMAGE_BUCKET,
+          public: true,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      });
+    } catch (createError) {
+      // Another request may have created the bucket between the lookup and create calls.
+      if (!(createError instanceof SupabaseRequestError) || createError.status !== 409) {
+        throw createError;
+      }
+    }
+  }
+
+  const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+  const objectPath = `${encodeURIComponent(String(userId))}/avatar.webp`;
+  await requestSupabase(
+    new URL(`/storage/v1/object/${PROFILE_IMAGE_BUCKET}/${objectPath}`, config.supabaseUrl),
+    {
+      body: Buffer.from(base64, 'base64'),
+      headers: { 'Content-Type': 'image/webp', 'x-upsert': 'true' },
+      method: 'POST',
+    },
+  );
+
+  return `${config.supabaseUrl}/storage/v1/object/public/${PROFILE_IMAGE_BUCKET}/${objectPath}?v=${Date.now()}`;
+};
+
 module.exports = {
   SupabaseRequestError,
   deleteSupabaseRows,
@@ -188,5 +231,6 @@ module.exports = {
   insertSupabaseRow,
   insertSupabaseRows,
   requestSupabaseAuth,
+  uploadSupabaseProfileImage,
   updateSupabaseRows,
 };

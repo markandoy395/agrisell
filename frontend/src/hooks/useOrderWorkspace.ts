@@ -134,6 +134,7 @@ export function useOrderWorkspace({ orders }: UseOrderWorkspaceParams) {
     clearOrderFilters,
     downloadFilteredOrders,
     filters: orderFilters,
+    filteredOrderCount: filteredRows.length,
     hasActiveOrderFilters:
       activeFilter !== "All" || orderQuery.trim().length > 0,
     hasDownloadableOrders: filteredRows.length > 0,

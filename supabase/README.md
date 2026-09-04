@@ -38,6 +38,8 @@ Build and deploy the `frontend` directory to GitHub Pages. Administrators can th
 
 ## 4. Add administrators
 
-A signed-in `super_admin` has every dashboard privilege and can create regular administrators from **Settings**. Each regular administrator must have exactly three feature privileges; accounts without stored privileges default to Overview, Users, and Farmers. Privileges are stored with the administrator's existing `admin_roles` record, so no additional database column is required. The API deliberately does not allow a superadmin to grant the `admin:manage` privilege to a new regular administrator.
+A signed-in `super_admin` has every dashboard privilege and can create regular administrators from **Settings**. Each regular administrator can have any combination of feature privileges, from one through all available dashboard areas; accounts without stored privileges default to Overview, Users, and Farmers. Privileges are stored with the administrator's existing `admin_roles` record, so no additional database column is required. The API deliberately does not allow a superadmin to grant the `admin:manage` privilege to a new regular administrator.
+
+The same **Settings** area lists existing administrator accounts. A superadmin can update a regular administrator's privileges at any time. Superadmin privileges are fixed at full access and cannot be restricted through this endpoint.
 
 The existing local command `npm run provision-admins` remains the bootstrap path for the initial admin and superadmin accounts while the Node backend configuration is available.

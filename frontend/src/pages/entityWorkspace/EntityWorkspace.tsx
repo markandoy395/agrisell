@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getEntityInfo, getEntityTableColumns } from "../../data/entityWorkspaceConfig";
 import type { EntityRecord } from "../../types/dashboard";
 import type { LocationPin, ModuleHighlight } from "../../types/dashboard";
@@ -83,6 +83,7 @@ const ACTIVE_RECORD_STATUSES = new Set([
 ]);
 
 const SECTIONS_WITH_LOCATION_MAP = new Set(["Farms"]);
+const REVIEWS_PER_PAGE = 4;
 
 const getModuleClassName = (section: string) =>
   `module-${section.toLowerCase().replace(/\s+/g, "-")}`;
@@ -198,6 +199,32 @@ export function EntityWorkspace({
       })),
     [records],
   );
+  const [reviewPage, setReviewPage] = useState(1);
+  const [reviewComposer, setReviewComposer] = useState<{
+    mode: "public" | "direct";
+    review: EntityRecord;
+  } | null>(null);
+  const [reviewMessage, setReviewMessage] = useState("");
+  const reviewTotalPages = Math.max(
+    1,
+    Math.ceil(reviewCards.length / REVIEWS_PER_PAGE),
+  );
+  const activeReviewPage = Math.min(reviewPage, reviewTotalPages);
+  const pageReviewCards = reviewCards.slice(
+    (activeReviewPage - 1) * REVIEWS_PER_PAGE,
+    activeReviewPage * REVIEWS_PER_PAGE,
+  );
+  const openReviewComposer = (
+    mode: "public" | "direct",
+    review: EntityRecord,
+  ) => {
+    setReviewMessage("");
+    setReviewComposer({ mode, review });
+  };
+  const closeReviewComposer = () => {
+    setReviewComposer(null);
+    setReviewMessage("");
+  };
 
   if (section === "Reviews") {
     const averageRating =
@@ -217,36 +244,53 @@ export function EntityWorkspace({
         aria-labelledby="reviews-title"
       >
         <div className="review-heading">
-          <div>
-            <span className="management-count">CUSTOMER FEEDBACK</span>
-            <h2 id="reviews-title">Reviews</h2>
-            <p>{info.description}</p>
+          <div className="review-heading-main">
+            <span className="review-heading-icon" aria-hidden="true">
+              <Icon name="message" size={30} />
+            </span>
+            <div>
+              <h2 id="reviews-title">Customer Feedback</h2>
+              <strong>Reviews</strong>
+              <p>{info.description}</p>
+            </div>
           </div>
           <div className="review-period" aria-label={`Review period ${period}`}>
             <Icon name="calendar" size={16} />
             {period}
+            <Icon name="chevron" size={14} />
           </div>
         </div>
 
         <div className="review-overview" aria-label="Review summary">
           <article className="review-metric">
-            <span>Total Reviews</span>
-            <strong>{allRecords.length}</strong>
-            <small>
-              <b>{farmerReviewCount} farmer</b> and {riderReviewCount} rider reviews
-            </small>
+            <span className="review-metric-icon review-metric-icon--message" aria-hidden="true">
+              <Icon name="message" size={25} />
+            </span>
+            <div>
+              <span>Total Reviews</span>
+              <strong>{allRecords.length}</strong>
+              <small>
+                <b>{farmerReviewCount} Farmer</b> reviews <i /> {riderReviewCount} Rider reviews
+              </small>
+            </div>
           </article>
           <article className="review-metric">
-            <span>Average Rating</span>
-            <strong>
-              {averageRating}
-              <span className="review-inline-stars">
-                {renderReviewStars(Math.round(Number(averageRating)))}
-              </span>
-            </strong>
-            <small>Average across all database reviews</small>
+            <span className="review-metric-icon review-metric-icon--star" aria-hidden="true">
+              <Icon name="star" size={28} />
+            </span>
+            <div>
+              <span>Average Rating</span>
+              <strong>
+                {averageRating}
+                <span className="review-inline-stars">
+                  {renderReviewStars(Math.round(Number(averageRating)))}
+                </span>
+              </strong>
+              <small>Average across all database reviews</small>
+            </div>
           </article>
           <article className="review-distribution">
+            <h3>Rating Breakdown</h3>
             {ratingDistribution.map((item) => (
               <div className="review-rating-row" key={item.rating}>
                 <span>{item.rating}</span>
@@ -260,18 +304,23 @@ export function EntityWorkspace({
         </div>
 
         <div className="review-toolbar">
-          <span>{reviewCards.length} reviews shown</span>
+          <div>
+            <strong>{reviewCards.length} reviews shown</strong>
+            <span>Latest reviews from farmers and riders.</span>
+          </div>
           <button
             className={`filter-button ${activeOnly ? "is-active" : ""}`}
             type="button"
             onClick={onToggleFilter}
           >
-            {activeOnly ? "Showing published" : "Show published only"}
+            <Icon name="filter" size={14} />
+            {activeOnly ? "Show: Published only" : "Show: All reviews"}
+            <Icon name="chevron" size={14} />
           </button>
         </div>
 
         <div className="review-list">
-          {reviewCards.map((review) => (
+          {pageReviewCards.map((review) => (
             <article
               className="review-card"
               key={review.record.entityId ?? `${review.record.primary}-${review.record.secondary}`}
@@ -304,32 +353,32 @@ export function EntityWorkspace({
                   </span>
                 </div>
                 <p>{review.comment}</p>
-                <div className="review-card-actions">
-                  <button
-                    className="review-action-button"
-                    type="button"
-                    onClick={() => onOpen(review.record)}
-                  >
-                    <Icon name="message" size={15} />
-                    Public Comment
-                  </button>
-                  <button
-                    className="review-action-button"
-                    type="button"
-                    onClick={() => onOpen(review.record)}
-                  >
-                    <Icon name="mail" size={15} />
-                    Direct Message
-                  </button>
-                  <button
-                    className="review-like-button"
-                    type="button"
-                    onClick={() => onOpen(review.record)}
-                    aria-label={`Mark ${review.record.primary}'s review as important`}
-                  >
-                    <Icon name="heart" size={16} />
-                  </button>
-                </div>
+              </div>
+              <div className="review-card-actions">
+                <button
+                  className="review-action-button review-action-button--primary"
+                  type="button"
+                  onClick={() => openReviewComposer("public", review.record)}
+                >
+                  <Icon name="message" size={15} />
+                  Public Comment
+                </button>
+                <button
+                  className="review-action-button"
+                  type="button"
+                  onClick={() => openReviewComposer("direct", review.record)}
+                >
+                  <Icon name="mail" size={15} />
+                  Direct Message
+                </button>
+                <button
+                  className="review-like-button"
+                  type="button"
+                  onClick={() => onOpen(review.record)}
+                  aria-label={`Mark ${review.record.primary}'s review as important`}
+                >
+                  <Icon name="heart" size={16} />
+                </button>
               </div>
             </article>
           ))}
@@ -338,6 +387,131 @@ export function EntityWorkspace({
             <div className="no-orders">No matching reviews found.</div>
           )}
         </div>
+        {reviewCards.length > 0 && (
+          <div className="review-pagination-footer">
+            <span>
+              Showing {(activeReviewPage - 1) * REVIEWS_PER_PAGE + 1} to{" "}
+              {Math.min(activeReviewPage * REVIEWS_PER_PAGE, reviewCards.length)} of{" "}
+              {reviewCards.length} reviews
+            </span>
+            <nav className="review-pagination" aria-label="Review pages">
+              <button type="button" disabled={activeReviewPage === 1} onClick={() => setReviewPage((page) => Math.max(1, page - 1))} aria-label="Previous review page"><Icon name="chevron" size={15} /></button>
+              {Array.from({ length: reviewTotalPages }, (_, index) => index + 1).map((page) => (
+                <button className={activeReviewPage === page ? "is-active" : ""} type="button" key={page} onClick={() => setReviewPage(page)} aria-current={activeReviewPage === page ? "page" : undefined}>{page}</button>
+              ))}
+              <button type="button" disabled={activeReviewPage === reviewTotalPages} onClick={() => setReviewPage((page) => Math.min(reviewTotalPages, page + 1))} aria-label="Next review page"><Icon name="chevron" size={15} /></button>
+            </nav>
+          </div>
+        )}
+        {reviewComposer && (
+          <div
+            className="review-compose-backdrop"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) closeReviewComposer();
+            }}
+          >
+            <section
+              className={`review-compose-dialog review-compose-dialog--${reviewComposer.mode}`}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="review-compose-title"
+            >
+              <header className="review-compose-header">
+                <span className="review-compose-header-icon" aria-hidden="true">
+                  <Icon name={reviewComposer.mode === "public" ? "message" : "mail"} size={20} />
+                </span>
+                <div>
+                  <h3 id="review-compose-title">
+                    {reviewComposer.mode === "public" ? "Public Comment" : "Direct Message"}
+                  </h3>
+                  <p>
+                    {reviewComposer.mode === "public"
+                      ? "This comment will be visible to everyone."
+                      : "This message will be sent privately to the reviewer."}
+                  </p>
+                </div>
+                <button className="review-compose-close" type="button" onClick={closeReviewComposer} aria-label="Close message composer">
+                  <Icon name="close" size={18} />
+                </button>
+              </header>
+
+              <div className="review-compose-content">
+                <div className="review-compose-review">
+                  <span className={`review-avatar ${reviewComposer.review.reviewedType === "Rider" ? "review-avatar-gold" : ""}`} aria-hidden="true">
+                    {getReviewInitials(reviewComposer.review.primary)}
+                  </span>
+                  <div className="review-compose-author">
+                    <h4>{reviewComposer.review.primary}</h4>
+                    <span>
+                      Reviewed {reviewComposer.review.reviewedType?.toLowerCase() ?? "account"}: {reviewComposer.review.reviewedName ?? "Not recorded"}
+                    </span>
+                    <strong>{reviewComposer.review.referenceLabel ?? reviewComposer.review.category}</strong>
+                  </div>
+                  <div className="review-compose-meta">
+                    <span className="review-stars">
+                      {renderReviewStars(getReviewRating(reviewComposer.review), 14)}
+                    </span>
+                    <time>{formatReviewDate(reviewComposer.review.reviewDate)}</time>
+                    <span className={`status ${reviewComposer.review.tone}`}>
+                      <i aria-hidden="true" />
+                      {reviewComposer.review.status}
+                    </span>
+                  </div>
+                  <p>{reviewComposer.review.comment ?? reviewComposer.review.secondary}</p>
+                </div>
+
+                {reviewComposer.mode === "direct" && (
+                  <div className="review-private-notice">
+                    <Icon name="lock" size={16} />
+                    <div>
+                      <strong>This is a private conversation between you and the reviewer.</strong>
+                      <span>Messages here will not be visible to other users.</span>
+                    </div>
+                  </div>
+                )}
+
+                <form
+                  className="review-compose-form"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    if (reviewMessage.trim()) closeReviewComposer();
+                  }}
+                >
+                  <label>
+                    <span className="review-sr-only">
+                      {reviewComposer.mode === "public" ? "Public comment" : "Direct message"}
+                    </span>
+                    <textarea
+                      autoFocus
+                      maxLength={reviewComposer.mode === "public" ? 500 : 1000}
+                      placeholder={reviewComposer.mode === "public" ? "Write your public comment..." : "Write your message..."}
+                      value={reviewMessage}
+                      onChange={(event) => setReviewMessage(event.target.value)}
+                    />
+                    <small>
+                      {reviewMessage.length} / {reviewComposer.mode === "public" ? 500 : 1000}
+                    </small>
+                  </label>
+                  <footer>
+                    {reviewComposer.mode === "public" && (
+                      <span className="review-public-notice">
+                        <Icon name="grid" size={14} />
+                        Your comment will be visible to all users.
+                      </span>
+                    )}
+                    <div className="review-compose-actions">
+                      <button type="button" onClick={closeReviewComposer}>Cancel</button>
+                      <button className="review-compose-submit" type="submit" disabled={!reviewMessage.trim()}>
+                        <Icon name="arrow" size={15} />
+                        {reviewComposer.mode === "public" ? "Post Comment" : "Send Message"}
+                      </button>
+                    </div>
+                  </footer>
+                </form>
+              </div>
+            </section>
+          </div>
+        )}
       </section>
     );
   }
@@ -421,12 +595,13 @@ export function EntityWorkspace({
                 })}
                 <td>
                   <button
-                    className="row-open"
+                    className="icon-action-button"
                     type="button"
                     onClick={() => onOpen(record)}
                     aria-label={`Open ${record.primary}`}
+                    title="Open"
                   >
-                    Open <Icon name="arrow" size={14} />
+                    <Icon name="eye" size={17} />
                   </button>
                 </td>
               </tr>

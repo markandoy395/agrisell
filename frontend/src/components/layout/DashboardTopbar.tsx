@@ -91,18 +91,22 @@ export function DashboardTopbar({
         <div className="top-profile-area">
           <Tooltip content="Profile menu">
             <button
-              className={`top-avatar${profile.avatarUrl ? " has-photo" : ""}`}
+              className="top-profile-trigger"
               type="button"
               onClick={onToggleProfile}
               aria-label="Open profile menu"
               aria-expanded={profileOpen}
               aria-controls="top-profile-menu"
             >
-              {profile.avatarUrl ? (
-                <img src={profile.avatarUrl} alt="" />
-              ) : (
-                profile.initials
-              )}
+              <span className={`top-avatar${profile.avatarUrl ? " has-photo" : ""}`}>
+                {profile.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt="" />
+                ) : (
+                  profile.initials
+                )}
+              </span>
+              <strong>{profile.name}</strong>
+              <Icon name="chevron" size={14} />
             </button>
           </Tooltip>
           {profileOpen && (

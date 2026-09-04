@@ -38,7 +38,7 @@ const normalizeAdminPermissions = (permissions) => {
     ? [...new Set(permissions)].filter((permission) => ADMIN_PERMISSIONS.includes(permission))
     : [];
 
-  return selectedPermissions.length === 3
+  return selectedPermissions.length
     ? selectedPermissions
     : DEFAULT_ADMIN_PERMISSIONS;
 };
@@ -61,6 +61,9 @@ const getPublicAdmin = (admin) => {
 
   const emailName = String(admin.email ?? '').split('@')[0].replace(/[._-]+/g, ' ').trim();
   return {
+    avatarUrl: typeof admin.avatarUrl === 'string' && admin.avatarUrl.trim()
+      ? admin.avatarUrl.trim()
+      : undefined,
     email: admin.email,
     name: typeof admin.name === 'string' && admin.name.trim()
       ? admin.name.trim()

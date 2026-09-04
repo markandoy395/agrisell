@@ -178,6 +178,39 @@ const icons: Record<IconName, ReactNode> = {
       <path d="M12 6c6 0 9.5 6 9.5 6a15 15 0 0 1-2.4 3" />
     </>
   ),
+  check: <path d="m5 12.5 4.2 4.2L19 7" />,
+  edit: (
+    <>
+      <path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z" />
+      <path d="m13.5 6.5 4 4" />
+    </>
+  ),
+  power: (
+    <>
+      <path d="M12 3v9" />
+      <path d="M7.1 5.8a8 8 0 1 0 9.8 0" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M4 7h16M9 7V4h6v3M6.5 7l1 14h9l1-14" />
+      <path d="M10 11v6M14 11v6" />
+    </>
+  ),
+  route: (
+    <>
+      <circle cx="6" cy="18" r="2.5" />
+      <circle cx="18" cy="18" r="2.5" />
+      <circle cx="12" cy="5" r="2.5" />
+      <path d="M12 7.5v4.2M6 15.5v-2h12v2" />
+    </>
+  ),
+  alert: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v6M12 17h.01" />
+    </>
+  ),
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

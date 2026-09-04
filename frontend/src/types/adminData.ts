@@ -37,7 +37,16 @@ export type AdminOverviewData = {
   totalSales: number;
 };
 
+export type AdministratorRecord = {
+  email: string;
+  name: string;
+  permissions: string[];
+  role: "admin" | "super_admin";
+  userId: string;
+};
+
 export type AdminDatabaseData = {
+  administrators: AdministratorRecord[];
   entityRows: Record<string, EntityRecord[]>;
   farmerFarms: FarmerFarm[];
   farmers: EntityRecord[];

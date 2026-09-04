@@ -1056,6 +1056,12 @@
   gap: 5px;
 }
 
+.sale-promotion-actions .icon-action-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
 .sale-promotion-actions button:nth-child(2) {
   color: white;
   border-color: var(--user-brand);

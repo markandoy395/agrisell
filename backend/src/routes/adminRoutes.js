@@ -8,6 +8,8 @@ const {
   getAdminSales,
   getAdminDashboard,
   updateAdminSaleEnabled,
+  updateAdminProfile,
+  updateAdministratorPrivileges,
 } = require('../controllers/adminDashboardController');
 const { sendJson } = require('../utils/http');
 
@@ -21,6 +23,11 @@ const requirePermission = (request, response, permission) => {
 };
 
 const routeAdminRequest = async (request, response, pathname) => {
+  if (pathname === '/api/admin/profile' && request.method === 'PATCH') {
+    await updateAdminProfile(request, response);
+    return true;
+  }
+
   if (pathname === '/api/admin/administrators' && request.method === 'POST') {
     if (!request.admin.permissions.includes('admin:manage')) {
       sendJson(response, 403, {
@@ -30,6 +37,25 @@ const routeAdminRequest = async (request, response, pathname) => {
       return true;
     }
     await createAdministrator(request, response);
+    return true;
+  }
+
+  const administratorPrivilegesMatch = pathname.match(
+    /^\/api\/admin\/administrators\/([^/]+)\/privileges$/,
+  );
+  if (administratorPrivilegesMatch && request.method === 'PATCH') {
+    if (!request.admin.permissions.includes('admin:manage')) {
+      sendJson(response, 403, {
+        code: 'SUPER_ADMIN_REQUIRED',
+        message: 'Only a super administrator can update administrator privileges.',
+      });
+      return true;
+    }
+    await updateAdministratorPrivileges(
+      request,
+      response,
+      decodeURIComponent(administratorPrivilegesMatch[1]),
+    );
     return true;
   }
 

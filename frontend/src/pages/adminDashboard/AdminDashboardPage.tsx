@@ -5,6 +5,7 @@ import { OrderWorkspace } from "../orderWorkspace/OrderWorkspace";
 import { PaymentWorkspace } from "../paymentWorkspace/PaymentWorkspace";
 import { UserWorkspace } from "../userWorkspace/UserWorkspace";
 import { FarmerWorkspace } from "../farmerWorkspace/FarmerWorkspace";
+import { DeliveryWorkspace } from "../deliveryWorkspace/DeliveryWorkspace";
 import { LogisticsWorkspace } from "../logisticsWorkspace/LogisticsWorkspace";
 import { DashboardSidebar } from "../../components/layout/DashboardSidebar";
 import { DashboardTopbar } from "../../components/layout/DashboardTopbar";
@@ -23,6 +24,8 @@ import {
   approveRiderProfile,
   createAdminUser,
   createAdministrator,
+  updateAdministratorPrivileges,
+  updateAdminProfile,
 } from "../../api/adminData";
 import type { CreateUserInput } from "../../api/adminData";
 import { getApiErrorMessage } from "../../api/adminAuth";
@@ -101,6 +104,7 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
   const [topProfileOpen, setTopProfileOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [adminProfile, setAdminProfile] = useState<AdminProfile>(() => ({
+    avatarUrl: admin.avatarUrl,
     email: admin.email,
     initials: getInitials(admin.name),
     name: admin.name,
@@ -261,6 +265,7 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
     "Farmers",
     "Logistics Companies",
     "Deliveries",
+    "Payments",
     "Reviews",
     "Sales & Discounts",
   ].includes(activeNav);
@@ -337,12 +342,15 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
         />
         <div className="page-content">
           {showPageHeading && (
-            <section className="page-heading">
+            <section className={`page-heading${activeNav === "Overview" ? " page-heading--overview" : ""}`}>
               <div>
                 <div className="eyebrow">
-                  {activeNav === "Overview"
-                    ? "GOOD MORNING, ANGELA"
-                    : "MANAGEMENT"}
+                  {activeNav === "Overview" ? (
+                    <>
+                      GOOD MORNING, {adminProfile.name.split(" ")[0].toUpperCase()}
+                      <Icon name="leaf" size={13} />
+                    </>
+                  ) : "MANAGEMENT"}
                 </div>
                 <h1>{pageTitle}</h1>
                 <p>{pageDescription}</p>
@@ -522,6 +530,14 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
               }}
               onOpen={openRecord}
             />
+          ) : data && activeNav === "Deliveries" ? (
+            <DeliveryWorkspace
+              created={created[activeNav] ?? []}
+              records={data.entityRows[activeNav] ?? []}
+              search={search}
+              onAdd={() => setAddSection(activeNav)}
+              onOpen={openRecord}
+            />
           ) : data && activeNav === "Payments" ? (
             <PaymentWorkspace
               paymentActivityBars={data.overview.paymentActivityBars}
@@ -531,11 +547,13 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
               activeOnly={activeOnly}
               onToggleFilter={() => setActiveOnly(!activeOnly)}
               onOpen={openRecord}
+              period={period}
             />
           ) : data && activeNav === "Sales & Discounts" ? (
             <SaleWorkspace onNotice={showToast} />
           ) : data && activeNav === "Settings" ? (
             <SettingsWorkspace
+              administrators={data.administrators}
               canManageAdmins={admin.permissions.includes("admin:manage")}
               autoApprove={autoApprove}
               digest={digest}
@@ -571,9 +589,18 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
               }
               onCreateAdministrator={async (input) => {
                 await createAdministrator(input);
+                await refreshDatabase();
                 notifyUpdate(
                   "Administrator created",
                   `${input.firstName} ${input.lastName} can now sign in with the selected privileges.`,
+                );
+              }}
+              onUpdateAdministratorPrivileges={async (userId, permissions) => {
+                await updateAdministratorPrivileges(userId, permissions);
+                await refreshDatabase();
+                notifyUpdate(
+                  "Administrator privileges updated",
+                  "The administrator's dashboard privileges were updated.",
                 );
               }}
             />
@@ -620,10 +647,17 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
           permissions={admin.permissions}
           profile={adminProfile}
           onClose={() => setProfileEditorOpen(false)}
-          onSave={(profile) => {
+          onSave={async (profile) => {
+            const savedProfile = await updateAdminProfile({
+              avatarUrl: profile.avatarUrl === adminProfile.avatarUrl
+                ? undefined
+                : profile.avatarUrl,
+              name: profile.name,
+            });
             setAdminProfile({
               ...profile,
-              initials: getInitials(profile.name),
+              ...savedProfile,
+              initials: getInitials(savedProfile.name),
             });
             setProfileEditorOpen(false);
             showToast("Profile information updated.");

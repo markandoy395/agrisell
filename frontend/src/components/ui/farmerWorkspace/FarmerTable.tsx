@@ -129,14 +129,20 @@ export function FarmerTable({
                   <td>
                     <div className="farmer-row-actions">
                       <button
-                        className="farmer-row-approve"
+                        className="icon-action-button"
                         type="button"
                         disabled={farmer.status === "Verified" || !farmer.entityId}
+                        aria-label={
+                          farmer.status === "Verified"
+                            ? `${farmer.primary} is approved`
+                            : `Approve ${farmer.primary}`
+                        }
+                        title={farmer.status === "Verified" ? "Approved" : "Approve"}
                         onClick={() => {
                           void onApproveFarmer(farmer).catch(() => undefined);
                         }}
                       >
-                        {farmer.status === "Verified" ? "Approved" : "Approve"}
+                        <Icon name="check" size={17} />
                       </button>
                       <button
                         className="user-row-action"

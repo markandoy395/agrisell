@@ -259,6 +259,40 @@ button {
   color: #46634a;
   font-weight: 600;
 }
+.page-heading--overview {
+  margin-bottom: 24px;
+}
+.page-heading--overview .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+  color: #087b38;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.15px;
+}
+.page-heading--overview h1 {
+  color: #0b0d0c;
+  font-size: clamp(32px, 2.5vw, 43px);
+  line-height: 1.08;
+  letter-spacing: -1.7px;
+}
+.page-heading--overview p {
+  margin-top: 8px;
+  color: #68716d;
+  font-size: 16px;
+}
+.page-heading--overview .date-filter {
+  min-width: 185px;
+  height: 54px;
+  justify-content: center;
+  padding: 0 15px;
+  color: #111713;
+  border-color: #dce2dd;
+  border-radius: 11px;
+  font-size: 14px;
+}
 
 .database-data-state.is-error {
   border-color: #f0c6c2;

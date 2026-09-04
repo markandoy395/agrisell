@@ -272,8 +272,55 @@ type ProfileModalProps = {
   permissions: string[];
   profile: AdminProfile;
   onClose: () => void;
-  onSave: (profile: AdminProfile) => void;
+  onSave: (profile: AdminProfile) => Promise<void>;
 };
+
+const PROFILE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const MAX_PROFILE_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_PROFILE_IMAGE_DATA_LENGTH = 650_000;
+
+const resizeProfilePhoto = (photo: File) =>
+  new Promise<string>((resolve, reject) => {
+    if (!PROFILE_IMAGE_TYPES.has(photo.type)) {
+      reject(new Error("Choose a JPG, PNG, or WEBP image."));
+      return;
+    }
+    if (photo.size > MAX_PROFILE_IMAGE_BYTES) {
+      reject(new Error("Profile images must be 5 MB or smaller."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("error", () => reject(new Error("The selected image could not be read.")));
+    reader.addEventListener("load", () => {
+      if (typeof reader.result !== "string") {
+        reject(new Error("The selected image could not be read."));
+        return;
+      }
+      const image = new Image();
+      image.addEventListener("error", () => reject(new Error("The selected file is not a valid image.")));
+      image.addEventListener("load", () => {
+        const scale = Math.min(1, 512 / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const context = canvas.getContext("2d");
+        if (!context) {
+          reject(new Error("The image could not be prepared for upload."));
+          return;
+        }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const avatarUrl = canvas.toDataURL("image/webp", 0.82);
+        if (avatarUrl.length > MAX_PROFILE_IMAGE_DATA_LENGTH) {
+          reject(new Error("The processed profile image is still too large."));
+          return;
+        }
+        resolve(avatarUrl);
+      });
+      image.src = reader.result;
+    });
+    reader.readAsDataURL(photo);
+  });
 
 const permissionLabels: Record<string, string> = {
   "admin:manage": "Administrator management",
@@ -290,19 +337,22 @@ const permissionLabels: Record<string, string> = {
 
 export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileModalProps) {
   const [draft, setDraft] = useState(profile);
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const hasFullAccess = permissions.includes("admin:manage");
 
-  const updatePhoto = (event: ChangeEvent<HTMLInputElement>) => {
+  const updatePhoto = async (event: ChangeEvent<HTMLInputElement>) => {
     const photo = event.target.files?.[0];
     if (!photo) return;
-
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      const avatarUrl = reader.result;
-      if (typeof avatarUrl !== "string") return;
+    setError("");
+    try {
+      const avatarUrl = await resizeProfilePhoto(photo);
       setDraft((current) => ({ ...current, avatarUrl }));
-    });
-    reader.readAsDataURL(photo);
+    } catch (photoError) {
+      setError(photoError instanceof Error ? photoError.message : "The profile image could not be prepared.");
+    } finally {
+      event.target.value = "";
+    }
   };
 
   const saveProfile: FormEventHandler<HTMLFormElement> = (event) => {
@@ -311,7 +361,13 @@ export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileM
     const email = draft.email.trim();
     const role = draft.role.trim();
     if (!name || !email || !role) return;
-    onSave({ ...draft, name, email, role });
+    setError("");
+    setIsSaving(true);
+    void onSave({ ...draft, name, email, role })
+      .catch((saveError) => {
+        setError(saveError instanceof Error ? saveError.message : "The profile could not be saved.");
+      })
+      .finally(() => setIsSaving(false));
   };
 
   return (
@@ -369,7 +425,7 @@ export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileM
               </span>
               <span className="profile-photo-upload">
                 {draft.avatarUrl ? "Change image" : "Add image"}
-                <input type="file" accept="image/*" onChange={updatePhoto} />
+                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { void updatePhoto(event); }} disabled={isSaving} />
               </span>
             </label>
             <label className="field-label">
@@ -391,12 +447,7 @@ export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileM
               <input
                 type="email"
                 value={draft.email}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    email: event.target.value,
-                  }))
-                }
+                readOnly
                 required
               />
             </label>
@@ -404,22 +455,18 @@ export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileM
               Role
               <input
                 value={draft.role}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    role: event.target.value,
-                  }))
-                }
+                readOnly
                 required
               />
             </label>
           </div>
+          {error && <p className="form-error" role="alert">{error}</p>}
           <div className="modal-actions">
-            <button type="button" className="outline-button" onClick={onClose}>
+            <button type="button" className="outline-button" onClick={onClose} disabled={isSaving}>
               Cancel
             </button>
-            <button className="primary-button" type="submit">
-              Save changes
+            <button className="primary-button" type="submit" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save changes"}
             </button>
           </div>
         </form>

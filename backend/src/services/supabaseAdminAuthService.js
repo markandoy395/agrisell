@@ -41,6 +41,20 @@ const getApplicationUser = async (email) => {
   )[0] ?? null;
 };
 
+const getSupabaseAdminProfile = async (email) => {
+  const user = await getApplicationUser(email);
+  if (!user) return null;
+
+  return {
+    avatarUrl: getText(user.profile_photo_url) || undefined,
+    email: getText(user.email) || email,
+    name: [user.first_name, user.middle_name, user.last_name, user.extension_name]
+      .map(getText)
+      .filter(Boolean)
+      .join(' '),
+  };
+};
+
 const getExistingAuthUser = async (email) => {
   const body = await requestSupabaseAuth('/auth/v1/admin/users?per_page=1000');
   const users = body && typeof body === 'object' && Array.isArray(body.users)
@@ -118,6 +132,7 @@ const authenticateSupabaseAdminCredentials = async (email, password) => {
     const roleRecord = await getAdminRoleRecord(getUserId(user.user_id));
     return {
       admin: getPublicAdmin({
+        avatarUrl: getText(user.profile_photo_url) || undefined,
         email,
         name: [user.first_name, user.middle_name, user.last_name, user.extension_name]
           .map(getText)
@@ -179,8 +194,8 @@ const provisionAdminAccount = async ({
     : Array.isArray(permissions)
       ? [...new Set(permissions)].filter((permission) => ADMIN_PERMISSIONS.includes(permission))
       : DEFAULT_ADMIN_PERMISSIONS;
-  if (role === 'admin' && selectedPermissions.length !== 3) {
-    throw new Error('Select exactly three administrator privileges.');
+  if (role === 'admin' && selectedPermissions.length === 0) {
+    throw new Error('Select at least one administrator privilege.');
   }
 
   let authUser;
@@ -252,6 +267,7 @@ const provisionAdminAccount = async ({
 module.exports = {
   authenticateSupabaseAdminCredentials,
   createSupabaseAuthUser,
+  getSupabaseAdminProfile,
   isSupabaseAdminEmail,
   provisionAdminAccount,
 };

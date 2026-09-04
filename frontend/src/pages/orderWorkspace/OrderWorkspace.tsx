@@ -5,6 +5,7 @@ import { OrderTable } from "../../components/ui/orderWorkspace/OrderTable";
 import { useOrderWorkspace } from "../../hooks/useOrderWorkspace";
 import { getOrderStatusGroup } from "../../utils/orderWorkspace";
 import type { OrderRow, OrderSummaryCard } from "../../types/dashboard";
+import { Icon } from "../../components/ui/icon/Icon";
 import "./OrderWorkspace.css";
 
 type OrderWorkspaceProps = {
@@ -52,7 +53,7 @@ const createSummaryCards = (orders: OrderRow[]): OrderSummaryCard[] => {
     },
     {
       detail: "Paid, completed, or delivered",
-      icon: "trend",
+      icon: "check",
       label: "Completed",
       tone: "orange",
       trend: "Live",
@@ -69,7 +70,23 @@ export function OrderWorkspace({ orders, onOpenOrder }: OrderWorkspaceProps) {
   return (
     <section className="order-workspace" aria-labelledby="order-title">
       <header className="order-workspace-header">
-        <h1 id="order-title">Order</h1>
+        <div className="order-heading-main">
+          <span className="order-heading-icon" aria-hidden="true"><Icon name="cart" size={25} /></span>
+          <div>
+            <h1 id="order-title">Order</h1>
+            <p>Monitor and manage all customer orders in one place.</p>
+          </div>
+        </div>
+        <div className="order-header-actions">
+          <button className="order-sort-button" type="button" onClick={workspace.toggleSortDirection} aria-label={`Sort orders ${workspace.sortDirection === "desc" ? "oldest first" : "newest first"}`}>
+            <Icon name="calendar" size={15} />
+            {workspace.sortDirection === "desc" ? "Newest first" : "Oldest first"}
+            <Icon name="chevron" size={14} />
+          </button>
+          <button className="order-download-button" type="button" disabled={!workspace.hasDownloadableOrders} onClick={workspace.downloadFilteredOrders}>
+            Download <Icon name="download" size={15} />
+          </button>
+        </div>
       </header>
 
       <OrderSummaryGrid cards={summaryCards} />
@@ -77,15 +94,11 @@ export function OrderWorkspace({ orders, onOpenOrder }: OrderWorkspaceProps) {
         activeFilter={workspace.activeFilter}
         filters={workspace.filters}
         hasActiveOrderFilters={workspace.hasActiveOrderFilters}
-        hasDownloadableOrders={workspace.hasDownloadableOrders}
         orderQuery={workspace.orderQuery}
-        sortDirection={workspace.sortDirection}
         statusCounts={workspace.statusCounts}
         onClearFilters={workspace.clearOrderFilters}
-        onDownload={workspace.downloadFilteredOrders}
         onFilterChange={workspace.updateOrderFilter}
         onQueryChange={workspace.updateOrderQuery}
-        onSortToggle={workspace.toggleSortDirection}
       />
       <OrderTable
         activePage={workspace.activePage}
@@ -94,6 +107,7 @@ export function OrderWorkspace({ orders, onOpenOrder }: OrderWorkspaceProps) {
         pageNumbers={workspace.pageNumbers}
         partiallyVisibleSelected={workspace.partiallyVisibleOrdersSelected}
         selectedOrderIds={workspace.selectedOrderIds}
+        totalCount={workspace.filteredOrderCount}
         totalPages={workspace.totalPages}
         onOpenOrder={onOpenOrder}
         onPageChange={workspace.setCurrentPage}

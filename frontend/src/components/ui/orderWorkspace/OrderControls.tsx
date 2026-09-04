@@ -1,6 +1,5 @@
 import type {
   OrderFilter,
-  OrderSortDirection,
 } from "../../../types/dashboard";
 import { Icon } from "../icon/Icon";
 
@@ -8,35 +7,23 @@ type OrderControlsProps = {
   activeFilter: OrderFilter;
   filters: OrderFilter[];
   hasActiveOrderFilters: boolean;
-  hasDownloadableOrders: boolean;
   orderQuery: string;
-  sortDirection: OrderSortDirection;
   statusCounts: Record<OrderFilter, number>;
   onClearFilters: () => void;
-  onDownload: () => void;
   onFilterChange: (filter: OrderFilter) => void;
   onQueryChange: (query: string) => void;
-  onSortToggle: () => void;
 };
 
 export function OrderControls({
   activeFilter,
   filters,
   hasActiveOrderFilters,
-  hasDownloadableOrders,
   orderQuery,
-  sortDirection,
   statusCounts,
   onClearFilters,
-  onDownload,
   onFilterChange,
   onQueryChange,
-  onSortToggle,
 }: OrderControlsProps) {
-  const sortLabel = sortDirection === "desc" ? "Newest first" : "Oldest first";
-  const nextSortLabel =
-    sortDirection === "desc" ? "oldest first" : "newest first";
-
   return (
     <div className="order-list-controls">
       <div
@@ -55,6 +42,18 @@ export function OrderControls({
             key={filter}
             onClick={() => onFilterChange(filter)}
           >
+            <Icon
+              name={
+                filter === "All"
+                  ? "route"
+                  : filter === "Success"
+                    ? "check"
+                    : filter === "Pending"
+                      ? "calendar"
+                      : "alert"
+              }
+              size={14}
+            />
             {filter}
           </button>
         ))}
@@ -66,7 +65,7 @@ export function OrderControls({
           <Icon name="search" size={15} />
           <input
             type="search"
-            placeholder="Search"
+            placeholder="Search orders..."
             value={orderQuery}
             onChange={(event) => onQueryChange(event.target.value)}
           />
@@ -80,25 +79,6 @@ export function OrderControls({
         >
           <Icon name="filter" size={15} />
           Clear
-        </button>
-        <button
-          className="order-tool-button"
-          type="button"
-          onClick={onSortToggle}
-          aria-label={`Sort orders ${nextSortLabel}`}
-        >
-          <Icon name="sort" size={15} />
-          {sortLabel}
-        </button>
-        <button
-          className="order-download-button"
-          type="button"
-          disabled={!hasDownloadableOrders}
-          onClick={onDownload}
-          aria-label="Download filtered orders"
-        >
-          Download
-          <Icon name="download" size={15} />
         </button>
       </div>
     </div>

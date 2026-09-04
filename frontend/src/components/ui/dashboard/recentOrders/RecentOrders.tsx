@@ -68,7 +68,8 @@ export function RecentOrders({
             <tr>
               <th>ORDER</th>
               <th>CUSTOMER</th>
-              <th>COMMODITY</th>
+              <th>PRODUCT</th>
+              <th>QTY</th>
               <th>TOTAL</th>
               <th>STATUS</th>
               <th></th>
@@ -88,11 +89,9 @@ export function RecentOrders({
                   </div>
                 </td>
                 <td>
-                  <span className="commodity-cell">
-                    {row.item}
-                    <small>{row.qty}</small>
-                  </span>
+                  <span className="commodity-cell">{row.item}</span>
                 </td>
+                <td>{row.qty}</td>
                 <td>
                   <strong>{row.total}</strong>
                 </td>

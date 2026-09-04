@@ -1,4 +1,5 @@
 const { getSupabaseRows, updateSupabaseRows } = require('./supabaseService');
+const { getPermissionsForAdminRole } = require('./sessionService');
 
 const PHP_FORMATTER = new Intl.NumberFormat('en-PH', {
   currency: 'PHP',
@@ -34,6 +35,17 @@ const getNumber = (value, fallback = 0) => {
 
 const getTextArray = (value) =>
   Array.isArray(value) ? value.filter((item) => typeof item === 'string') : [];
+
+const getRolePermissions = (role) => {
+  const description = getText(role?.description);
+  if (!description.toLowerCase().startsWith('privileges:')) return undefined;
+
+  return description
+    .slice('privileges:'.length)
+    .split(',')
+    .map((permission) => permission.trim())
+    .filter(Boolean);
+};
 
 const getId = (value) => {
   if (typeof value === 'string' || typeof value === 'number') {
@@ -758,6 +770,7 @@ const getDashboardData = async () => {
   const buyersByUser = createIndex(tableData.buyers, 'user_id');
   const buyersById = createIndex(tableData.buyers, 'buyer_user_id');
   const adminsByUser = createIndex(tableData.admins, 'user_id');
+  const adminRolesByUser = createIndex(tableData.adminRoles, 'user_id');
   const usersById = createIndex(tableData.users, 'user_id');
   const commoditiesByFarm = groupRows(tableData.commodities, 'farm_id');
   const commoditiesById = createIndex(tableData.commodities, 'commodity_id');
@@ -835,6 +848,25 @@ const getDashboardData = async () => {
   }, new Map());
 
   return {
+    administrators: tableData.admins
+      .map((admin) => {
+        const userId = getId(admin.user_id);
+        const user = usersById.get(userId);
+        const role = getText(admin.admin_role).toLowerCase();
+        if (!userId || (role !== 'admin' && role !== 'super_admin')) return null;
+
+        return {
+          email: user ? getText(user.email, 'Email not recorded') : 'Email not recorded',
+          name: user ? getName(user, `Admin ${userId}`) : `Admin ${userId}`,
+          permissions: getPermissionsForAdminRole(
+            role,
+            getRolePermissions(adminRolesByUser.get(userId)),
+          ),
+          role,
+          userId,
+        };
+      })
+      .filter(Boolean),
     entityRows: createEntityRows({
       ...tableData,
       farmerFarms,

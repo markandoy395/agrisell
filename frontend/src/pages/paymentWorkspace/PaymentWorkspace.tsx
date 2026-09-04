@@ -42,6 +42,7 @@ type PaymentWorkspaceProps = {
   activeOnly: boolean;
   onToggleFilter: () => void;
   onOpen: (record: EntityRecord) => void;
+  period?: string;
 };
 
 export function PaymentWorkspace({
@@ -52,6 +53,7 @@ export function PaymentWorkspace({
   activeOnly,
   onToggleFilter,
   onOpen,
+  period = "This month",
 }: PaymentWorkspaceProps) {
   const [activeFilter, setActiveFilter] = useState<PaymentFilter>("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,7 +117,7 @@ export function PaymentWorkspace({
       },
       {
         detail: "Failed payment attempts",
-        icon: "filter",
+        icon: "close",
         label: "Exceptions",
         tone: "dark",
         trend: `${failedPayments.length} open`,
@@ -201,6 +203,19 @@ export function PaymentWorkspace({
 
   return (
     <section className="payment-workspace" aria-label="Payments">
+      <header className="payment-workspace-header">
+        <div>
+          <span className="payment-kicker">MANAGEMENT</span>
+          <h1>Payments</h1>
+          <p>Monitor and manage all your payments in one place.</p>
+        </div>
+        <button className="payment-period-button" type="button">
+          <Icon name="calendar" size={15} />
+          {period}
+          <Icon name="chevron" size={14} />
+        </button>
+      </header>
+
       <div className="payment-summary-grid">
         {paymentSummaryCards.map((card) => (
           <article
@@ -229,16 +244,25 @@ export function PaymentWorkspace({
             </div>
             <button className="ghost-button" type="button">
               <Icon name="calendar" size={14} />
-              This month
+              {period}
+              <Icon name="chevron" size={13} />
             </button>
           </div>
-          <div className="payment-bars" aria-label="Monthly payment volume">
-            {paymentActivityBars.map((height, index) => (
-              <span
-                key={`${height}-${index}`}
-                style={{ height: `${height}%` }}
-              />
-            ))}
+          <div className="payment-chart" aria-label="Monthly payment volume">
+            <div className="payment-chart-y" aria-hidden="true">
+              <span>₱300</span><span>₱200</span><span>₱100</span><span>₱0</span>
+            </div>
+            <div className="payment-bars">
+              {paymentActivityBars.map((height, index) => (
+                <span
+                  key={`${height}-${index}`}
+                  style={{ height: `${height}%` }}
+                />
+              ))}
+            </div>
+            <div className="payment-chart-x" aria-hidden="true">
+              <span>May 1</span><span>May 5</span><span>May 10</span><span>May 15</span><span>May 20</span><span>May 25</span><span>May 30</span>
+            </div>
           </div>
           <div className="payment-methods" aria-label="Payment methods">
             {paymentMethodMetrics.map((method) => (
@@ -354,13 +378,18 @@ export function PaymentWorkspace({
                       </span>
                     </span>
                   </td>
-                  <td>{payment.method}</td>
+                  <td><span className="payment-method-cell"><i aria-hidden="true"><Icon name="card" size={12} /></i>{payment.method}</span></td>
                   <td>{payment.amount}</td>
                   <td>
                     <strong>{payment.net}</strong>
                     <small>Fee {payment.fee}</small>
                   </td>
-                  <td>{payment.settlement}</td>
+                  <td>
+                    <span className={`payment-settlement-status ${/ready/i.test(payment.settlement) ? "is-ready" : "is-confirming"}`}>
+                      <Icon name={/ready/i.test(payment.settlement) ? "check" : "calendar"} size={14} />
+                      {payment.settlement}
+                    </span>
+                  </td>
                   <td>
                     <span className={`status ${payment.tone}`}>
                       <i aria-hidden="true" />
@@ -369,12 +398,13 @@ export function PaymentWorkspace({
                   </td>
                   <td>
                     <button
-                      className="row-open"
+                      className="icon-action-button"
                       type="button"
                       onClick={() => onOpen(paymentToEntityRecord(payment))}
                       aria-label={`Open ${payment.id}`}
+                      title="Open payment"
                     >
-                      Open <Icon name="arrow" size={14} />
+                      <Icon name="eye" size={17} />
                     </button>
                   </td>
                 </tr>

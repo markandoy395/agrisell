@@ -1,3 +1,46 @@
 .icon-button,
 .more-button,
 .table-more { display: grid; place-items: center; color: #77857e; border: 0; background: transparent; }
+
+.icon-action-button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-forest-green);
+  border: 1px solid var(--line, #dfe8e1);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.icon-action-button:hover:not(:disabled) {
+  color: #fff;
+  border-color: var(--brand-forest-green);
+  background: var(--brand-forest-green);
+}
+
+.icon-action-button:focus-visible {
+  outline: 2px solid var(--brand-lime-green, #9acb3c);
+  outline-offset: 2px;
+}
+
+.icon-action-button:disabled {
+  color: #8aa08f;
+  border-color: #d7e6d8;
+  background: #edf5ed;
+  cursor: default;
+}
+
+.icon-action-button--danger {
+  color: #a33a2f;
+  border-color: #f0d6d2;
+  background: #fff8f6;
+}
+
+.icon-action-button--danger:hover:not(:disabled) {
+  border-color: #a33a2f;
+  background: #a33a2f;
+}

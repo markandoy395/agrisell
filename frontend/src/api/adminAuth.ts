@@ -4,6 +4,7 @@ export type LoginCredentials = {
 };
 
 export type AuthenticatedAdmin = {
+  avatarUrl?: string;
   email: string;
   name: string;
   role: "admin";
@@ -164,6 +165,9 @@ const parseAdminSession = (body: unknown): AdminSession => {
 
   return {
     admin: {
+      avatarUrl: typeof admin.avatarUrl === "string" && admin.avatarUrl
+        ? admin.avatarUrl
+        : undefined,
       email: admin.email,
       name: typeof admin.name === "string" && admin.name.trim()
         ? admin.name

@@ -1,5 +1,6 @@
 const { config } = require('../config/environment');
 const { authenticateAdminCredentials } = require('../services/adminAuthService');
+const { getSupabaseAdminProfile } = require('../services/supabaseAdminAuthService');
 const {
   AdminPasswordResetError,
   requestAdminPasswordReset,
@@ -162,7 +163,7 @@ const loginAdmin = async (request, response) => {
   );
 };
 
-const getCurrentSession = (request, response) => {
+const getCurrentSession = async (request, response) => {
   const admin = verifyAdminSession(getSessionToken(request));
 
   if (!admin) {
@@ -175,8 +176,16 @@ const getCurrentSession = (request, response) => {
     return;
   }
 
+  let currentAdmin = admin;
+  try {
+    const profile = await getSupabaseAdminProfile(admin.email);
+    if (profile) currentAdmin = { ...admin, ...profile };
+  } catch (error) {
+    console.warn('Unable to refresh the administrator profile for this session.', error);
+  }
+
   sendJson(response, 200, {
-    admin,
+    admin: currentAdmin,
     authenticated: true,
   });
 };

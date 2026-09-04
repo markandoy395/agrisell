@@ -1,5 +1,5 @@
 .orders-table-wrap {
-  margin: 14px -20px -20px;
+  margin: 13px -24px -20px;
   overflow-x: auto;
 }
 .orders-table-wrap table {
@@ -8,43 +8,43 @@
   border-collapse: collapse;
 }
 .orders-table-wrap th {
-  height: 32px;
-  color: #98a29c;
+  height: 35px;
+  color: #57605c;
   border-top: 1px solid #f0f2f0;
   border-bottom: 1px solid #edf0ed;
   background: #fafbfa;
-  font-size: 8.5px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.55px;
   text-align: left;
 }
 .orders-table-wrap th:first-child,
 .orders-table-wrap td:first-child {
-  padding-left: 20px;
+  padding-left: 24px;
 }
 .orders-table-wrap th:last-child,
 .orders-table-wrap td:last-child {
   padding-right: 15px;
 }
 .orders-table-wrap td {
-  height: 57px;
-  color: #506157;
+  height: 53px;
+  color: #252c28;
   border-bottom: 1px solid #eff2ef;
-  font-size: 10.5px;
+  font-size: 11.5px;
 }
 .orders-table-wrap tr:last-child td {
   border-bottom: 0;
 }
 .orders-table-wrap td > strong {
-  color: #344a3d;
-  font-size: 10.5px;
+  color: #0b110d;
+  font-size: 12px;
 }
 .orders-table-wrap td small,
 .commodity-cell small {
   display: block;
   margin-top: 2px;
   color: #9ca69f;
-  font-size: 9px;
+  font-size: 9.5px;
 }
 .customer {
   display: flex;
@@ -52,14 +52,14 @@
   gap: 7px;
 }
 .customer-avatar {
-  width: 23px;
-  height: 23px;
+  width: 31px;
+  height: 31px;
   display: grid;
   place-items: center;
   color: #5c7666;
   border-radius: 50%;
   background: #e1eee3;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 700;
 }
 .orders-table-wrap tbody tr:nth-child(2) .customer-avatar {

@@ -29,13 +29,69 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.order-heading-main,
+.order-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.order-heading-main {
+  gap: 14px;
+}
+
+.order-heading-icon {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--order-brand);
+  border-radius: 14px;
+  background: #edf7ef;
+}
+
+.order-heading-main p {
+  margin: 8px 0 0;
+  color: #66736b;
+  font-size: 11px;
+}
+
+.order-header-actions {
+  gap: 12px;
+}
+
+.order-sort-button {
+  min-width: 162px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13px;
+  color: var(--order-brand-dark);
+  border: 1px solid var(--order-line);
+  border-radius: 9px;
+  background: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.order-sort-button .icon:last-child {
+  margin-left: auto;
+}
+
+.order-header-actions .order-download-button {
+  height: 42px;
+  padding: 0 18px;
+  background: linear-gradient(145deg, #159247, #056f32);
 }
 
 .order-workspace h1 {
   margin: 0;
   color: var(--order-ink-strong);
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   line-height: 1.12;
   letter-spacing: 0;
@@ -50,16 +106,32 @@
 
 .order-summary-card {
   min-width: 0;
-  min-height: 122px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 13px;
+  min-height: 138px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto 1fr;
+  align-items: center;
+  column-gap: 16px;
+  position: relative;
+  overflow: hidden;
+  padding: 18px 20px;
   border: 1px solid var(--order-line);
   border-radius: var(--order-radius-sm);
   background: var(--order-surface);
   box-shadow: 0 12px 24px var(--order-shadow);
 }
+
+.order-summary-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--order-brand);
+}
+
+.order-summary-card.tone-blue::before { background: #efa900; }
+.order-summary-card.tone-red::before { background: #e33b2f; }
+.order-summary-card.tone-orange::before { background: #2f80e8; }
 
 .order-summary-top {
   min-width: 0;
@@ -71,6 +143,11 @@
   font-weight: 600;
 }
 
+.order-summary-top,
+.order-summary-value {
+  display: contents;
+}
+
 .order-summary-top > span:nth-child(2) {
   min-width: 0;
   overflow: hidden;
@@ -79,12 +156,24 @@
 }
 
 .order-summary-icon {
-  width: 24px;
-  height: 24px;
+  width: 58px;
+  height: 58px;
+  grid-column: 1;
+  grid-row: 1 / 3;
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 7px;
+  border-radius: 50%;
+}
+
+.order-summary-icon .icon {
+  width: 25px;
+  height: 25px;
+}
+
+.order-summary-top > span:nth-child(2) {
+  grid-column: 2 / -1;
+  grid-row: 1;
 }
 
 .order-summary-card.tone-green .order-summary-icon {
@@ -93,24 +182,24 @@
 }
 
 .order-summary-card.tone-blue .order-summary-icon {
-  color: var(--order-brand-dark);
-  background: var(--order-lime-soft);
+  color: #8c6500;
+  background: #fff4d4;
 }
 
 .order-summary-card.tone-orange .order-summary-icon {
-  color: var(--order-neutral-accent);
-  background: var(--order-neutral-soft);
+  color: #347de0;
+  background: #edf4ff;
 }
 
 .order-summary-card.tone-red .order-summary-icon {
-  color: var(--order-muted-strong);
-  background: var(--order-neutral-soft);
+  color: #e13c30;
+  background: #fdeceb;
 }
 
 .order-card-menu {
   width: 23px;
   height: 23px;
-  display: grid;
+  display: none;
   flex: 0 0 auto;
   place-items: center;
   margin-left: auto;
@@ -118,7 +207,7 @@
 }
 
 .order-summary-value {
-  display: flex;
+  display: contents;
   align-items: flex-end;
   justify-content: space-between;
   gap: 10px;
@@ -126,6 +215,9 @@
 }
 
 .order-summary-value strong {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
   min-width: 0;
   overflow-wrap: anywhere;
   color: var(--order-ink-strong);
@@ -134,6 +226,10 @@
   line-height: 1;
   letter-spacing: 0;
 }
+
+.order-summary-card.tone-blue .order-summary-value strong { color: #e69400; }
+.order-summary-card.tone-red .order-summary-value strong { color: #d93024; }
+.order-summary-card.tone-orange .order-summary-value strong { color: #256ed1; }
 
 .order-growth {
   display: inline-flex;
@@ -147,6 +243,12 @@
   line-height: 1;
 }
 
+.order-summary-value .order-growth {
+  grid-column: 3;
+  grid-row: 2;
+  align-self: center;
+}
+
 .order-growth.tone-green {
   color: var(--order-brand);
   background: var(--order-brand-soft);
@@ -158,6 +260,9 @@
 }
 
 .order-summary-card small {
+  grid-column: 2 / -1;
+  grid-row: 3;
+  align-self: end;
   margin-top: 7px;
   color: var(--order-muted);
   font-size: 9px;
@@ -169,7 +274,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+  padding: 16px 20px;
+  border: 1px solid var(--order-line);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: #fff;
 }
 
 .order-filter-tabs {
@@ -181,7 +291,11 @@
 
 .order-filter-tab {
   min-width: 70px;
-  height: 32px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   padding: 0 13px;
   color: var(--order-muted-strong);
   border: 1px solid var(--order-line);
@@ -197,6 +311,12 @@
   border-color: var(--order-line-strong);
   background: var(--order-brand-soft);
   box-shadow: 0 8px 18px color-mix(in srgb, var(--order-brand) 12%, transparent);
+}
+
+.order-filter-tab.is-active {
+  color: #fff;
+  border-color: var(--order-brand);
+  background: linear-gradient(145deg, #19984e, #08743a);
 }
 
 .order-filter-tab:focus-visible,
@@ -216,8 +336,8 @@
 }
 
 .order-search-field {
-  width: 214px;
-  height: 34px;
+  width: 360px;
+  height: 38px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -244,7 +364,7 @@
 
 .order-tool-button,
 .order-download-button {
-  height: 34px;
+  height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -303,7 +423,7 @@
 .order-board {
   overflow: hidden;
   border: 1px solid var(--order-line);
-  border-radius: var(--order-radius-sm);
+  border-radius: 0 0 10px 10px;
   background: var(--order-surface);
   box-shadow: 0 14px 30px var(--order-shadow);
 }
@@ -373,7 +493,7 @@
 }
 
 .order-table td {
-  height: 42px;
+  height: 70px;
   padding: 0 8px;
   color: var(--order-ink);
   border-bottom: 1px solid var(--order-line);
@@ -424,6 +544,12 @@
   white-space: nowrap;
 }
 
+.order-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
 .order-tracking-number,
 .order-date,
 .order-person-name {
@@ -439,13 +565,13 @@
 }
 
 .order-avatar {
-  width: 21px;
-  height: 21px;
+  width: 30px;
+  height: 30px;
   display: grid;
   flex: 0 0 auto;
   place-items: center;
   border-radius: 50%;
-  font-size: 6px;
+  font-size: 7px;
   font-weight: 800;
 }
 
@@ -488,20 +614,12 @@
   gap: 4px;
   overflow: hidden;
   padding: 5px 7px;
-  border-radius: 7px;
+  border-radius: 999px;
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.order-status-pill i {
-  width: 6px;
-  height: 6px;
-  display: block;
-  border: 1px solid currentColor;
-  border-radius: 2px;
 }
 
 .order-status-pill.completed {
@@ -547,9 +665,21 @@
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  padding: 13px 14px;
-  border-top: 1px solid var(--order-line);
+  padding: 0;
+  border-top: 0;
   background: var(--order-surface);
+}
+
+.order-table-footer {
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 20px;
+  color: var(--order-muted);
+  border-top: 1px solid var(--order-line);
+  font-size: 11px;
 }
 
 .order-pagination button {
@@ -604,13 +734,25 @@
   }
 
   .order-search-field {
-    width: min(100%, 260px);
+    width: min(100%, 360px);
   }
 }
 
 @media (max-width: 760px) {
   .order-workspace-header {
+    align-items: flex-start;
+    flex-direction: column;
     margin-bottom: 14px;
+  }
+
+  .order-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .order-sort-button,
+  .order-header-actions .order-download-button {
+    flex: 1;
   }
 
   .order-summary-grid {
@@ -635,6 +777,11 @@
 
   .order-download-button {
     grid-column: 1 / -1;
+  }
+
+  .order-table-footer {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .order-pagination {

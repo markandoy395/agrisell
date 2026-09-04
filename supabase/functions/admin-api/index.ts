@@ -155,6 +155,44 @@ const setIfPresent = (target: Row, field: string, value: unknown) => {
   if (value !== undefined) target[field] = value;
 };
 
+const PROFILE_IMAGE_BUCKET = "admin-profile-images";
+const uploadProfileImage = async (userId: string, dataUrl: string) => {
+  const bucketResult = await fetch(`${SUPABASE_URL}/storage/v1/bucket/${PROFILE_IMAGE_BUCKET}`, {
+    headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
+  });
+  if (bucketResult.status === 400 || bucketResult.status === 404) {
+    const createResult = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
+      body: JSON.stringify({
+        allowed_mime_types: ["image/webp"],
+        file_size_limit: 500_000,
+        id: PROFILE_IMAGE_BUCKET,
+        name: PROFILE_IMAGE_BUCKET,
+        public: true,
+      }),
+      headers: {
+        apikey: SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    });
+    if (!createResult.ok && createResult.status !== 409) {
+      throw createUserError("PROFILE_IMAGE_STORAGE_FAILED", "The profile image storage bucket could not be created.", 502);
+    }
+  } else if (!bucketResult.ok) {
+    throw createUserError("PROFILE_IMAGE_STORAGE_FAILED", "The profile image storage bucket could not be accessed.", 502);
+  }
+
+  const binary = Uint8Array.from(atob(dataUrl.slice(dataUrl.indexOf(",") + 1)), (character) => character.charCodeAt(0));
+  const objectPath = `${encodeURIComponent(userId)}/avatar.webp`;
+  await requestSupabase(`/storage/v1/object/${PROFILE_IMAGE_BUCKET}/${objectPath}`, {
+    body: binary,
+    headers: { "Content-Type": "image/webp", "x-upsert": "true" },
+    method: "POST",
+  });
+  return `${SUPABASE_URL}/storage/v1/object/public/${PROFILE_IMAGE_BUCKET}/${objectPath}?v=${Date.now()}`;
+};
+
 const createDashboardUser = async (payload: unknown) => {
   if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
     throw createUserError("INVALID_USER_PAYLOAD", "Enter the new user details.");
@@ -223,7 +261,7 @@ const createDashboardUser = async (payload: unknown) => {
   }
 };
 
-type Admin = { email: string; name: string; permissions: string[]; role: "admin"; userId: string };
+type Admin = { avatarUrl?: string; email: string; name: string; permissions: string[]; role: "admin"; userId: string };
 
 const permissionsFromRole = (role: Row | undefined) => {
   const description = text(role?.description);
@@ -238,7 +276,7 @@ const permissionsFromRole = (role: Row | undefined) => {
 const regularAdminPermissions = (permissions: string[] | undefined) => {
   const selectedPermissions = [...new Set(permissions ?? [])]
     .filter((permission) => ADMIN_PERMISSIONS.includes(permission));
-  return selectedPermissions.length === 3
+  return selectedPermissions.length
     ? selectedPermissions
     : DEFAULT_ADMIN_PERMISSIONS;
 };
@@ -269,6 +307,7 @@ const getAdmin = async (request: Request): Promise<Admin | null> => {
     : permissionsFromRole(roleRecords[0]);
 
   return {
+    avatarUrl: text(users[0]?.profile_photo_url) || undefined,
     email,
     name: name(users[0], display(email.split("@")[0], "Administrator")),
     permissions: role === "super_admin"
@@ -276,6 +315,51 @@ const getAdmin = async (request: Request): Promise<Admin | null> => {
       : regularAdminPermissions(storedPermissions),
     role: "admin",
     userId,
+  };
+};
+
+const updateAdminProfile = async (payload: unknown, admin: Admin) => {
+  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+    throw createUserError("INVALID_ADMIN_PROFILE", "Enter valid profile information.");
+  }
+  const body = payload as Row;
+  const profileName = text(body.name).replace(/\s+/g, " ");
+  const avatarUrl = text(body.avatarUrl);
+  if (!profileName || profileName.length > 200) {
+    throw createUserError("INVALID_ADMIN_PROFILE", "Enter a valid profile name.");
+  }
+  if (avatarUrl && (
+    avatarUrl.length > 650_000 ||
+    !/^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(avatarUrl)
+  )) {
+    throw createUserError("INVALID_PROFILE_IMAGE", "Choose a valid JPG, PNG, or WEBP profile image.");
+  }
+
+  const nameParts = profileName.split(" ");
+  const lastName = nameParts.length > 1 ? nameParts.pop() ?? "" : "";
+  const updates: Row = {
+    extension_name: null,
+    first_name: nameParts.join(" ") || profileName,
+    last_name: lastName,
+    middle_name: null,
+  };
+  if (avatarUrl) updates.profile_photo_url = await uploadProfileImage(admin.userId, avatarUrl);
+
+  const updated = rows(await requestSupabase(
+    `/rest/v1/users?user_id=eq.${encodeURIComponent(admin.userId)}`,
+    {
+      body: JSON.stringify(updates),
+      headers: { "Content-Type": "application/json", Prefer: "return=representation" },
+      method: "PATCH",
+    },
+  ));
+  const user = updated[0];
+  if (!user) throw createUserError("ADMIN_PROFILE_NOT_FOUND", "The administrator profile could not be found.", 404);
+
+  return {
+    avatarUrl: text(user.profile_photo_url),
+    email: text(user.email, admin.email),
+    name: name(user, profileName),
   };
 };
 
@@ -295,8 +379,8 @@ const createAdministrator = async (payload: unknown, assigningAdmin: Admin) => {
   if (!firstName || !lastName) throw createUserError("INVALID_ADMIN_PAYLOAD", "First and last names are required.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw createUserError("INVALID_ADMIN_PAYLOAD", "Enter a valid email address.");
   if (password.length < 8 || password.length > 512) throw createUserError("INVALID_ADMIN_PAYLOAD", "Password must be between 8 and 512 characters.");
-  if (permissions.length !== 3 || permissions.length !== (Array.isArray(body.permissions) ? new Set(body.permissions).size : 0)) {
-    throw createUserError("INVALID_ADMIN_PRIVILEGES", "Select exactly three valid administrator privileges.");
+  if (!permissions.length || permissions.length !== (Array.isArray(body.permissions) ? new Set(body.permissions).size : 0)) {
+    throw createUserError("INVALID_ADMIN_PRIVILEGES", "Select at least one valid administrator privilege.");
   }
   let authUser = await getAuthUserByEmail(email);
   const resumedAuthUser = Boolean(authUser);
@@ -352,6 +436,47 @@ const createAdministrator = async (payload: unknown, assigningAdmin: Admin) => {
     await requestSupabase(`/auth/v1/admin/users/${encodeURIComponent(authUserId)}`, { method: "DELETE" }).catch(() => undefined);
     throw error;
   }
+};
+
+const updateAdministratorPrivileges = async (userId: string, payload: unknown) => {
+  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+    throw createUserError("INVALID_ADMIN_PRIVILEGES", "Select at least one valid administrator privilege.");
+  }
+  const body = payload as Row;
+  const permissions = Array.isArray(body.permissions)
+    ? [...new Set(body.permissions.filter((item): item is string =>
+        typeof item === "string" && ADMIN_PERMISSIONS.includes(item)))]
+    : [];
+  if (!permissions.length || permissions.length !== (Array.isArray(body.permissions) ? new Set(body.permissions).size : 0)) {
+    throw createUserError("INVALID_ADMIN_PRIVILEGES", "Select at least one valid administrator privilege.");
+  }
+
+  const targetAdmin = (await getTable("admins", { user_id: `eq.${userId}` }))[0];
+  const targetRole = text(targetAdmin?.admin_role).toLowerCase();
+  if (targetRole === "super_admin") {
+    throw createUserError("SUPER_ADMIN_IMMUTABLE", "Superadmin privileges cannot be restricted.", 403);
+  }
+  if (targetRole !== "admin") {
+    throw createUserError("ADMIN_NOT_FOUND", "The administrator account could not be found.", 404);
+  }
+
+  const description = `Privileges: ${permissions.join(", ")}`;
+  const updatedRoles = rows(await requestSupabase(
+    `/rest/v1/admin_roles?user_id=eq.${encodeURIComponent(userId)}`,
+    {
+      body: JSON.stringify({ description }),
+      headers: { "Content-Type": "application/json", Prefer: "return=representation" },
+      method: "PATCH",
+    },
+  ));
+  if (!updatedRoles.length) {
+    await requestSupabase("/rest/v1/admin_roles", {
+      body: JSON.stringify({ description, role_level: 50, role_name: "Administrator", user_id: userId }),
+      headers: { "Content-Type": "application/json", Prefer: "return=representation" },
+      method: "POST",
+    });
+  }
+  return { permissions, userId };
 };
 
 type SaleInput = {
@@ -581,7 +706,7 @@ const updateSale = async (saleId: string, payload: unknown) => {
 };
 
 const getDashboard = async () => {
-  const tableNames = ["users", "admins", "buyers", "farmers", "farms", "categories", "commodities", "carts", "cart_items", "orders", "payments", "reviews", "rider_ratings", "deliveries", "logistics_companies", "riders"];
+  const tableNames = ["users", "admins", "admin_roles", "buyers", "farmers", "farms", "categories", "commodities", "carts", "cart_items", "orders", "payments", "reviews", "rider_ratings", "deliveries", "logistics_companies", "riders"];
   const tableEntries = await Promise.all(tableNames.map(async (table) => [table, await getTable(table)] as const));
   const tables = Object.fromEntries(tableEntries) as Record<string, Row[]>;
   const users = tables.users;
@@ -590,6 +715,7 @@ const getDashboard = async () => {
   const companies = tables.logistics_companies;
   const riders = tables.riders;
   const usersById = indexBy(users, "user_id");
+  const adminRolesByUserId = indexBy(tables.admin_roles, "user_id");
   const buyersByUserId = indexBy(tables.buyers, "user_id");
   const buyersById = indexBy(tables.buyers, "buyer_user_id");
   const companiesById = indexBy(companies, "logistics_company_id");
@@ -721,7 +847,23 @@ const getDashboard = async () => {
       userType: ["Admin", "Buyer", "Farmer", "Rider"].includes(role) ? role : "User",
     };
   });
-  return { entityRows, farmerFarms, farmers: farmerRecords, orders, payments, users: userRows, overview: { activeFarmers: farmerRecords.filter((farmer) => farmer.status === "Verified").length, activeListings: tables.commodities.filter((commodity) => !/(sold|archived|inactive)/i.test(text(commodity.commodity_status))).length, commodityMix: [], deliveryStatuses: [], lowStock: tables.commodities.filter((commodity) => number(commodity.available_quantity, Infinity) <= 5).length, paymentActivityBars: [0, 0, 0, 0, 0, 0, 0], salesTrend: salesTrend(tables.payments), totalOrders: orders.length, totalSales: completedPayments.reduce((total, payment) => total + payment.amountValue, 0) } };
+  const administrators = tables.admins.flatMap((administrator) => {
+    const userId = id(administrator.user_id);
+    const role = text(administrator.admin_role).toLowerCase();
+    if (!userId || (role !== "admin" && role !== "super_admin")) return [];
+    const user = usersById.get(userId);
+    const storedPermissions = permissionsFromRole(adminRolesByUserId.get(userId));
+    return [{
+      email: text(user?.email, "Email not recorded"),
+      name: user ? name(user, `Admin ${userId}`) : `Admin ${userId}`,
+      permissions: role === "super_admin"
+        ? [...ADMIN_PERMISSIONS, "admin:manage"]
+        : regularAdminPermissions(storedPermissions),
+      role,
+      userId,
+    }];
+  });
+  return { administrators, entityRows, farmerFarms, farmers: farmerRecords, orders, payments, users: userRows, overview: { activeFarmers: farmerRecords.filter((farmer) => farmer.status === "Verified").length, activeListings: tables.commodities.filter((commodity) => !/(sold|archived|inactive)/i.test(text(commodity.commodity_status))).length, commodityMix: [], deliveryStatuses: [], lowStock: tables.commodities.filter((commodity) => number(commodity.available_quantity, Infinity) <= 5).length, paymentActivityBars: [0, 0, 0, 0, 0, 0, 0], salesTrend: salesTrend(tables.payments), totalOrders: orders.length, totalSales: completedPayments.reduce((total, payment) => total + payment.amountValue, 0) } };
 };
 
 Deno.serve(async (request) => {
@@ -735,13 +877,30 @@ Deno.serve(async (request) => {
     }
     if (request.method === "POST" && pathname === "/api/auth/logout") return response(request, 200, { authenticated: false });
     if (!admin) return response(request, 401, { code: "AUTHENTICATION_REQUIRED", message: "A valid admin session is required." });
+    if (request.method === "PATCH" && pathname === "/api/admin/profile") {
+      return response(request, 200, {
+        profile: await updateAdminProfile(await request.json().catch(() => null), admin),
+      });
+    }
     if (request.method === "POST" && pathname === "/api/admin/administrators") {
       if (!admin.permissions.includes("admin:manage")) {
         return response(request, 403, { code: "SUPER_ADMIN_REQUIRED", message: "Only a super administrator can create administrator accounts." });
       }
       return response(request, 201, { admin: await createAdministrator(await request.json().catch(() => null), admin) });
     }
-    if (request.method === "GET" && pathname === "/api/admin/dashboard") return response(request, 200, await getDashboard());
+    const administratorPrivilegesRoute = pathname.match(/^\/api\/admin\/administrators\/([^/]+)\/privileges$/);
+    if (request.method === "PATCH" && administratorPrivilegesRoute) {
+      if (!admin.permissions.includes("admin:manage")) {
+        return response(request, 403, { code: "SUPER_ADMIN_REQUIRED", message: "Only a super administrator can update administrator privileges." });
+      }
+      const userId = decodeURIComponent(administratorPrivilegesRoute[1]);
+      return response(request, 200, await updateAdministratorPrivileges(userId, await request.json().catch(() => null)));
+    }
+    if (request.method === "GET" && pathname === "/api/admin/dashboard") {
+      const dashboard = await getDashboard();
+      if (!admin.permissions.includes("admin:manage")) dashboard.administrators = [];
+      return response(request, 200, dashboard);
+    }
     if (request.method === "GET" && pathname === "/api/admin/sales") {
       if (!admin.permissions.includes("sales:manage") && !admin.permissions.includes("admin:manage")) return response(request, 403, { code: "ADMIN_PRIVILEGE_REQUIRED", message: "Your administrator account does not have permission for this action." });
       return response(request, 200, await getSales());

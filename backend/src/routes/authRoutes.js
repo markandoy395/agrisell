@@ -13,7 +13,7 @@ const routeAuthRequest = async (request, response, pathname) => {
   }
 
   if (pathname === '/api/auth/session' && request.method === 'GET') {
-    getCurrentSession(request, response);
+    await getCurrentSession(request, response);
     return true;
   }
 

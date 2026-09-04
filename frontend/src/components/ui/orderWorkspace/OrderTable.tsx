@@ -13,6 +13,7 @@ type OrderTableProps = {
   pageNumbers: number[];
   partiallyVisibleSelected: boolean;
   selectedOrderIds: Set<string>;
+  totalCount: number;
   totalPages: number;
   onOpenOrder: (order: OrderRow) => void;
   onPageChange: (page: number | ((currentPage: number) => number)) => void;
@@ -27,6 +28,7 @@ export function OrderTable({
   pageNumbers,
   partiallyVisibleSelected,
   selectedOrderIds,
+  totalCount,
   totalPages,
   onOpenOrder,
   onPageChange,
@@ -118,7 +120,7 @@ export function OrderTable({
                     </span>
                   </td>
                   <td>
-                    <span className="order-date">{row.orderDate}</span>
+                    <span className="order-date"><Icon name="calendar" size={13} />{row.orderDate}</span>
                   </td>
                   <td>
                     <span className="order-destination">{row.destination}</span>
@@ -146,7 +148,7 @@ export function OrderTable({
                     <span
                       className={`order-status-pill ${deliveryStatus.toLowerCase()}`}
                     >
-                      <i aria-hidden="true" />
+                      <Icon name={deliveryStatus === "Completed" ? "check" : deliveryStatus === "Delivering" ? "truck" : "close"} size={13} />
                       {deliveryStatus}
                     </span>
                   </td>
@@ -170,7 +172,9 @@ export function OrderTable({
         )}
       </div>
 
-      <nav className="order-pagination" aria-label="Order pages">
+      <div className="order-table-footer">
+        <span>Showing {(activePage - 1) * 12 + (orders.length ? 1 : 0)} to {(activePage - 1) * 12 + orders.length} of {totalCount} orders</span>
+        <nav className="order-pagination" aria-label="Order pages">
         <button
           type="button"
           disabled={activePage === 1}
@@ -198,7 +202,8 @@ export function OrderTable({
         >
           Next
         </button>
-      </nav>
+        </nav>
+      </div>
     </div>
   );
 }

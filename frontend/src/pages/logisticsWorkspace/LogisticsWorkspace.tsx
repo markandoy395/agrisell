@@ -258,7 +258,7 @@ export function LogisticsWorkspace({
                 <td><strong>{rider.value}</strong></td>
                 <td><span className={`user-status ${rider.tone}`}><i aria-hidden="true" />{rider.status}</span></td>
                 <td><span className={`user-status ${rider.approvalTone ?? "blue"}`}><i aria-hidden="true" />{rider.approvalStatus ?? "Not recorded"}</span></td>
-                <td><div className="logistics-row-actions"><button className="logistics-row-approve" type="button" disabled={!rider.entityId || rider.approvalStatus === "Approved" || approvingRiderId === rider.entityId} onClick={() => { void approveRider(rider); }}>{rider.approvalStatus === "Approved" ? "Approved" : approvingRiderId === rider.entityId ? "Approving…" : "Approve"}</button><button className="user-row-action" type="button" onClick={() => onOpen(rider)} aria-label={`Open ${rider.primary}`}><Icon name="more" size={18} /></button></div></td>
+                <td><div className="logistics-row-actions"><button className="icon-action-button" type="button" disabled={!rider.entityId || rider.approvalStatus === "Approved" || approvingRiderId === rider.entityId} onClick={() => { void approveRider(rider); }} aria-label={rider.approvalStatus === "Approved" ? `${rider.primary} is approved` : approvingRiderId === rider.entityId ? `Approving ${rider.primary}` : `Approve ${rider.primary}`} title={rider.approvalStatus === "Approved" ? "Approved" : approvingRiderId === rider.entityId ? "Approving…" : "Approve"}><Icon name="check" size={17} /></button><button className="user-row-action" type="button" onClick={() => onOpen(rider)} aria-label={`Open ${rider.primary}`}><Icon name="more" size={18} /></button></div></td>
               </tr>;
             })}</tbody>
           </table>
