@@ -9,15 +9,15 @@ import "../../components/ui/modals/DashboardModals.css";
 import "./SettingsWorkspace.css";
 
 const privileges = [
-  { key: "overview:view", label: "Overview", description: "View marketplace summaries and activity." },
-  { key: "users:manage", label: "Users", description: "Create and manage user accounts." },
-  { key: "farmers:manage", label: "Farmers", description: "Review and approve farmer accounts." },
-  { key: "logistics:manage", label: "Logistics", description: "Manage riders, deliveries, and logistics companies." },
-  { key: "orders:manage", label: "Orders", description: "View and manage marketplace orders." },
-  { key: "payments:view", label: "Payments", description: "View payment and settlement information." },
-  { key: "sales:manage", label: "Sales & discounts", description: "Create and manage promotional campaigns." },
-  { key: "reviews:manage", label: "Reviews", description: "View and moderate customer reviews." },
-  { key: "settings:manage", label: "Settings", description: "Change regular workspace preferences." },
+  { key: "overview:view", label: "Overview", description: "View marketplace summaries and activity.", icon: "home" },
+  { key: "users:manage", label: "Users", description: "Create and manage user accounts.", icon: "users" },
+  { key: "farmers:manage", label: "Farmers", description: "Review and approve farmer accounts.", icon: "sprout" },
+  { key: "logistics:manage", label: "Logistics", description: "Manage riders, deliveries, and logistics companies.", icon: "truck" },
+  { key: "orders:manage", label: "Orders", description: "View and manage marketplace orders.", icon: "cart" },
+  { key: "payments:view", label: "Payments", description: "View payment and settlement information.", icon: "card" },
+  { key: "sales:manage", label: "Sales & discounts", description: "Create and manage promotional campaigns.", icon: "trend" },
+  { key: "reviews:manage", label: "Reviews", description: "View and moderate customer reviews.", icon: "star" },
+  { key: "settings:manage", label: "Settings", description: "Change regular workspace preferences.", icon: "settings" },
 ] as const;
 
 const defaultAdminPrivileges = ["overview:view", "users:manage", "farmers:manage"];
@@ -49,6 +49,11 @@ export function SettingsWorkspace({ administrators, autoApprove, canManageAdmins
   const [editPermissions, setEditPermissions] = useState<string[]>([]);
   const [editError, setEditError] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [administratorSearch, setAdministratorSearch] = useState("");
+
+  const visibleAdministrators = administrators.filter((administrator) =>
+    `${administrator.name} ${administrator.email}`.toLowerCase().includes(administratorSearch.trim().toLowerCase()),
+  );
 
   const closeAdminModal = () => {
     if (isSubmitting) return;
@@ -125,19 +130,24 @@ export function SettingsWorkspace({ administrators, autoApprove, canManageAdmins
   };
 
   return <div className="settings-sections">
-    <section className="settings-workspace panel"><div className="panel-heading"><div><h2>Workspace settings</h2><p>Control how Agrisell handles marketplace activity.</p></div>{canManageAdmins && <button type="button" className="primary-button settings-admin-button" onClick={() => setIsAdminModalOpen(true)}>Create administrator</button>}</div>
-      <div className="settings-list"><div><div><strong>Auto-approve verified farmer listings</strong><span>Publish commodities from verified farms immediately.</span></div><button type="button" className={`switch ${autoApprove ? "checked" : ""}`} onClick={onToggleApprove} aria-pressed={autoApprove}><i /></button></div><div><div><strong>Daily admin digest</strong><span>Receive a daily summary of sales, orders, and delivery exceptions.</span></div><button type="button" className={`switch ${digest ? "checked" : ""}`} onClick={onToggleDigest} aria-pressed={digest}><i /></button></div></div>
-      <div className="settings-actions"><button type="button" className="outline-button" onClick={onReset}>Reset</button><button type="button" className="primary-button" onClick={onSave}>Save preferences</button></div>
+    <section className="settings-workspace panel">
+      <div className="settings-panel-heading"><span className="settings-heading-icon"><Icon name="settings" size={24} /></span><div><h2>Workspace settings</h2><p>Control how Agrisell handles marketplace activity.</p></div></div>
+      <div className="settings-list">
+        {canManageAdmins && <div className="settings-row"><span className="settings-row-icon"><Icon name="users" size={22} /></span><div><strong>Create administrator</strong><span>Add a new administrator to manage the system.</span></div><button type="button" className="primary-button settings-admin-button" onClick={() => setIsAdminModalOpen(true)}><Icon name="plus" size={19} />Create administrator</button></div>}
+        <div className="settings-row"><span className="settings-row-icon"><Icon name="shield" size={22} /></span><div><strong>Auto-approve verified farmer listings</strong><span>Publish commodities from verified farms immediately.</span></div><div className="setting-toggle-control"><button type="button" className={`switch ${autoApprove ? "checked" : ""}`} onClick={onToggleApprove} aria-pressed={autoApprove} aria-label="Toggle automatic farmer approvals"><i /></button><span>{autoApprove ? "Enabled" : "Disabled"}</span></div></div>
+        <div className="settings-row"><span className="settings-row-icon"><Icon name="document" size={22} /></span><div><strong>Daily admin digest</strong><span>Receive a daily summary of sales, orders, and delivery exceptions.</span></div><div className="setting-toggle-control"><button type="button" className={`switch ${digest ? "checked" : ""}`} onClick={onToggleDigest} aria-pressed={digest} aria-label="Toggle daily admin digest"><i /></button><span>{digest ? "Enabled" : "Disabled"}</span></div></div>
+      </div>
+      <div className="settings-actions"><button type="button" className="outline-button" onClick={onReset}><Icon name="refresh" size={17} />Reset</button><button type="button" className="primary-button" onClick={onSave}><Icon name="save" size={17} />Save preferences</button></div>
     </section>
     {canManageAdmins && <section className="settings-workspace settings-admin-management panel">
-      <div className="panel-heading"><div><h2>Administrator privileges</h2><p>Review administrator access and update the privileges assigned to regular admins.</p></div></div>
+      <div className="settings-admin-heading"><div className="settings-panel-heading"><span className="settings-heading-icon"><Icon name="users" size={24} /></span><div><h2>Administrator privileges</h2><p>Review administrator access and update the privileges assigned to regular admins.</p></div></div><label className="administrator-search"><Icon name="search" size={18} /><input value={administratorSearch} onChange={(event) => setAdministratorSearch(event.target.value)} placeholder="Search administrator..." aria-label="Search administrators" /></label></div>
       <div className="administrator-list">
-        {administrators.map((administrator) => <article className="administrator-row" key={administrator.userId}>
-          <div className="administrator-identity"><strong>{administrator.name}</strong><span>{administrator.email}</span><small>{administrator.role === "super_admin" ? "Superadmin · Full system access" : `Admin · ${administrator.permissions.length} privileges`}</small></div>
-          <div className="administrator-privileges">{administrator.permissions.map((permission) => <span key={permission}>{privileges.find((item) => item.key === permission)?.label ?? (permission === "admin:manage" ? "Administrator management" : permission)}</span>)}</div>
+        {visibleAdministrators.map((administrator) => <article className={`administrator-row${administrator.role === "super_admin" ? " is-superadmin" : ""}`} key={administrator.userId}>
+          <div className="administrator-identity"><span className="administrator-avatar">{administrator.name.trim().charAt(0).toUpperCase() || "A"}</span><div><strong>{administrator.name}</strong><span>{administrator.email}</span><small>{administrator.role === "super_admin" ? "Superadmin · Full system access" : `Admin · ${administrator.permissions.length} ${administrator.permissions.length === 1 ? "privilege" : "privileges"}`}</small></div></div>
+          <div className="administrator-access"><span className="administrator-access-label">MODULE ACCESS</span><div className="administrator-privileges">{administrator.permissions.map((permission) => { const privilege = privileges.find((item) => item.key === permission); const icon = privilege?.icon ?? (permission === "admin:manage" ? "shield" : "check"); return <span key={permission}><Icon name={icon} size={15} />{privilege?.label ?? (permission === "admin:manage" ? "Administrator management" : permission)}</span>; })}</div></div>
           {administrator.role === "admin" && <button type="button" className="icon-action-button" onClick={() => openPrivilegeEditor(administrator)} aria-label={`Edit privileges for ${administrator.name}`} title="Edit privileges"><Icon name="edit" size={17} /></button>}
         </article>)}
-        {!administrators.length && <p className="administrator-empty">No administrator accounts were found.</p>}
+        {!visibleAdministrators.length && <p className="administrator-empty">No administrator accounts match your search.</p>}
       </div>
     </section>}
     {canManageAdmins && isAdminModalOpen && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeAdminModal(); }}>

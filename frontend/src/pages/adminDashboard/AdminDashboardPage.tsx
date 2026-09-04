@@ -100,7 +100,6 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
   const [panelMenu, setPanelMenu] = useState<"commodity" | "delivery" | null>(
     null,
   );
-  const [sidebarProfileOpen, setSidebarProfileOpen] = useState(false);
   const [topProfileOpen, setTopProfileOpen] = useState(false);
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
   const [adminProfile, setAdminProfile] = useState<AdminProfile>(() => ({
@@ -274,28 +273,14 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
       <DashboardSidebar
         activeNav={activeNav}
         profile={adminProfile}
-        profileOpen={sidebarProfileOpen}
         permissions={admin.permissions}
         onNavigate={navigate}
-        onToggleProfile={() => setSidebarProfileOpen((isOpen) => !isOpen)}
-        onOpenProfile={() => {
-          setSidebarProfileOpen(false);
-          setProfileEditorOpen(true);
-        }}
-        onOpenHelp={() =>
+        onOpenHelp={() => {
           setModal({
             title: "Help Center Coming Soon",
             message:
               "The Agrisell Help Center is currently under development. We're working to make support resources available soon. Thank you for your patience.",
-          })
-        }
-        onOpenPreferences={() => {
-          navigate("Settings");
-          setSidebarProfileOpen(false);
-        }}
-        onSignOut={() => {
-          setSidebarProfileOpen(false);
-          onSignOut();
+          });
         }}
       />
       <main className="main-content">
@@ -335,6 +320,20 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
             navigate("Settings");
             setTopProfileOpen(false);
           }}
+          onOpenHelp={() => {
+            setTopProfileOpen(false);
+            setModal({
+              title: "Help Center Coming Soon",
+              message: "The Agrisell Help Center is currently under development. We're working to make support resources available soon. Thank you for your patience.",
+            });
+          }}
+          onOpenAccountAction={(action) => {
+            setTopProfileOpen(false);
+            setModal({
+              title: `${action} Coming Soon`,
+              message: `${action} is currently under development. This option will be available in a future update.`,
+            });
+          }}
           onSignOut={() => {
             setTopProfileOpen(false);
             onSignOut();
@@ -343,7 +342,9 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
         <div className="page-content">
           {showPageHeading && (
             <section className={`page-heading${activeNav === "Overview" ? " page-heading--overview" : ""}`}>
-              <div>
+              <div className={activeNav === "Settings" ? "settings-page-title" : undefined}>
+                {activeNav === "Settings" && <span className="settings-page-title-icon"><Icon name="settings" size={25} /></span>}
+                <div>
                 <div className="eyebrow">
                   {activeNav === "Overview" ? (
                     <>
@@ -354,6 +355,7 @@ export function AdminDashboardPage({ admin, onSignOut }: AdminDashboardPageProps
                 </div>
                 <h1>{pageTitle}</h1>
                 <p>{pageDescription}</p>
+                </div>
               </div>
               <div className="date-control">
                 <button

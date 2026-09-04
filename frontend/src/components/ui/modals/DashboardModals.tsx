@@ -2,8 +2,9 @@ import type { ChangeEvent, FormEventHandler } from "react";
 import { useState } from "react";
 import { getEntityInfo } from "../../../data/entityWorkspaceConfig";
 import type { CreateUserInput } from "../../../api/adminData";
-import type { AdminProfile, DashboardModal } from "../../../types/dashboard";
+import type { AdminProfile, DashboardModal, IconName } from "../../../types/dashboard";
 import { CloseButton } from "../closeButton/CloseButton";
+import { Icon } from "../icon/Icon";
 import "./DashboardModals.css";
 
 type DetailsModalProps = { modal: DashboardModal; onClose: () => void };
@@ -322,17 +323,17 @@ const resizeProfilePhoto = (photo: File) =>
     reader.readAsDataURL(photo);
   });
 
-const permissionLabels: Record<string, string> = {
-  "admin:manage": "Administrator management",
-  "farmers:manage": "Farmers",
-  "logistics:manage": "Logistics and deliveries",
-  "orders:manage": "Orders",
-  "overview:view": "Overview",
-  "payments:view": "Payments",
-  "reviews:manage": "Reviews",
-  "sales:manage": "Sales and discounts",
-  "settings:manage": "Settings",
-  "users:manage": "Users",
+const permissionDetails: Record<string, { label: string; description: string; icon: IconName }> = {
+  "overview:view": { label: "Overview", description: "Dashboard & reports", icon: "home" },
+  "users:manage": { label: "Users", description: "Manage user accounts", icon: "users" },
+  "farmers:manage": { label: "Farmers", description: "Manage farmer records", icon: "sprout" },
+  "logistics:manage": { label: "Logistics & Deliveries", description: "Manage deliveries", icon: "truck" },
+  "orders:manage": { label: "Orders", description: "View and manage orders", icon: "cart" },
+  "payments:view": { label: "Payments", description: "Track transactions", icon: "card" },
+  "sales:manage": { label: "Sales & Discounts", description: "Manage promotions", icon: "trend" },
+  "reviews:manage": { label: "Reviews", description: "Customer feedback", icon: "star" },
+  "settings:manage": { label: "Settings", description: "System configuration", icon: "settings" },
+  "admin:manage": { label: "Administrator Management", description: "Manage system administrators", icon: "shield" },
 };
 
 export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileModalProps) {
@@ -371,105 +372,90 @@ export function ProfileModal({ permissions, profile, onClose, onSave }: ProfileM
   };
 
   return (
-    <div className="modal-backdrop" onMouseDown={onClose}>
+    <div className="modal-backdrop profile-modal-backdrop" onMouseDown={onClose}>
       <section
-        className="modal-card"
+        className="modal-card profile-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="profile-title"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <CloseButton label="Close profile modal" onClick={onClose} />
-        <header className="modal-header">
-          <span className="modal-eyebrow">ADMIN PROFILE</span>
-          <h2 id="profile-title">Profile information</h2>
-        </header>
-        <div className="profile-editor-summary">
-          <span
-            className={`profile-editor-avatar${draft.avatarUrl ? " has-photo" : ""}`}
-          >
-            {draft.avatarUrl ? (
-              <img src={draft.avatarUrl} alt="" />
-            ) : (
-              draft.initials
-            )}
-          </span>
+        <header className="profile-modal-header">
+          <span className="profile-header-icon"><Icon name="profile" size={23} /></span>
           <div>
+            <span className="profile-modal-eyebrow">ADMIN PROFILE</span>
+            <h2 id="profile-title">Profile Information</h2>
+            <p>View and manage your account details and privileges.</p>
+          </div>
+        </header>
+        <section className="profile-hero" aria-label="Profile summary">
+          <label className={`profile-hero-avatar${draft.avatarUrl ? " has-photo" : ""}`} title="Change profile photo">
+            {draft.avatarUrl ? <img src={draft.avatarUrl} alt="" /> : draft.initials}
+            <span className="profile-camera"><Icon name="camera" size={18} /></span>
+            <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { void updatePhoto(event); }} disabled={isSaving} />
+          </label>
+          <div className="profile-hero-main">
             <strong>{draft.name || "Administrator"}</strong>
             <span>{draft.email || "Add an email address"}</span>
-          </div>
-        </div>
-        <section className="profile-access" aria-labelledby="profile-access-title">
-          <div className="profile-access-heading">
-            <div>
-              <strong id="profile-access-title">Account privileges</strong>
-              <span>{hasFullAccess ? "Full system access" : `${permissions.length} assigned privileges`}</span>
+            <div className="profile-statuses">
+              <span><Icon name="shield" size={16} />{hasFullAccess ? "Super Administrator" : "Administrator"}</span>
+              <span><i />Active</span>
             </div>
-            <span className={`profile-access-role${hasFullAccess ? " is-superadmin" : ""}`}>
-              {hasFullAccess ? "Superadmin" : "Admin"}
+          </div>
+          <blockquote>“Manage today<br />for a better tomorrow.”<Icon name="leaf" size={21} /></blockquote>
+        </section>
+        <section className="profile-details-card">
+          <div className="profile-section-heading">
+            <span className="profile-section-icon"><Icon name="grid" size={22} /></span>
+            <div>
+              <strong id="profile-access-title">Account Privileges</strong>
+              <span>Modules and features you can access.</span>
+            </div>
+            <span className="profile-full-access">
+              <Icon name="crown" size={19} />{hasFullAccess ? "FULL ACCESS" : `${permissions.length} PRIVILEGES`}
             </span>
           </div>
           <div className="profile-access-list" role="list">
-            {permissions.map((permission) => (
-              <span key={permission} role="listitem">
-                {permissionLabels[permission] ?? permission}
-              </span>
-            ))}
+            {permissions.map((permission) => {
+              const detail = permissionDetails[permission];
+              if (!detail) return null;
+              return <div className="profile-privilege" key={permission} role="listitem">
+                <Icon name={detail.icon} size={27} />
+                <span><strong>{detail.label}</strong><small>{detail.description}</small></span>
+              </div>;
+            })}
           </div>
-        </section>
-        <form onSubmit={saveProfile}>
+          <form id="profile-information-form" className="profile-information-form" onSubmit={saveProfile}>
+            <div className="profile-section-heading profile-personal-heading">
+              <span className="profile-section-icon"><Icon name="profile" size={22} /></span>
+              <div><strong>Personal Information</strong><span>Update your account details below.</span></div>
+            </div>
           <div className="profile-fields">
-            <label className="profile-photo-field">
-              <span>
-                Profile photo<small>JPG, PNG, or WEBP</small>
-              </span>
-              <span className="profile-photo-upload">
-                {draft.avatarUrl ? "Change image" : "Add image"}
-                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { void updatePhoto(event); }} disabled={isSaving} />
-              </span>
-            </label>
             <label className="field-label">
               Full name
-              <input
-                autoFocus
-                value={draft.name}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    name: event.target.value,
-                  }))
-                }
-                required
-              />
+              <span className="profile-input"><Icon name="profile" size={20} /><input autoFocus value={draft.name} onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} required /></span>
             </label>
             <label className="field-label">
               Email address
-              <input
-                type="email"
-                value={draft.email}
-                readOnly
-                required
-              />
+              <span className="profile-input"><Icon name="mail" size={20} /><input type="email" value={draft.email} readOnly required /></span>
             </label>
             <label className="field-label">
               Role
-              <input
-                value={draft.role}
-                readOnly
-                required
-              />
+              <span className="profile-input"><Icon name="shield" size={20} /><input value={draft.role} readOnly required /><Icon name="chevron" size={17} /></span>
             </label>
           </div>
           {error && <p className="form-error" role="alert">{error}</p>}
-          <div className="modal-actions">
+          </form>
+        </section>
+          <div className="modal-actions profile-modal-actions">
             <button type="button" className="outline-button" onClick={onClose} disabled={isSaving}>
               Cancel
             </button>
-            <button className="primary-button" type="submit" disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save changes"}
+            <button className="primary-button" type="submit" form="profile-information-form" disabled={isSaving}>
+              <Icon name="save" size={18} />{isSaving ? "Saving..." : "Save Changes"}
             </button>
           </div>
-        </form>
       </section>
     </div>
   );

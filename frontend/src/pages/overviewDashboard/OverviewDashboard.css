@@ -15,6 +15,10 @@
 .mini-bars { position: absolute; right: 22px; bottom: 28px; height: 48px; display: flex; align-items: end; gap: 4px; opacity: .95; }.mini-bars i { width: 5px; height: 13px; border-radius: 3px; background: var(--card-color); }.mini-bars i:nth-child(2) { height: 19px }.mini-bars i:nth-child(3) { height: 15px }.mini-bars i:nth-child(4) { height: 25px }.mini-bars i:nth-child(5) { height: 22px }.mini-bars i:nth-child(6) { height: 33px }.mini-bars i:nth-child(7) { height: 25px }.mini-bars i:nth-child(8) { height: 35px }.mini-bars i:nth-child(9) { height: 30px }.mini-bars i:nth-child(10) { height: 40px }.mini-bars i:nth-child(11) { height: 35px }.mini-bars i:nth-child(12) { height: 47px }
 .farmers-row { position: absolute; bottom: 20px; display: flex; align-items: center; gap: 7px; }.farmers-row small { color: #7e8782; font-size: 12px; }
 .listings-progress { position: absolute; right: 22px; bottom: 14px; left: 22px; }.listings-progress > span { display: block; height: 7px; overflow: hidden; border-radius: 7px; background: #e3e5e4; }.listings-progress i { display: block; width: 67%; height: 100%; border-radius: inherit; background: #4b9dac; }.listings-progress small { display: block; margin-top: 7px; color: #7c8580; font-size: 11px; }
+.inventory-card .stat-value { margin-top: 10px; }
+.inventory-card .stat-label { margin-top: 2px; font-size: 13px; line-height: 1.25; }
+.inventory-card .listings-progress { bottom: 10px; }
+.inventory-card .listings-progress small { margin-top: 4px; line-height: 1.2; }
 .insights-grid,.lower-grid { display: grid; grid-template-columns: minmax(0, 1.72fr) minmax(360px, 1fr); gap: 25px; margin-top: 19px; }.lower-grid { grid-template-columns: minmax(0, 1.72fr) minmax(340px, 1fr); }
 .overview-dashboard .panel { padding: 20px 24px; border-color: #dfe5e0; border-radius: 15px; box-shadow: 0 5px 16px rgb(28 54 36 / 6%); }
 .overview-dashboard .panel h2 { color: #090c0a; font-size: 18px; line-height: 1.2; }

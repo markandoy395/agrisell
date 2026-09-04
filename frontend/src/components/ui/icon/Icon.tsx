@@ -211,6 +211,68 @@ const icons: Record<IconName, ReactNode> = {
       <path d="M12 7v6M12 17h.01" />
     </>
   ),
+  profile: (
+    <>
+      <circle cx="12" cy="7" r="4" />
+      <path d="M4.5 21v-2.2A5.8 5.8 0 0 1 10.3 13h3.4a5.8 5.8 0 0 1 5.8 5.8V21" />
+    </>
+  ),
+  help: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.7 9a2.5 2.5 0 1 1 3.7 2.2c-.9.5-1.4 1-1.4 2.3M12 17h.01" />
+    </>
+  ),
+  headset: (
+    <>
+      <path d="M4 14v-2a8 8 0 0 1 16 0v2" />
+      <path d="M4 14a2 2 0 0 1 2-2h1v7H6a2 2 0 0 1-2-2v-3ZM20 14a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2v-3ZM17 19c-.7 1.3-2 2-4 2" />
+    </>
+  ),
+  bulb: (
+    <>
+      <path d="M8.7 16.5A7 7 0 1 1 15.3 16.5c-.8.6-1.3 1.4-1.3 2.5h-4c0-1.1-.5-1.9-1.3-2.5Z" />
+      <path d="M10 22h4M9 19h6" />
+    </>
+  ),
+  logout: (
+    <>
+      <path d="M14 5V3H4v18h10v-2" />
+      <path d="M10 12h11M17 8l4 4-4 4" />
+    </>
+  ),
+  home: <path d="m3 11 9-8 9 8v10h-6v-6H9v6H3V11Z" />,
+  shield: (
+    <>
+      <path d="M12 3 20 6v6c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-3Z" />
+      <path d="m8.5 12 2.2 2.2 4.8-5" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M4 8h3l1.5-2h7L17 8h3v11H4V8Z" />
+      <circle cx="12" cy="13" r="3" />
+    </>
+  ),
+  crown: <path d="m3 7 4 4 5-7 5 7 4-4-2 11H5L3 7ZM5 21h14" />,
+  save: (
+    <>
+      <path d="M4 3h14l2 2v16H4V3Z" />
+      <path d="M8 3v6h8V3M8 21v-7h8v7" />
+    </>
+  ),
+  document: (
+    <>
+      <path d="M6 3h9l4 4v14H6V3Z" />
+      <path d="M15 3v5h4M9 12h7M9 16h7" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M20 7v5h-5" />
+      <path d="M18.2 16a7 7 0 1 1 .3-7.6L20 12" />
+    </>
+  ),
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

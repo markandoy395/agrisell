@@ -1,4 +1,4 @@
-.topbar { height: 80px; display: flex; align-items: center; padding: 0 43px; border-bottom: 1px solid #e9eeea; background: #fff; }
+.topbar { position: relative; z-index: 11; height: 80px; display: flex; align-items: center; padding: 0 43px; border-bottom: 1px solid #e9eeea; background: #fff; }
 .search-box { width: min(402px, 45vw); height: 39px; display: flex; align-items: center; gap: 9px; padding: 0 11px; color: #89958d; border: 1px solid #edf1ed; border-radius: 8px; background: #f7f9f7; }
 .search-box input { min-width: 0; flex: 1; color: var(--ink); border: 0; outline: 0; background: transparent; font-size: 12px; }
 .search-box input::placeholder { color: #a0aaa4; }
@@ -22,5 +22,20 @@
 .top-profile-menu button { display: block; width: 100%; padding: 8px 9px; color: #55665d; border: 0; border-radius: 7px; background: transparent; font-size: 10.5px; text-align: left; }
 .top-profile-menu button:first-of-type { margin-top: 5px; }
 .top-profile-menu button:hover, .top-profile-menu button:focus-visible { color: var(--brand-forest-green); background: var(--brand-forest-green-soft); outline: 0; }
+.profile-menu--topbar {
+  top: calc(100% + 12px);
+  right: 0;
+  bottom: auto;
+  left: auto;
+}
+.profile-menu--topbar::before {
+  top: -8px;
+  right: 31px;
+  bottom: auto;
+  left: auto;
+  border: 0;
+  border-top: 1px solid #e6e9e7;
+  border-left: 1px solid #e6e9e7;
+}
 .mobile-brand { display: none; }
-@media (max-width: 700px) { .topbar { height: 66px; gap: 12px; padding: 0 17px; }.mobile-brand { display: flex; align-items: center; gap: 7px; color: #2a633f; font-size: 0 !important; letter-spacing: -1px; }.mobile-brand .brand-mark { width: 108px !important; height: 31px !important; }.search-box { width: 36px; margin-left: auto; padding: 0 8px; border: 0; background: transparent; }.search-box input,.search-box kbd { display: none; }.top-actions { gap: 8px; margin-left: 0; }.top-profile-trigger > strong,.top-profile-trigger > .icon { display: none; }.top-profile-trigger { padding-right: 2px; }.top-avatar { width: 34px; height: 34px; } }
+@media (max-width: 700px) { .topbar { height: 66px; gap: 12px; padding: 0 17px; }.mobile-brand { display: flex; align-items: center; gap: 7px; color: #2a633f; font-size: 0 !important; letter-spacing: -1px; }.mobile-brand .brand-mark { width: 108px !important; height: 31px !important; }.search-box { width: 36px; margin-left: auto; padding: 0 8px; border: 0; background: transparent; }.search-box input,.search-box kbd { display: none; }.top-actions { gap: 8px; margin-left: 0; }.top-profile-trigger > strong,.top-profile-trigger > .icon { display: none; }.top-profile-trigger { padding-right: 2px; }.top-avatar { width: 34px; height: 34px; }.profile-menu--topbar { width: min(292px, calc(100vw - 20px)); right: -2px; } }

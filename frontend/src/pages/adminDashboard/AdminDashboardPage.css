@@ -73,6 +73,21 @@ button {
   color: #7d8982;
   font-size: 12.5px;
 }
+.settings-page-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.settings-page-title-icon {
+  width: 57px;
+  height: 57px;
+  display: grid;
+  flex: 0 0 57px;
+  place-items: center;
+  color: #087e48;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #d5f4e2, #e8f8ef);
+}
 
 .date-control,
 .panel-action {

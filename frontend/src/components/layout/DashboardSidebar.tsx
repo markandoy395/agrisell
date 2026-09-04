@@ -17,13 +17,8 @@ const navigation: NavigationItem[] = [
 type DashboardSidebarProps = {
   activeNav: string;
   profile: AdminProfile;
-  profileOpen: boolean;
   onNavigate: (section: string) => void;
-  onToggleProfile: () => void;
-  onOpenProfile: () => void;
   onOpenHelp: () => void;
-  onOpenPreferences: () => void;
-  onSignOut: () => void;
   permissions: string[];
 };
 
@@ -42,13 +37,8 @@ const navigationPermission: Record<string, string> = {
 export function DashboardSidebar({
   activeNav,
   profile,
-  profileOpen,
   onNavigate,
-  onToggleProfile,
-  onOpenProfile,
   onOpenHelp,
-  onOpenPreferences,
-  onSignOut,
   permissions,
 }: DashboardSidebarProps) {
   const canOpenSettings = permissions.includes("settings:manage") || permissions.includes("admin:manage");
@@ -103,13 +93,7 @@ export function DashboardSidebar({
           <Icon name="arrow" size={17} />
         </button>
         <div className="profile-area">
-          <button
-            className="profile-mini"
-            type="button"
-            onClick={onToggleProfile}
-            aria-expanded={profileOpen}
-            aria-controls="sidebar-profile-menu"
-          >
+          <div className="profile-mini">
             <span className={`avatar${profile.avatarUrl ? " has-photo" : ""}`}>
               {profile.avatarUrl ? (
                 <img src={profile.avatarUrl} alt="" />
@@ -121,21 +105,7 @@ export function DashboardSidebar({
               <strong>{profile.name}</strong>
               <small>{profile.role}</small>
             </span>
-            <Icon name="more" size={18} />
-          </button>
-          {profileOpen && (
-            <div id="sidebar-profile-menu" className="profile-menu" role="menu">
-              <button type="button" role="menuitem" onClick={onOpenProfile}>
-                Profile information
-              </button>
-              <button type="button" role="menuitem" onClick={onOpenPreferences}>
-                Account preferences
-              </button>
-              <button type="button" role="menuitem" onClick={onSignOut}>
-                Sign out
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </aside>
