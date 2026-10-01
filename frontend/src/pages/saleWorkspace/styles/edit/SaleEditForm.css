@@ -1,0 +1,149 @@
+.sale-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px 22px;
+  padding: 12px 30px 18px;
+}
+
+.sale-edit-field {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+  color: var(--brand-black);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+}
+
+.sale-edit-field > span:first-child b {
+  color: #e03d3d;
+}
+
+.sale-edit-field > small {
+  margin-top: -2px;
+  color: var(--user-muted);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+}
+
+.sale-edit-control,
+.sale-edit-products {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--user-muted);
+  border: 1px solid var(--user-line-strong);
+  border-radius: 7px;
+  background: #fff;
+}
+
+.sale-edit-control:focus-within,
+.sale-edit-products:focus-within {
+  border-color: var(--user-brand);
+  box-shadow: 0 0 0 3px var(--user-brand-soft);
+}
+
+.sale-edit-control > .icon,
+.sale-edit-products > .icon {
+  flex: 0 0 auto;
+  margin: 0 13px;
+}
+
+.sale-edit-control input,
+.sale-edit-control select,
+.sale-edit-control textarea,
+.sale-edit-products select {
+  min-width: 0;
+  flex: 1;
+  align-self: stretch;
+  padding: 0 12px 0 0;
+  color: var(--user-ink);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: var(--fs-caption);
+}
+
+.sale-edit-control select,
+.sale-edit-products select {
+  cursor: pointer;
+}
+
+.sale-edit-value em {
+  align-self: stretch;
+  min-width: 58px;
+  display: grid;
+  place-items: center;
+  padding: 0 10px;
+  color: var(--user-muted);
+  border-left: 1px solid var(--user-line);
+  background: var(--user-neutral-soft);
+  font-size: var(--fs-micro);
+  font-style: normal;
+  font-weight: var(--fw-bold);
+}
+
+.sale-edit-products {
+  padding-right: 6px;
+}
+
+.sale-edit-products > select {
+  max-width: 140px;
+  padding-left: 8px;
+}
+
+.sale-edit-chips {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 6px 0;
+}
+
+.sale-edit-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  color: var(--user-ink);
+  border: 0;
+  border-radius: 5px;
+  background: var(--user-neutral-soft);
+  font-size: var(--fs-xs);
+}
+
+.sale-edit-chips i {
+  color: var(--user-muted);
+  font-size: var(--fs-body);
+  font-style: normal;
+  line-height: var(--lh-solid);
+}
+
+.sale-edit-notes {
+  align-items: flex-start;
+}
+
+.sale-edit-notes > .icon {
+  margin-top: 13px;
+}
+
+.sale-edit-control textarea {
+  min-height: 62px;
+  padding-top: 12px;
+  resize: vertical;
+}
+
+.sale-edit-error {
+  margin: 0 30px 8px;
+  color: #a33a2f;
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 760px) {
+  .sale-edit-grid {
+      grid-template-columns: 1fr;
+      padding: 10px 20px 16px;
+    }
+}
+

@@ -1,0 +1,102 @@
+.sale-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sale-summary-card {
+  min-width: 0;
+  height: 98px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 9px 11px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--user-line);
+  border-radius: 10px;
+  background: var(--user-surface);
+  box-shadow: 0 8px 20px rgba(15, 116, 59, 0.05); /* fallback for browsers without color-mix() */
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--user-brand) 5%, transparent);
+}
+
+.sale-summary-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  grid-row: 1 / span 2;
+  place-items: center;
+  color: var(--user-brand);
+  border-radius: 9px;
+  background: var(--user-brand-soft);
+}
+
+.sale-summary-card:nth-child(2) .sale-summary-icon {
+  color: var(--user-brand-dark);
+  background: var(--user-lime-soft);
+}
+
+.sale-summary-card:nth-child(3) .sale-summary-icon {
+  color: white;
+  background: linear-gradient(135deg, var(--user-lime), var(--user-brand));
+}
+
+.sale-summary-card > div {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sale-summary-card > div > span {
+  overflow: hidden;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sale-summary-card strong {
+  color: var(--brand-black);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-solid);
+}
+
+.sale-summary-card > small {
+  overflow: hidden;
+  color: var(--user-muted);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sale-live-dot {
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  margin-right: 3px;
+  border-radius: 50%;
+  background: var(--user-lime);
+  box-shadow: 0 0 0 3px var(--user-lime-soft);
+}
+
+@media (max-width: 1050px) {
+  .sale-summary-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+  .sale-summary-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+  .sale-summary-card {
+      grid-template-columns: 34px minmax(0, 1fr);
+    }
+}
+

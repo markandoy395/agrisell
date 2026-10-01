@@ -28,20 +28,31 @@ const handleRequest = async (request, response) => {
 };
 
 const server = http.createServer((request, response) => {
+  request.on('error', (err) => {
+    if (err.code === 'ECONNRESET') return;
+    console.error('Request socket error:', err.message);
+  });
+  response.on('error', (err) => {
+    if (err.code === 'ECONNRESET' || err.code === 'EPIPE') return;
+    console.error('Response socket error:', err.message);
+  });
+
   applySecurityHeaders(response);
   applyCorsHeaders(request, response);
 
   handleRequest(request, response).catch((error) => {
     console.error('Unhandled backend request error.', error);
 
-    if (!response.headersSent) {
+    if (!response.headersSent && !response.destroyed && !response.writableEnded) {
       sendJson(response, 500, {
         message: 'Internal server error.',
       });
       return;
     }
 
-    response.destroy(error);
+    if (!response.destroyed) {
+      response.destroy(error);
+    }
   });
 });
 
@@ -68,3 +79,11 @@ const stopServer = (signal) => {
 
 process.on('SIGINT', () => stopServer('SIGINT'));
 process.on('SIGTERM', () => stopServer('SIGTERM'));
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception in backend server:', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled promise rejection in backend server:', reason);
+});

@@ -1,0 +1,125 @@
+.modal-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(10 35 22 / 72%); /* fallback: more opaque for browsers without backdrop-filter */
+  backdrop-filter: blur(4px);
+  animation: modal-backdrop-enter 0.18s ease-out;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .modal-backdrop {
+    background: rgb(10 35 22 / 52%);
+  }
+}
+
+.modal-card {
+  position: relative;
+  width: min(460px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  padding: 30px;
+  border: 1px solid rgb(255 255 255 / 72%);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #fff, #fbfdfb);
+  box-shadow: 0 24px 64px rgb(12 42 25 / 32%);
+  animation: modal-card-enter 0.22s ease-out;
+}
+
+.modal-card--wide {
+  width: min(760px, 100%);
+}
+
+.modal-card::before {
+  position: absolute;
+  top: 0;
+  right: 22px;
+  left: 22px;
+  height: 4px;
+  border-radius: 0 0 6px 6px;
+  background: var(--brand-gradient);
+  content: '';
+}
+
+.modal-card > .tooltip {
+  position: absolute;
+  top: 17px;
+  right: 17px;
+}
+
+.modal-card > .tooltip .close-button {
+  position: static;
+}
+
+.modal-header {
+  padding-right: 40px;
+}
+
+.modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  color: var(--brand-forest-green);
+  border-radius: 6px;
+  background: var(--brand-forest-green-soft);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.modal-card h2 {
+  margin: 10px 0 0;
+  color: #203d2c;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  font-weight: var(--fw-bold);
+}
+
+.modal-copy {
+  margin: 20px 0 0;
+  color: #61746a;
+  font-size: var(--fs-small);
+  line-height: var(--lh-body);
+  white-space: pre-line;
+}
+
+.modal-description {
+  margin: 8px 0 0;
+  color: #687b70;
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid #e8efea;
+}
+
+.modal-actions--single {
+  margin-top: 24px;
+}
+
+.modal-card .primary-button,
+.modal-card .outline-button {
+  min-height: 38px;
+  padding-right: 14px;
+  padding-left: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+    .modal-card {
+      animation: none;
+    }
+}
+

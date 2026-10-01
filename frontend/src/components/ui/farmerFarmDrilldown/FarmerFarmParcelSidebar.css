@@ -1,0 +1,175 @@
+.farm-parcel-sidebar {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 600px;
+}
+
+.parcel-sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.parcel-sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  color: #1e293b;
+}
+
+.parcel-sidebar-sub {
+  font-size: var(--fs-micro);
+  color: #64748b;
+}
+
+.parcel-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.parcel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+}
+
+.parcel-card:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.parcel-card.is-selected {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+}
+
+.parcel-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.parcel-card-name {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  color: #0f172a;
+}
+
+.parcel-card.is-selected .parcel-card-name {
+  color: #15803d;
+}
+
+.parcel-card-size {
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  color: #16a34a;
+  background: #ecfdf5;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.parcel-card-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-micro);
+  color: #475569;
+}
+
+.parcel-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.coords-badge {
+  font-size: var(--fs-nano);
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.coords-badge.no-coords {
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.farming-type-badge {
+  font-size: var(--fs-nano);
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-weight: var(--fw-semibold);
+}
+
+.parcel-card-crops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.crop-pill {
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-semibold);
+  background: #f1f5f9;
+  color: #334155;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.crop-pill-more {
+  font-size: var(--fs-nano);
+  color: #64748b;
+  align-self: center;
+}
+
+.parcel-card-actions {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid #dcfce7;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.parcel-action-gallery-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.parcel-action-gallery-btn:hover {
+  background: #15803d;
+}

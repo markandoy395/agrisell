@@ -1,0 +1,103 @@
+.profile-editor-summary {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 22px 0 -2px;
+  padding: 12px;
+  border: 1px solid #e1ece2;
+  border-radius: 11px;
+  background: #f5f9f5;
+}
+
+.profile-editor-avatar {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  color: #fff;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #76af62, var(--brand-forest-green));
+  box-shadow: 0 3px 8px rgb(15 116 59 / 20%);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+}
+
+.profile-editor-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-editor-avatar.has-photo {
+  border-color: #c9e5ce;
+  background: #fff;
+}
+
+.profile-editor-summary strong,
+.profile-editor-summary span {
+  display: block;
+}
+
+.profile-editor-summary strong {
+  color: #2e4c39;
+  font-size: var(--fs-xs);
+}
+
+.profile-editor-summary span {
+  margin-top: 2px;
+  color: #78887d;
+  font-size: var(--fs-nano);
+}
+
+.profile-photo-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 12px;
+  color: #52695a;
+  border: 1px solid #dce8de;
+  border-radius: 9px;
+  background: #f8fbf8;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+.profile-photo-field > span:first-child small {
+  display: block;
+  margin-top: 2px;
+  color: #8c9a90;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-medium);
+}
+
+.profile-photo-upload {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 9px;
+  overflow: hidden;
+  color: var(--brand-forest-green);
+  border: 1px solid #b8d7bd;
+  border-radius: 7px;
+  background: #fff;
+  font-size: var(--fs-nano);
+  white-space: nowrap;
+}
+
+.profile-photo-upload:hover {
+  background: var(--brand-forest-green-soft);
+}
+
+.profile-photo-upload input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+

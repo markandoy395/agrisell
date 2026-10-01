@@ -1,0 +1,113 @@
+.assign-rider-delivery-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.15fr;
+  column-gap: 22px;
+  row-gap: 21px;
+  padding: 18px 18px 19px;
+  border: 1px solid #d9e2dd;
+  border-radius: 8px;
+}
+
+.assign-rider-delivery-summary > div {
+  min-width: 0;
+}
+
+.assign-rider-delivery-summary > div:nth-child(4) {
+  grid-column: 1 / 2;
+}
+
+.assign-rider-delivery-summary > div:nth-child(5) {
+  grid-column: 2 / 4;
+  min-width: 0;
+  padding-left: 24px;
+  border-left: 1px solid #e0e6e2;
+}
+
+.assign-rider-delivery-summary small,
+.assign-rider-delivery-summary strong {
+  display: block;
+}
+
+.assign-rider-delivery-summary small {
+  color: #68758a;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-caption);
+}
+
+.assign-rider-delivery-summary strong {
+  margin-top: 5px;
+  color: #172132;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-small);
+  overflow-wrap: anywhere;
+}
+
+.assign-rider-delivery-summary > div:first-child strong {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+}
+
+.assign-rider-delivery-summary > div > span {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.assign-rider-delivery-summary > div:nth-child(-n + 3) > span {
+  margin-top: 6px;
+}
+
+.assign-rider-location-icon {
+  flex: 0 0 auto;
+}
+
+.assign-rider-location-icon path {
+  fill: #087a40;
+}
+
+.assign-rider-location-icon circle {
+  fill: #fff;
+}
+
+.assign-rider-delivery-summary .delivery-status-pill {
+  width: fit-content;
+  min-width: 95px;
+  max-width: 100%;
+  min-height: 32px;
+  align-self: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-top: 5px;
+  padding: 0 12px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.assign-rider-delivery-summary .delivery-status-pill i {
+  width: 9px;
+  height: 9px;
+}
+
+@media (max-width: 700px) {
+  .assign-rider-delivery-summary {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+  .assign-rider-delivery-summary > div:nth-child(4),
+    .assign-rider-delivery-summary > div:nth-child(5) {
+      grid-column: auto;
+      padding-left: 0;
+      border-left: 0;
+    }
+}
+

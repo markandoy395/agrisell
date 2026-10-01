@@ -46,10 +46,21 @@ values through your shell or hosting environment.
 - `SUPABASE_URL` - the Agrisell Supabase project URL
 - `SUPABASE_SERVICE_ROLE_KEY` - server-only key used for protected admin reads
 - `SUPABASE_QUERY_LIMIT` - optional per-table dashboard read limit, defaults to `1000`
+- `RATE_LIMIT_TRUST_PROXY_HOPS` - trusted reverse-proxy count used to resolve the
+  client IP for rate limiting; defaults to `0` and should only be increased when
+  every request reaches Node through that many trusted proxies
 
-In production, `ADMIN_SESSION_SECRET` is required along with either
-`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, or the legacy `ADMIN_EMAIL`
-and `ADMIN_PASSWORD_HASH`. Raw `ADMIN_PASSWORD` is only accepted in
+Authentication attempts and authenticated mutations use the Supabase-backed
+`admin_consume_rate_limit` RPC, so limits are shared across backend instances.
+Development without Supabase uses a process-local fallback. Authentication
+limits are per IP and normalized email; mutation limits are per IP and signed-in
+administrator. Apply the latest Supabase migrations before deploying the backend.
+
+In production, `ADMIN_SESSION_SECRET`, `SUPABASE_URL`, and
+`SUPABASE_SERVICE_ROLE_KEY` are required. The database is the authoritative
+session and session-version store, so production does not fall back to
+process-local sessions. Legacy environment credentials remain available for
+local development only. Raw `ADMIN_PASSWORD` is only accepted in
 non-production development and should not be used for deployment.
 Use `SESSION_COOKIE_SAMESITE=None` only when the frontend and API are on
 different sites, and only with HTTPS plus `SECURE_COOKIES=true`.
@@ -58,6 +69,13 @@ Copy the existing Agrisell application's `SUPABASE_URL` into this backend's
 environment. Obtain `SUPABASE_SERVICE_ROLE_KEY` from the Supabase project
 settings and keep it only in `backend/.env.local` or the production host's
 secret store; it must never be included in the Flutter or Vite application.
+
+Node session tokens contain only identity, expiry, session ID, and persistent
+session version. Every authenticated request must match an active
+`admin_sessions` row and reloads the current account status, role, and
+permissions. Password resets, password changes, privilege changes, and account
+status changes increment the administrator session version and revoke existing
+sessions across all backend instances.
 
 ## Database-backed administrator accounts
 

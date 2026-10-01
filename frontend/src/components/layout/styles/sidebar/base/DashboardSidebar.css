@@ -1,0 +1,71 @@
+.sidebar {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  align-self: flex-start;
+  width: 286px;
+  height: 100vh;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 26px 18px 18px;
+  border-right: 1px solid #e8ede9;
+  background: #fff;
+  box-shadow: 8px 0 28px rgb(31 55 39 / 3%);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: var(--lh-body);
+}
+
+.brand {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  margin: 0 18px 31px;
+}
+
+.brand > span {
+  display: none;
+}
+
+.brand-mark {
+  width: 174px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: transparent
+    url('../../../../../assets/image/logo/Agrisell - Landscape Logo with out tagline.png') center / contain
+    no-repeat;
+  box-shadow: none;
+}
+
+.brand-mark .icon {
+  display: none;
+}
+
+@media (max-width: 1120px) {
+  .sidebar {
+      width: 226px;
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+}
+
+@media (max-width: 1120px) {
+  .brand {
+      margin-left: 12px;
+    }
+}
+
+@media (max-width: 1120px) {
+  .brand-mark {
+      width: 154px;
+    }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+      display: none;
+    }
+}

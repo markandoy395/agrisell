@@ -1,0 +1,67 @@
+.sale-table-wrap {
+  overflow-x: auto;
+}
+
+.sale-table-product {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sale-table-product strong {
+  overflow: hidden;
+  color: var(--brand-black);
+  font-size: var(--fs-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sale-table-price {
+  color: var(--user-brand);
+  font-size: var(--fs-caption);
+}
+
+.sale-discount-chip {
+  display: inline-block;
+  padding: 4px 6px;
+  color: var(--user-brand);
+  border-radius: 5px;
+  background: var(--user-brand-soft);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+@media (max-width: 760px) {
+  .sale-table-product {
+      text-align: left;
+    }
+}
+
+.sale-table-farm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #15803d;
+  font-size: var(--fs-xs);
+}
+
+.sale-table-farm strong {
+  color: #166534;
+  font-weight: var(--fw-semibold);
+}
+
+.sale-table-farm small {
+  display: block;
+  font-size: var(--fs-micro);
+  color: var(--user-muted);
+}
+
+.sale-table-platform {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  color: var(--user-muted);
+  font-style: italic;
+}
+
+

@@ -1,0 +1,137 @@
+.review-action-button,
+.review-like-button {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1f2c25;
+  border: 1px solid #e7ece8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 5px 12px rgb(22 45 31 / 4%);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  transition: 0.18s ease;
+}
+
+.review-action-button {
+  gap: 7px;
+  padding: 0 12px;
+}
+
+.review-like-button {
+  width: 34px;
+  padding: 0;
+  color: #9aa49e;
+}
+
+.review-action-button:hover,
+.review-like-button:hover,
+.review-action-button:focus-visible,
+.review-like-button:focus-visible {
+  color: var(--brand-forest-green);
+  border-color: #cfe2c9;
+  background: #f6fbf3;
+  outline: 0;
+}
+
+.review-like-button .icon {
+  fill: transparent;
+}
+
+.review-like-button.is-liked {
+  color: #0e72e8;
+  border-color: #d9e9fb;
+  background: #f5faff;
+}
+
+.review-like-button.is-liked .icon {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.review-action-button,
+.review-like-button {
+  min-height: 38px;
+}
+
+.review-action-button {
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.review-action-button--primary {
+  color: var(--brand-forest-green);
+  border-color: #61b27d;
+}
+
+.review-like-button {
+  width: 40px;
+}
+
+.review-admin-response {
+  margin: 10px 0 0;
+  padding: 9px 11px;
+  border-left: 3px solid var(--brand-forest-green);
+  border-radius: 6px;
+  background: #f5faf2;
+  color: #405849;
+}
+
+.review-moderate-button {
+  color: #6a4a8f;
+  background: #f4eef9;
+}
+
+.review-abuse-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.review-abuse-flags span {
+  padding: 4px 8px;
+  color: #a33a2f;
+  border: 1px solid #f0cbc6;
+  border-radius: 999px;
+  background: #fff0ee;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+.review-history {
+  margin-top: 10px;
+  color: #607066;
+}
+
+.review-history summary {
+  cursor: pointer;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+.review-history ol,
+.review-moderation-history ol {
+  display: grid;
+  gap: 8px;
+  margin: 9px 0 0;
+  padding-left: 18px;
+}
+
+.review-history li,
+.review-moderation-history li {
+  color: #607066;
+  font-size: var(--fs-micro);
+}
+
+.review-history li span,
+.review-moderation-history li span {
+  color: #87958b;
+}
+
+.review-history li p,
+.review-moderation-history li p {
+  margin: 3px 0 0;
+  color: #405849;
+}

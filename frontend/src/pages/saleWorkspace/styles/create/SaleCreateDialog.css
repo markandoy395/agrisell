@@ -1,0 +1,152 @@
+.sale-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 24, 14, 0.68); /* fallback: more opaque for browsers without backdrop-filter */
+  backdrop-filter: blur(3px);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .sale-modal-backdrop {
+    background: rgba(8, 24, 14, 0.48);
+  }
+}
+
+.sale-modal-backdrop .sale-form {
+  width: min(1080px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  margin: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 24px 70px rgba(4, 24, 12, 0.22);
+}
+
+.sale-modal-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  color: var(--user-muted);
+  border: 1px solid var(--user-line);
+  border-radius: 7px;
+  background: var(--user-control-surface);
+  cursor: pointer;
+}
+
+.sale-modal-close:hover {
+  color: var(--user-brand);
+  border-color: var(--user-line-strong);
+  background: var(--user-brand-soft);
+}
+
+.sale-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 12px 18px;
+  list-style: none;
+  border-bottom: 1px solid var(--user-line);
+  background: #fbfef8; /* fallback for browsers without color-mix() */
+  background: color-mix(in srgb, var(--user-brand) 2%, white);
+}
+
+.sale-steps li {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sale-steps li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  width: min(27%, 48px);
+  height: 1px;
+  background: var(--user-line-strong);
+}
+
+.sale-steps li > span,
+.sale-section-title > span {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--user-muted);
+  border: 1px solid var(--user-control-border);
+  border-radius: 50%;
+  background: white;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+}
+
+.sale-steps .is-current > span,
+.sale-steps .is-complete > span,
+.sale-section-title > span {
+  color: white;
+  border-color: var(--user-brand);
+  background: var(--user-brand);
+}
+
+.sale-steps li div {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.sale-steps strong {
+  overflow: hidden;
+  color: var(--user-ink);
+  font-size: var(--fs-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sale-steps small {
+  overflow: hidden;
+  color: var(--user-muted);
+  font-size: var(--fs-micro);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sale-form-section,
+.sale-review {
+  margin: 0 18px;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--user-line);
+}
+
+@media (max-width: 760px) {
+  .sale-modal-backdrop {
+      padding: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-modal-backdrop .sale-form {
+      width: calc(100vw - 24px);
+      max-height: calc(100vh - 24px);
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-steps li::after {
+      display: none;
+    }
+}
+

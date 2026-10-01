@@ -14,7 +14,7 @@
   border-radius: 50%;
 }
 .donut::after {
-  content: "";
+  content: '';
   position: absolute;
   z-index: 1;
   inset: 39px;
@@ -68,14 +68,14 @@
   text-align: center;
 }
 .donut strong {
-  font-size: 20px;
-  line-height: 1.1;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-hero);
 }
 .donut span {
   max-width: 62px;
   color: #9ba49f;
-  font-size: 8.5px;
-  line-height: 1.25;
+  font-size: var(--fs-nano);
+  line-height: var(--lh-h2);
   overflow-wrap: anywhere;
 }
 .donut-legend {
@@ -91,7 +91,7 @@
   color: #77837b;
   border: 0;
   background: transparent;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   text-align: left;
   transition: color 0.2s ease;
 }
@@ -111,11 +111,10 @@
 }
 .donut-legend strong {
   color: #405249;
-  font-size: 10px;
+  font-size: var(--fs-micro);
 }
 .overview-dashboard .donut-slice {
-  animation: commodity-slice-in 0.52s cubic-bezier(0.2, 0.8, 0.2, 1)
-    var(--slice-delay) backwards;
+  animation: commodity-slice-in 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) var(--slice-delay) backwards;
 }
 
 @keyframes commodity-slice-in {

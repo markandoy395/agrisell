@@ -1,0 +1,81 @@
+.overview-dashboard .sales-panel,
+.overview-dashboard .category-panel {
+  min-height: 276px;
+}
+
+.overview-dashboard .sales-period-tabs {
+  padding: 2px;
+  border-radius: 9px;
+}
+
+.overview-dashboard .sales-period-tabs button {
+  min-height: 33px;
+  padding: 0 15px;
+  font-size: var(--fs-caption);
+}
+
+.overview-dashboard .sales-panel-actions .date-filter {
+  height: 38px;
+  padding: 0 14px;
+  font-size: var(--fs-caption);
+}
+
+.overview-dashboard .sales-summary {
+  margin-top: 17px;
+}
+
+.overview-dashboard .sales-summary strong {
+  color: #080b09;
+  font-size: var(--fs-h3);
+}
+
+.overview-dashboard .sales-summary span {
+  font-size: var(--fs-xs);
+}
+
+.overview-dashboard .chart-wrap {
+  height: 145px;
+  margin-top: 10px;
+}
+
+.overview-dashboard .chart-y,
+.overview-dashboard .chart-x {
+  color: #737d77;
+  font-size: var(--fs-micro);
+}
+
+.overview-dashboard .donut-area,
+.overview-dashboard .delivery-chart-area {
+  height: 164px;
+}
+
+.overview-dashboard .donut,
+.overview-dashboard .delivery-ring {
+  width: 112px;
+  height: 112px;
+}
+
+.overview-dashboard .donut::after,
+.overview-dashboard .donut-center,
+.overview-dashboard .delivery-ring-center {
+  inset: 31px;
+}
+
+.overview-dashboard .donut-legend button,
+.overview-dashboard .delivery-stats button {
+  min-width: 142px;
+  font-size: var(--fs-caption);
+}
+
+.overview-dashboard .donut-legend strong,
+.overview-dashboard .delivery-stats strong {
+  font-size: var(--fs-caption);
+}
+
+.overview-dashboard .orders-panel,
+.overview-dashboard .delivery-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}

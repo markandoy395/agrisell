@@ -1,0 +1,185 @@
+.workspace-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.workspace-stat-card {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 154px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 16px 14px;
+  color: var(--brand-black);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(15, 116, 59, 0.05); /* fallback for browsers without color-mix() */
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--brand-forest-green) 5%, transparent);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  text-align: left;
+}
+
+.workspace-stat-card::after {
+  position: absolute;
+  right: 12px;
+  bottom: 0;
+  left: 12px;
+  height: 2px;
+  background: var(--brand-forest-green);
+  content: '';
+}
+
+.workspace-stat-card:nth-child(2)::after,
+.workspace-stat-card--accent-lime::after {
+  background: #f0a000 !important;
+}
+
+.workspace-stat-card:nth-child(3)::after,
+.workspace-stat-card--accent-soft::after {
+  background: #1766cd !important;
+}
+
+.workspace-stat-card:nth-child(4)::after,
+.workspace-stat-card--accent-dark::after {
+  background: #d82323 !important;
+}
+
+.workspace-stat-card--clickable {
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.workspace-stat-card--clickable:hover {
+  border-color: #bcd4c4; /* fallback for browsers without color-mix() */
+  border-color: color-mix(in srgb, var(--brand-forest-green) 30%, var(--line));
+  box-shadow: 0 14px 28px rgba(15, 116, 59, 0.1); /* fallback for browsers without color-mix() */
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--brand-forest-green) 10%, transparent);
+  transform: translateY(-1px);
+}
+
+.workspace-stat-card--clickable:focus-visible {
+  outline: 3px solid rgba(15, 116, 59, 0.22); /* fallback for browsers without color-mix() */
+  outline: 3px solid color-mix(in srgb, var(--brand-forest-green) 22%, transparent);
+  outline-offset: 2px;
+}
+
+.workspace-stat-top {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #263b30;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-caption);
+}
+
+.workspace-stat-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: var(--ls-tight);
+}
+
+.workspace-stat-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--brand-forest-green);
+  border-radius: 8px;
+  background: var(--brand-forest-green-soft);
+}
+
+.workspace-stat-card:nth-child(2) .workspace-stat-icon {
+  color: #376f24;
+  background: #eff9e7;
+}
+
+.workspace-stat-card:nth-child(3) .workspace-stat-icon {
+  color: #fff;
+  background: linear-gradient(135deg, #72bd38, var(--brand-forest-green));
+}
+
+.workspace-stat-menu {
+  width: 23px;
+  height: 23px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-left: auto;
+  color: var(--muted);
+}
+
+.workspace-stat-value-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.workspace-stat-value-row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--brand-black);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+  letter-spacing: var(--ls-h2);
+}
+
+.workspace-stat-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  color: var(--brand-forest-green);
+  border-radius: 7px;
+  background: var(--brand-forest-green-soft);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+  letter-spacing: var(--ls-btn);
+}
+
+.workspace-stat-card > small {
+  margin-top: 8px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1220px) {
+  .workspace-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

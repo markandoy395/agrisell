@@ -1,0 +1,138 @@
+.profile-access {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #e1e8e2;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.profile-access-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-access-heading strong,
+.profile-access-heading span {
+  display: block;
+}
+
+.profile-access-heading strong {
+  color: #334f3c;
+  font-size: var(--fs-micro);
+}
+
+.profile-access-heading div > span {
+  margin-top: 2px;
+  color: #839087;
+  font-size: var(--fs-nano);
+}
+
+.profile-access-role {
+  padding: 4px 8px;
+  color: #55705d;
+  border-radius: 999px;
+  background: #eef3ef;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+}
+
+.profile-access-role.is-superadmin {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.profile-access-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.profile-access-list > span {
+  padding: 5px 8px;
+  color: #476451;
+  border: 1px solid #dbe7dd;
+  border-radius: 7px;
+  background: #f6faf7;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-semibold);
+}
+
+.profile-full-access {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 0 16px;
+  color: #096039;
+  border-radius: 999px;
+  background: #d8f7e3;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+}
+
+.profile-modal .profile-access-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.profile-privilege {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  color: #07904d;
+  border: 1px solid #dce6e0;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fff, #f7faf8);
+}
+
+.profile-privilege > .icon {
+  flex: 0 0 auto;
+}
+
+.profile-privilege span,
+.profile-privilege strong,
+.profile-privilege small {
+  display: block;
+}
+
+.profile-privilege strong {
+  color: #18212a;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-h3);
+}
+
+.profile-privilege small {
+  margin-top: 3px;
+  color: #6f7b85;
+  font-size: var(--fs-nano);
+  line-height: var(--lh-h3);
+}
+
+@media (max-width: 900px) {
+  .profile-modal .profile-access-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+  .profile-full-access {
+      display: none;
+    }
+}
+
+@media (max-width: 620px) {
+  .profile-modal .profile-access-list,
+    .profile-modal .profile-fields {
+      grid-template-columns: 1fr;
+    }
+}
+

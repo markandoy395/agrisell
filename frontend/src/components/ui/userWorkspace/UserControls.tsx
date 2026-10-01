@@ -1,22 +1,22 @@
-import type { UserDateFilter, UserStatusFilter } from "../../../types/dashboard";
-import { Icon } from "../icon/Icon";
+import type { UserDateFilter, UserStatusFilter } from '../../../types/dashboard'
+import { Icon } from '../icon/Icon'
 
 type UserControlsProps = {
-  dateFilter: UserDateFilter;
-  dateFilters: UserDateFilter[];
-  hasDownloadableUsers: boolean;
-  locationFilter: string;
-  locationOptions: string[];
-  query: string;
-  statusFilter: UserStatusFilter;
-  statusOptions: UserStatusFilter[];
-  onAdd: () => void;
-  onDateFilterChange: (filter: UserDateFilter) => void;
-  onDownload: () => void;
-  onLocationFilterChange: (location: string) => void;
-  onQueryChange: (query: string) => void;
-  onStatusFilterChange: (status: UserStatusFilter) => void;
-};
+  dateFilter: UserDateFilter
+  dateFilters: UserDateFilter[]
+  hasDownloadableUsers: boolean
+  locationFilter: string
+  locationOptions: string[]
+  query: string
+  statusFilter: UserStatusFilter
+  statusOptions: UserStatusFilter[]
+  onAdd: () => void
+  onDateFilterChange: (filter: UserDateFilter) => void
+  onDownload: () => void
+  onLocationFilterChange: (location: string) => void
+  onQueryChange: (query: string) => void
+  onStatusFilterChange: (status: UserStatusFilter) => void
+}
 
 export function UserControls({
   dateFilter,
@@ -54,11 +54,9 @@ export function UserControls({
         <select
           value={dateFilter}
           onChange={(event) => {
-            const selectedFilter = dateFilters.find(
-              (filter) => filter === event.target.value,
-            );
+            const selectedFilter = dateFilters.find((filter) => filter === event.target.value)
 
-            if (selectedFilter) onDateFilterChange(selectedFilter);
+            if (selectedFilter) onDateFilterChange(selectedFilter)
           }}
         >
           {dateFilters.map((option) => (
@@ -84,11 +82,9 @@ export function UserControls({
         <select
           value={statusFilter}
           onChange={(event) => {
-            const selectedStatus = statusOptions.find(
-              (status) => status === event.target.value,
-            );
+            const selectedStatus = statusOptions.find((status) => status === event.target.value)
 
-            if (selectedStatus) onStatusFilterChange(selectedStatus);
+            if (selectedStatus) onStatusFilterChange(selectedStatus)
           }}
         >
           {statusOptions.map((option) => (
@@ -114,5 +110,5 @@ export function UserControls({
         </button>
       </div>
     </div>
-  );
+  )
 }

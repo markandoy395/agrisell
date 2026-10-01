@@ -1,0 +1,134 @@
+.review-compose-content {
+  padding: 20px 18px 18px;
+}
+
+.review-compose-review {
+  display: grid;
+  grid-template-columns: 54px minmax(180px, 1fr) auto;
+  align-items: start;
+  gap: 13px;
+}
+
+.review-compose-review .review-avatar {
+  width: 50px;
+  height: 50px;
+}
+
+.review-compose-author {
+  min-width: 0;
+}
+
+.review-compose-author h4 {
+  margin: 1px 0 5px;
+  color: #142019;
+  font-size: var(--fs-small);
+}
+
+.review-compose-author span,
+.review-compose-author strong {
+  display: block;
+  overflow: hidden;
+  font-size: var(--fs-nano);
+  line-height: var(--lh-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-compose-author span {
+  color: #647269;
+}
+
+.review-compose-author strong {
+  margin-top: 3px;
+  color: var(--brand-forest-green);
+  font-weight: var(--fw-medium);
+}
+
+.review-compose-meta {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-content: end;
+  gap: 8px 14px;
+}
+
+.review-compose-meta time {
+  color: #647269;
+  font-size: var(--fs-nano);
+}
+
+.review-compose-meta .status {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.review-compose-review > p {
+  grid-column: 2 / -1;
+  min-height: 32px;
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  color: #536158;
+  border-radius: 7px;
+  background: #f7f8f7;
+  font-size: var(--fs-nano);
+}
+
+.review-private-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 13px 15px;
+  color: var(--brand-forest-green);
+  border: 1px solid #d5e8da;
+  border-radius: 9px;
+  background: #f5fbf7;
+}
+
+.review-private-notice .icon {
+  margin-top: 1px;
+}
+
+.review-private-notice strong,
+.review-private-notice span {
+  display: block;
+  font-size: var(--fs-nano);
+  line-height: var(--lh-small);
+}
+
+.review-private-notice span {
+  margin-top: 2px;
+  color: #647269;
+}
+
+@media (max-width: 700px) {
+  .review-compose-header,
+  .review-compose-content {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 700px) {
+  .review-compose-review {
+    grid-template-columns: 50px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .review-compose-meta {
+    grid-column: 1 / -1;
+    justify-content: start;
+  }
+}
+
+@media (max-width: 700px) {
+  .review-compose-meta .status {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .review-compose-review > p {
+    grid-column: 1 / -1;
+  }
+}

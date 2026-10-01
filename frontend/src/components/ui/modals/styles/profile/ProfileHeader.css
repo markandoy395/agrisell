@@ -1,0 +1,68 @@
+.profile-modal-header {
+  min-height: 122px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 4px 70px 22px 10px;
+}
+
+.profile-header-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  flex: 0 0 52px;
+  place-items: center;
+  color: #fff;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #16aa5b, #00723b);
+  box-shadow: 0 7px 15px rgb(3 126 63 / 24%);
+}
+
+.profile-modal-eyebrow {
+  display: block;
+  margin: 7px 0 7px;
+  color: #087344;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+}
+
+.profile-modal h2 {
+  margin: 0;
+  color: #0b1520;
+  font-size: var(--fs-h1);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-h1);
+}
+
+.profile-modal-header p {
+  margin: 8px 0 0;
+  color: #697784;
+  font-size: var(--fs-small);
+}
+
+@media (max-width: 620px) {
+  .profile-modal-header {
+      min-height: 105px;
+      padding-left: 0;
+    }
+}
+
+@media (max-width: 620px) {
+  .profile-header-icon {
+      display: none;
+    }
+}
+
+@media (max-width: 620px) {
+  .profile-modal h2 {
+      font-size: var(--fs-h2);
+    }
+}
+
+@media (max-width: 620px) {
+  .profile-modal-eyebrow {
+      font-size: var(--fs-xs);
+    }
+}
+

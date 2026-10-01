@@ -1,0 +1,139 @@
+.sale-edit-form {
+  width: min(720px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  color: var(--user-ink);
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 24px 70px rgba(4, 24, 12, 0.24);
+}
+
+.sale-edit-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 25px 30px 17px;
+}
+
+.sale-edit-header h2 {
+  margin: 0;
+  color: var(--brand-black);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+}
+
+.sale-edit-header p {
+  margin: 5px 0 0;
+  color: var(--user-muted);
+  font-size: var(--fs-small);
+}
+
+.sale-edit-wide {
+  grid-column: 1 / -1;
+}
+
+.sale-edit-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0 30px;
+  padding: 18px 0;
+  border-top: 1px solid var(--user-line);
+}
+
+.sale-edit-footer > button {
+  min-width: 110px;
+  min-height: 40px;
+  border: 1px solid var(--user-line-strong);
+  border-radius: 8px;
+  background: white;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+}
+
+.sale-edit-footer .sale-primary-button {
+  min-width: 145px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: white;
+  border-color: var(--user-brand);
+  background: var(--user-brand);
+}
+
+@media (max-width: 760px) {
+  .sale-edit-form {
+      width: calc(100vw - 24px);
+      max-height: calc(100vh - 24px);
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-edit-header {
+      padding: 22px 20px 14px;
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-edit-wide {
+      grid-column: auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-edit-footer {
+      margin: 0 20px;
+    }
+}
+
+.sale-edit-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sale-farmer-warning-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 30px 16px;
+  padding: 14px 16px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-left: 4px solid #f59e0b;
+  border-radius: 6px;
+  color: #92400e;
+}
+
+.sale-farmer-warning-banner .icon {
+  flex: 0 0 auto;
+  color: #d97706;
+  margin-top: 2px;
+}
+
+.sale-farmer-warning-banner strong {
+  display: block;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  color: #78350f;
+  margin-bottom: 3px;
+}
+
+.sale-farmer-warning-banner p {
+  margin: 0;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: #92400e;
+}
+
+.sale-scope-note {
+  font-style: normal;
+  font-weight: var(--fw-semibold);
+  color: #15803d;
+  font-size: var(--fs-xs);
+}
+
+

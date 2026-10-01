@@ -1,0 +1,89 @@
+.sale-review {
+  border-bottom: 0;
+}
+
+.sale-review-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--user-line);
+  border-radius: 8px;
+}
+
+.sale-review-grid > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  padding: 9px 11px;
+  border-right: 1px solid var(--user-line);
+}
+
+.sale-review-grid > div:last-child {
+  border-right: 0;
+}
+
+.sale-review-grid small {
+  color: var(--user-muted);
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+}
+
+.sale-review-grid strong {
+  overflow: hidden;
+  color: var(--brand-black);
+  font-size: var(--fs-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sale-validation-message {
+  margin: 8px 0 0;
+  padding: 7px 9px;
+  color: #a33a2f;
+  border-radius: 6px;
+  background: #fff0ee;
+  font-size: var(--fs-xs);
+}
+
+.sale-submit-row {
+  margin-top: 12px;
+}
+
+.sale-submit-row > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--user-muted);
+  font-size: var(--fs-xs);
+}
+
+.sale-submit-row > span .icon {
+  color: var(--user-brand);
+}
+
+@media (max-width: 760px) {
+  .sale-review-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-review-grid > div:nth-child(2) {
+      border-right: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-review-grid > div:nth-child(-n + 2) {
+      border-bottom: 1px solid var(--user-line);
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-submit-row {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+}
+

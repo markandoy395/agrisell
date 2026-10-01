@@ -1,0 +1,260 @@
+.farm-parcel-map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e2e8f0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.farm-parcel-map-container.is-mini {
+  min-height: 240px;
+  height: 240px;
+}
+
+.farm-parcel-map-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.farm-map-error-banner {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  background: rgba(254, 242, 242, 0.95);
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: var(--fs-xs);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.farm-parcel-map-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 4;
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.map-control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.map-control-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.map-control-btn.is-active {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #86efac;
+}
+
+/* Custom Interactive Farm Marker */
+.farm-parcel-marker {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -100%);
+  transition: transform 0.18s ease-in-out;
+  user-select: none;
+}
+
+.farm-parcel-marker:hover {
+  transform: translate(-50%, -105%) scale(1.08);
+  z-index: 10;
+}
+
+.farm-parcel-marker.is-selected {
+  transform: translate(-50%, -105%) scale(1.12);
+  z-index: 12;
+}
+
+.marker-pin-pin {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #16a34a;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+  border: 2px solid #ffffff;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+
+.farm-parcel-marker.is-selected .marker-pin-pin {
+  background: #0f766e;
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.3), 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.marker-pin-icon {
+  font-size: var(--fs-caption);
+}
+
+.marker-pin-hectares {
+  letter-spacing: var(--ls-caps);
+}
+
+.marker-pin-label {
+  margin-top: 3px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-semibold);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.farm-parcel-marker.is-selected .marker-pin-label {
+  background: #0f172a;
+  font-weight: var(--fw-bold);
+}
+
+/* MapLibre Popup Styling */
+.maplibregl-popup-content {
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.2);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.farm-parcel-popup {
+  padding: 12px 14px;
+  min-width: 200px;
+  max-width: 280px;
+  font-family: inherit;
+}
+
+.parcel-popup-header {
+  margin-bottom: 8px;
+}
+
+.parcel-badge {
+  display: inline-block;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  color: #15803d;
+  background: #f0fdf4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  letter-spacing: var(--ls-caps);
+}
+
+.parcel-popup-header h4 {
+  margin: 0;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  color: #0f172a;
+}
+
+.parcel-popup-coords {
+  margin: 2px 0 0;
+  font-size: var(--fs-micro);
+  color: #64748b;
+}
+
+.parcel-popup-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 6px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 8px;
+  font-size: var(--fs-micro);
+}
+
+.parcel-popup-stats span {
+  color: #64748b;
+}
+
+.parcel-popup-stats strong {
+  color: #1e293b;
+}
+
+.parcel-popup-crops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.crop-tag {
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-semibold);
+  background: #f1f5f9;
+  color: #334155;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.parcel-popup-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.parcel-external-link {
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  color: #16a34a;
+  text-decoration: none;
+}
+
+.parcel-external-link:hover {
+  text-decoration: underline;
+}
+
+.farm-parcel-map-empty-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(248, 250, 252, 0.85);
+  color: #64748b;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  padding: 20px;
+  text-align: center;
+}

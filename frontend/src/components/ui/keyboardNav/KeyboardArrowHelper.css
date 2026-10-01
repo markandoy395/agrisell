@@ -1,0 +1,220 @@
+.keyboard-nav-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+}
+
+.keyboard-nav-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  color: #244d35;
+  border: 1px solid #d4e7d7;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 16px rgba(15, 116, 59, 0.12);
+  font-family: inherit;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.keyboard-nav-chip:hover {
+  border-color: #0f743b;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(15, 116, 59, 0.18);
+  transform: translateY(-1px);
+}
+
+.keyboard-nav-chip.is-active {
+  color: #0c6333;
+  border-color: #93cf3c;
+  background: #f1f8ee;
+}
+
+.keyboard-chip-icon {
+  font-size: var(--fs-small);
+  line-height: var(--lh-solid);
+}
+
+.keyboard-chip-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0f743b;
+  box-shadow: 0 0 0 2px rgba(15, 116, 59, 0.25);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(15, 116, 59, 0.4);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(15, 116, 59, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(15, 116, 59, 0);
+  }
+}
+
+.keyboard-nav-hud {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  width: 320px;
+  border: 1px solid #cce2d2;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgba(17, 43, 27, 0.16);
+  font-family: inherit;
+  color: #1f2d24;
+  overflow: hidden;
+  animation: hud-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hud-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.keyboard-nav-hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #f4faef 0%, #eaf4e6 100%);
+  border-bottom: 1px solid #dbead9;
+}
+
+.keyboard-nav-hud-badge {
+  display: inline-block;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  color: #0f743b;
+  margin-bottom: 2px;
+}
+
+.keyboard-nav-hud-title strong {
+  display: block;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  color: #163622;
+}
+
+.keyboard-nav-hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-action-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #4f6b57;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hud-action-btn:hover {
+  background: rgba(15, 116, 59, 0.1);
+  color: #0c6333;
+}
+
+.keyboard-nav-hud-body {
+  padding: 12px 14px;
+}
+
+.keyboard-nav-hud-sub {
+  margin: 0 0 10px;
+  font-size: var(--fs-xs);
+  color: #556c5c;
+  line-height: var(--lh-caption);
+}
+
+.keyboard-nav-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.keyboard-nav-item {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  color: #25392d;
+}
+
+.keys-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.key-cap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border: 1px solid #b5d1bd;
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: #f7faf6;
+  font-family: monospace, sans-serif;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: #0f743b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.key-desc {
+  flex: 1;
+  line-height: var(--lh-h3);
+}
+
+.keyboard-nav-hud-footer {
+  padding: 8px 14px;
+  background: #fbfdfa;
+  border-top: 1px solid #edf4eb;
+  font-size: var(--fs-xs);
+  color: #6d8273;
+}
+
+.keyboard-nav-hud-footer strong {
+  color: #0f743b;
+}
+
+@media (max-width: 600px) {
+  .keyboard-nav-hud {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+  }
+}

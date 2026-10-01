@@ -1,0 +1,69 @@
+.sidebar-bottom {
+  margin-top: auto;
+  flex-shrink: 0;
+  padding: 0 7px;
+}
+
+.sidebar-bottom > .nav-item {
+  margin-bottom: 15px;
+}
+
+.help-card {
+  width: 100%;
+  height: 68px;
+  min-height: 68px;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 4px 0 16px;
+  padding: 10px 14px;
+  color: #4c9859;
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(105deg, #edf7ed, #f7faf4);
+  text-align: left;
+  font-family: var(--font-sans);
+}
+
+.help-card > .icon {
+  margin-left: auto;
+  color: #4d9b58;
+}
+
+.help-leaf {
+  width: 34px;
+  height: 34px;
+  display: grid !important;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--brand-forest-green);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 60%);
+}
+
+.help-card strong {
+  display: block;
+  color: #4b9b58;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+}
+
+.help-card small {
+  display: block;
+  margin-top: 2px;
+  color: #86948b;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-small);
+}
+
+@media (max-width: 1120px) {
+  .help-card {
+      padding: 12px;
+    }
+}

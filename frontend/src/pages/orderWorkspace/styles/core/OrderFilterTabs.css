@@ -1,0 +1,54 @@
+.order-filter-tabs {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.order-filter-tab {
+  min-width: 70px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  color: var(--order-muted-strong);
+  border: 1px solid var(--order-line);
+  border-radius: var(--order-radius-sm);
+  background: var(--order-surface);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+}
+
+.order-filter-tab:hover,
+.order-filter-tab.is-active {
+  color: var(--order-brand-dark);
+  border-color: var(--order-line-strong);
+  background: var(--order-brand-soft);
+  box-shadow: 0 8px 18px rgba(15, 116, 59, 0.12); /* fallback for browsers without color-mix() */
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--order-brand) 12%, transparent);
+}
+
+.order-filter-tab.is-active {
+  color: #fff;
+  border-color: var(--order-brand);
+  background: linear-gradient(145deg, #19984e, #08743a);
+}
+
+.order-filter-tab:focus-visible,
+.order-tool-button:focus-visible,
+.order-download-button:focus-visible,
+.order-row-action:focus-visible,
+.order-pagination button:focus-visible {
+  outline: 2px solid var(--order-brand);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .order-filter-tab {
+      min-width: 0;
+      flex: 1 1 95px;
+    }
+}
+

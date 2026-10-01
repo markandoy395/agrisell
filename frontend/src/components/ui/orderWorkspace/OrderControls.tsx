@@ -1,75 +1,89 @@
-import type {
-  OrderFilter,
-} from "../../../types/dashboard";
-import { Icon } from "../icon/Icon";
+import type { OrderFilter } from '../../../types/dashboard'
+import { Icon } from '../icon/Icon'
 
 type OrderControlsProps = {
-  activeFilter: OrderFilter;
-  filters: OrderFilter[];
-  hasActiveOrderFilters: boolean;
-  orderQuery: string;
-  statusCounts: Record<OrderFilter, number>;
-  onClearFilters: () => void;
-  onFilterChange: (filter: OrderFilter) => void;
-  onQueryChange: (query: string) => void;
-};
+  activeFilter: OrderFilter
+  filters: OrderFilter[]
+  hasActiveOrderFilters: boolean
+  hasDownloadableOrders: boolean
+  orderQuery: string
+  sortDirection: 'asc' | 'desc'
+  statusCounts: Record<OrderFilter, number>
+  onClearFilters: () => void
+  onCreateOrder: () => void
+  onDownload: () => void
+  onFilterChange: (filter: OrderFilter) => void
+  onQueryChange: (query: string) => void
+  onToggleSortDirection: () => void
+}
 
 export function OrderControls({
   activeFilter,
   filters,
   hasActiveOrderFilters,
+  hasDownloadableOrders,
   orderQuery,
+  sortDirection,
   statusCounts,
   onClearFilters,
+  onCreateOrder,
+  onDownload,
   onFilterChange,
   onQueryChange,
+  onToggleSortDirection,
 }: OrderControlsProps) {
   return (
-    <div className="order-list-controls">
-      <div
-        className="order-filter-tabs"
-        role="group"
-        aria-label="Filter orders by status"
-      >
-        {filters.map((filter) => (
-          <button
-            className={`order-filter-tab ${
-              activeFilter === filter ? "is-active" : ""
-            }`}
-            type="button"
-            aria-pressed={activeFilter === filter}
-            aria-label={`${filter} orders, ${statusCounts[filter]} shown`}
-            key={filter}
-            onClick={() => onFilterChange(filter)}
-          >
-            <Icon
-              name={
-                filter === "All"
-                  ? "route"
-                  : filter === "Success"
-                    ? "check"
-                    : filter === "Pending"
-                      ? "calendar"
-                      : "alert"
-              }
-              size={14}
-            />
-            {filter}
-          </button>
-        ))}
-      </div>
-
-      <div className="order-table-actions">
-        <label className="order-search-field">
-          <span className="sr-only">Search orders</span>
+    <div className="order-list-controls dashboard-filter-grid">
+      <label className="dashboard-filter-field">
+        <span>Search</span>
+        <span className="order-search-field dashboard-filter-control">
           <Icon name="search" size={15} />
           <input
             type="search"
-            placeholder="Search orders..."
+            placeholder="Orders..."
             value={orderQuery}
             onChange={(event) => onQueryChange(event.target.value)}
           />
-        </label>
+        </span>
+      </label>
+      <label className="dashboard-filter-field">
+        <span>Status</span>
+        <select
+          value={activeFilter}
+          onChange={(event) => onFilterChange(event.target.value as OrderFilter)}
+        >
+          {filters.map((filter) => (
+            <option key={filter} value={filter}>{filter} ({statusCounts[filter]})</option>
+          ))}
+        </select>
+      </label>
+      <div className="order-table-actions dashboard-filter-actions">
+        <button
+          className="order-create-button"
+          type="button"
+          onClick={onCreateOrder}
+        >
+          <Icon name="plus" size={14} />
+          Create manual order
+        </button>
+        <button
+          className="order-sort-button"
+          type="button"
+          onClick={onToggleSortDirection}
+          aria-label={`Sort orders ${sortDirection === 'desc' ? 'oldest first' : 'newest first'}`}
+        >
+          <Icon name="calendar" size={15} />
+          {sortDirection === 'desc' ? 'Newest first' : 'Oldest first'}
+          <Icon name="chevron" size={14} />
+        </button>
+        <button
+          className="order-download-button"
+          type="button"
+          disabled={!hasDownloadableOrders}
+          onClick={onDownload}
+        >
+          Download <Icon name="download" size={15} />
+        </button>
         <button
           className="order-tool-button"
           type="button"
@@ -82,5 +96,5 @@ export function OrderControls({
         </button>
       </div>
     </div>
-  );
+  )
 }

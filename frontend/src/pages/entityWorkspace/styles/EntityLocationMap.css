@@ -1,0 +1,88 @@
+.farm-map-panel {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.72fr) minmax(320px, 1fr);
+  gap: 14px;
+  margin-top: 17px;
+  padding: 14px;
+  border: 1px solid #e8eee9;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f7fbf5, #ffffff);
+}
+
+.farm-map-copy h3 {
+  margin: 4px 0 5px;
+  color: #32483b;
+  font-size: var(--fs-small);
+}
+
+.farm-map-copy p {
+  max-width: 380px;
+  margin: 0 0 12px;
+  color: #77857d;
+  font-size: var(--fs-micro);
+  line-height: var(--lh-small);
+}
+
+.farm-map-list {
+  display: grid;
+  gap: 7px;
+}
+
+.farm-map-list a {
+  display: block;
+  padding: 8px 9px;
+  color: #4e6459;
+  border: 1px solid #e1eadf;
+  border-radius: 9px;
+  background: #fff;
+  text-decoration: none;
+}
+
+.farm-map-list a:hover {
+  color: var(--brand-forest-green);
+  border-color: #c9dfc7;
+  background: #f2f8ef;
+}
+
+.farm-map-list strong {
+  display: block;
+  font-size: var(--fs-micro);
+}
+
+.farm-map-list small {
+  display: block;
+  margin-top: 2px;
+  color: #8b9991;
+  font-size: var(--fs-nano);
+}
+
+.farm-map-frame {
+  width: 100%;
+  min-height: 238px;
+  border: 0;
+  border-radius: 10px;
+  background: #edf3ee;
+}
+
+.module-highlights + .management-toolbar,
+.farm-map-panel + .management-toolbar {
+  margin-top: 17px;
+}
+
+@media (max-width: 900px) {
+  .farm-map-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .farm-map-frame {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 700px) {
+  .farm-map-panel {
+    padding: 11px;
+  }
+}

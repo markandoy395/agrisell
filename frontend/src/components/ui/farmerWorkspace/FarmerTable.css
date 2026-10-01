@@ -47,8 +47,8 @@
   border: 1px solid var(--brand-forest-green);
   border-radius: 7px;
   background: var(--brand-forest-green);
-  font-size: 9px;
-  font-weight: 700;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
 }
 
 .farmer-row-approve:hover:not(:disabled) {

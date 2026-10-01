@@ -1,0 +1,123 @@
+.farm-location-detail {
+  min-width: 0;
+  height: var(--farm-detail-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px;
+  border: 1px solid #e8eee9;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.farm-location-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.farm-location-header h4 {
+  margin: 4px 0 2px;
+  color: #31483b;
+  font-size: var(--fs-small);
+}
+
+.farm-location-header p {
+  margin: 0;
+  color: #839087;
+  font-size: var(--fs-micro);
+}
+
+.map-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 29px;
+  padding: 0 10px;
+  color: var(--brand-forest-green);
+  border: 1px solid #cfe2c9;
+  border-radius: 8px;
+  background: #f4faf1;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.map-link:hover {
+  color: var(--brand-forest-green-dark);
+  background: #edf7e9;
+}
+
+.farm-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.farm-spec-grid div {
+  padding: 9px;
+  border: 1px solid #edf2ee;
+  border-radius: 9px;
+  background: #fbfdfb;
+}
+
+.farm-spec-grid dt {
+  color: #91a097;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.farm-spec-grid dd {
+  margin: 3px 0 0;
+  color: #43574c;
+  font-size: var(--fs-micro);
+}
+
+.farm-commodity-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.farm-commodity-list span {
+  padding: 5px 8px;
+  color: #496356;
+  border-radius: 999px;
+  background: #edf6ee;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+}
+
+.farm-location-empty {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  padding: 18px;
+  color: #87958d;
+  border: 1px dashed #dce7dd;
+  border-radius: 12px;
+  background: #fbfdfb;
+  font-size: var(--fs-xs);
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .farmer-farms-heading,
+    .farm-location-header {
+      display: grid;
+    }
+}
+
+@media (max-width: 700px) {
+  .farm-card-list,
+    .farm-spec-grid {
+      grid-template-columns: 1fr;
+    }
+}
+

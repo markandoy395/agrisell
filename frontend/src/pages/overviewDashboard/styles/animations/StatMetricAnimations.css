@@ -1,0 +1,108 @@
+.overview-dashboard .mini-bars i {
+  transform-origin: bottom;
+  animation: overview-bars-in 0.5s var(--overview-ease) backwards;
+}
+
+.overview-dashboard .mini-bars i:nth-child(1) {
+  animation-delay: 220ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(2) {
+  animation-delay: 250ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(3) {
+  animation-delay: 280ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(4) {
+  animation-delay: 310ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(5) {
+  animation-delay: 340ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(6) {
+  animation-delay: 370ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(7) {
+  animation-delay: 400ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(8) {
+  animation-delay: 430ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(9) {
+  animation-delay: 460ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(10) {
+  animation-delay: 490ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(11) {
+  animation-delay: 520ms;
+}
+
+.overview-dashboard .mini-bars i:nth-child(12) {
+  animation-delay: 550ms;
+}
+
+.overview-dashboard .listings-progress i {
+  transform-origin: left;
+  animation: overview-progress-in 0.72s var(--overview-ease) 520ms backwards;
+}
+
+.overview-dashboard .stacked-avatars b {
+  animation: overview-avatar-in 0.42s var(--overview-ease) backwards;
+}
+
+.overview-dashboard .stacked-avatars b:nth-child(1) {
+  animation-delay: 340ms;
+}
+
+.overview-dashboard .stacked-avatars b:nth-child(2) {
+  animation-delay: 400ms;
+}
+
+.overview-dashboard .stacked-avatars b:nth-child(3) {
+  animation-delay: 460ms;
+}
+
+.overview-dashboard .stacked-avatars b:nth-child(4) {
+  animation-delay: 520ms;
+}
+
+@keyframes overview-bars-in {
+  from {
+    opacity: 0.25;
+    transform: scaleY(0.18);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes overview-progress-in {
+  from {
+    transform: scaleX(0.08);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes overview-avatar-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

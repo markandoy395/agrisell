@@ -1,4 +1,4 @@
-export type LocationPinKind = 'user' | 'farmer' | 'farm'
+export type LocationPinKind = 'user' | 'farmer' | 'farm' | 'rider'
 
 export type LocationPin = {
   id: string

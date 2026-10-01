@@ -1,0 +1,58 @@
+.payment-transactions {
+  padding-bottom: 0;
+}
+
+.payment-table-heading {
+  align-items: center;
+  padding-bottom: 16px;
+}
+
+.payment-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.payment-filter-row.dashboard-filter-grid {
+  align-items: end;
+}
+
+.payment-filter-row.dashboard-filter-grid > .dashboard-filter-field {
+  min-width: 180px;
+}
+
+.payment-filter-row.dashboard-filter-grid .dashboard-filter-actions button {
+  border-radius: 8px;
+  font-size: var(--fs-caption);
+}
+
+.payment-filter-row button {
+  min-height: 30px;
+  padding: 0 10px;
+  color: var(--payment-muted);
+  border: 1px solid var(--payment-line);
+  border-radius: 999px;
+  background: var(--payment-surface);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+.payment-filter-row button:hover,
+.payment-filter-row button.is-active {
+  color: var(--brand-forest-green);
+  border-color: var(--brand-forest-green);
+  background: var(--brand-forest-green-soft);
+}
+
+@media (max-width: 820px) {
+  .payment-table-heading {
+      display: grid;
+    }
+}
+
+@media (max-width: 820px) {
+  .payment-filter-row {
+      justify-content: flex-start;
+    }
+}

@@ -1,0 +1,36 @@
+.user-workspace {
+  --user-surface: white;
+  --user-soft: var(--bg);
+  --user-line: var(--line);
+  /* Static fallbacks for browsers without color-mix() support */
+  --user-line-strong: #ddeae1;
+  --user-line-strong: color-mix(in srgb, var(--user-brand) 13%, white);
+  --user-ink: #213527;
+  --user-ink: color-mix(in srgb, var(--brand-black) 72%, var(--user-brand));
+  --user-muted: var(--muted);
+  --user-brand: var(--brand-forest-green);
+  --user-brand-dark: var(--brand-forest-green-dark);
+  --user-brand-soft: var(--brand-forest-green-soft);
+  --user-lime: var(--brand-lime-green);
+  --user-lime-soft: var(--brand-lime-green-soft);
+  --user-neutral-soft: #f1f7f3;
+  --user-neutral-soft: color-mix(in srgb, var(--user-brand) 7%, white);
+  --user-control-surface: #f6faf7;
+  --user-control-surface: color-mix(in srgb, var(--user-brand) 4%, white);
+  --user-control-border: #ddeae1;
+  --user-control-border: color-mix(in srgb, var(--user-brand) 14%, white);
+  --user-shadow: rgba(15, 116, 59, 0.14);
+  --user-shadow: color-mix(in srgb, var(--user-brand) 14%, transparent);
+  --user-radius: 8px;
+  min-width: 0;
+}
+
+.user-workspace-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+

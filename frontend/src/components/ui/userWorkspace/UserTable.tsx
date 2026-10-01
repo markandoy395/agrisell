@@ -1,28 +1,24 @@
-import { useEffect, useRef } from "react";
-import type { UserWorkspaceRow } from "../../../types/dashboard";
-import {
-  getUserFullName,
-  getUserInitials,
-  getUserLocation,
-} from "../../../utils/userWorkspace";
-import { Icon } from "../icon/Icon";
+import { useEffect, useRef } from 'react'
+import type { UserWorkspaceRow } from '../../../types/dashboard'
+import { getUserFullName, getUserInitials, getUserLocation } from '../../../utils/userWorkspace'
+import { Icon } from '../icon/Icon'
 
 type UserTableProps = {
-  activePage: number;
-  allVisibleSelected: boolean;
-  firstVisibleUserIndex: number;
-  lastVisibleUserIndex: number;
-  pageNumbers: number[];
-  partiallyVisibleSelected: boolean;
-  selectedUserIds: Set<string>;
-  totalCount: number;
-  totalPages: number;
-  users: UserWorkspaceRow[];
-  onOpenUser: (user: UserWorkspaceRow) => void;
-  onPageChange: (page: number | ((currentPage: number) => number)) => void;
-  onToggleAllVisible: () => void;
-  onToggleUserSelection: (userId: string) => void;
-};
+  activePage: number
+  allVisibleSelected: boolean
+  firstVisibleUserIndex: number
+  lastVisibleUserIndex: number
+  pageNumbers: number[]
+  partiallyVisibleSelected: boolean
+  selectedUserIds: Set<string>
+  totalCount: number
+  totalPages: number
+  users: UserWorkspaceRow[]
+  onOpenUser: (user: UserWorkspaceRow) => void
+  onPageChange: (page: number | ((currentPage: number) => number)) => void
+  onToggleAllVisible: () => void
+  onToggleUserSelection: (userId: string) => void
+}
 
 export function UserTable({
   activePage,
@@ -40,13 +36,13 @@ export function UserTable({
   onToggleAllVisible,
   onToggleUserSelection,
 }: UserTableProps) {
-  const selectAllUsersRef = useRef<HTMLInputElement>(null);
+  const selectAllUsersRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (selectAllUsersRef.current) {
-      selectAllUsersRef.current.indeterminate = partiallyVisibleSelected;
+      selectAllUsersRef.current.indeterminate = partiallyVisibleSelected
     }
-  }, [partiallyVisibleSelected]);
+  }, [partiallyVisibleSelected])
 
   return (
     <div className="user-table-panel">
@@ -73,9 +69,7 @@ export function UserTable({
                   disabled={users.length === 0}
                   onChange={onToggleAllVisible}
                   aria-label="Select all visible users"
-                  aria-checked={
-                    partiallyVisibleSelected ? "mixed" : allVisibleSelected
-                  }
+                  aria-checked={partiallyVisibleSelected ? 'mixed' : allVisibleSelected}
                 />
               </th>
               <th>User and name</th>
@@ -115,23 +109,19 @@ export function UserTable({
                   <small>{user.email}</small>
                 </td>
                 <td>
-                  <span
-                    className={`user-status ${user.accountStatus.toLowerCase()}`}
-                  >
+                  <span className={`user-status ${user.accountStatus.toLowerCase()}`}>
                     <i aria-hidden="true" />
                     {user.accountStatus}
                   </span>
                 </td>
                 <td>
                   <strong>{user.userType}</strong>
-                  <small>{user.buyerUserId ?? "Primary user profile"}</small>
+                  <small>{user.buyerUserId ?? 'Primary user profile'}</small>
                 </td>
                 <td>{getUserLocation(user)}</td>
                 <td>
                   <strong>{user.eWalletDetails}</strong>
-                  <small>
-                    {user.preferredPaymentMethod ?? "No buyer payment method"}
-                  </small>
+                  <small>{user.preferredPaymentMethod ?? 'No buyer payment method'}</small>
                 </td>
                 <td>
                   <strong>{user.createdAt}</strong>
@@ -151,15 +141,12 @@ export function UserTable({
             ))}
           </tbody>
         </table>
-        {users.length === 0 && (
-          <div className="user-empty-state">No matching users found.</div>
-        )}
+        {users.length === 0 && <div className="user-empty-state">No matching users found.</div>}
       </div>
 
       <div className="user-table-footer">
         <span>
-          Showing {firstVisibleUserIndex} to {lastVisibleUserIndex} of{" "}
-          {totalCount} users
+          Showing {firstVisibleUserIndex} to {lastVisibleUserIndex} of {totalCount} users
         </span>
         <nav className="user-pagination" aria-label="Users pages">
           <button
@@ -172,11 +159,11 @@ export function UserTable({
           </button>
           {pageNumbers.map((page) => (
             <button
-              className={activePage === page ? "is-active" : ""}
+              className={activePage === page ? 'is-active' : ''}
               type="button"
               key={page}
               onClick={() => onPageChange(page)}
-              aria-current={activePage === page ? "page" : undefined}
+              aria-current={activePage === page ? 'page' : undefined}
             >
               {page}
             </button>
@@ -192,5 +179,5 @@ export function UserTable({
         </nav>
       </div>
     </div>
-  );
+  )
 }

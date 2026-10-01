@@ -1,42 +1,38 @@
-import type { OrderRow } from "../../../../types/dashboard";
-import { Icon } from "../../icon/Icon";
-import { Tooltip } from "../../tooltip/Tooltip";
-import "./RecentOrders.css";
+import type { OrderRow } from '../../../../types/dashboard'
+import { Icon } from '../../icon/Icon'
+import { Tooltip } from '../../tooltip/Tooltip'
+import './RecentOrders.css'
 
 type RecentOrdersProps = {
-  orders: OrderRow[];
-  onNavigate: (section: string) => void;
-  onOpenOrder: (order: OrderRow) => void;
-};
+  orders: OrderRow[]
+  onNavigate: (section: string) => void
+  onOpenOrder: (order: OrderRow) => void
+}
 
-const RECENT_ORDER_LIMIT = 4;
+const RECENT_ORDER_LIMIT = 4
 
 function getElapsedMinutes(time: string) {
-  const normalizedTime = time.trim().toLowerCase();
+  const normalizedTime = time.trim().toLowerCase()
 
-  if (normalizedTime === "just now") return 0;
+  if (normalizedTime === 'just now') return 0
 
   const match = normalizedTime.match(
     /^(\d+)\s*(min|mins|minute|minutes|hr|hrs|hour|hours|day|days)\s+ago$/,
-  );
+  )
 
-  if (!match) return Number.MAX_SAFE_INTEGER;
+  if (!match) return Number.MAX_SAFE_INTEGER
 
-  const amount = Number(match[1]);
-  const unit = match[2];
+  const amount = Number(match[1])
+  const unit = match[2]
 
-  if (unit.startsWith("min")) return amount;
-  if (unit.startsWith("hr") || unit.startsWith("hour")) return amount * 60;
-  if (unit.startsWith("day")) return amount * 24 * 60;
+  if (unit.startsWith('min')) return amount
+  if (unit.startsWith('hr') || unit.startsWith('hour')) return amount * 60
+  if (unit.startsWith('day')) return amount * 24 * 60
 
-  return Number.MAX_SAFE_INTEGER;
+  return Number.MAX_SAFE_INTEGER
 }
 
-export function RecentOrders({
-  orders,
-  onNavigate,
-  onOpenOrder,
-}: RecentOrdersProps) {
+export function RecentOrders({ orders, onNavigate, onOpenOrder }: RecentOrdersProps) {
   const recentOrders = orders
     .map((order, index) => ({
       order,
@@ -49,7 +45,7 @@ export function RecentOrders({
         currentOrder.index - nextOrder.index,
     )
     .slice(0, RECENT_ORDER_LIMIT)
-    .map(({ order }) => order);
+    .map(({ order }) => order)
 
   return (
     <article className="orders-panel panel">
@@ -58,7 +54,7 @@ export function RecentOrders({
           <h2>Recent orders</h2>
           <p>Latest activity across your marketplace</p>
         </div>
-        <button className="outline-button" onClick={() => onNavigate("Orders")}>
+        <button className="outline-button" onClick={() => onNavigate('Orders')}>
           View all <Icon name="arrow" size={16} />
         </button>
       </div>
@@ -116,10 +112,8 @@ export function RecentOrders({
             ))}
           </tbody>
         </table>
-        {recentOrders.length === 0 && (
-          <div className="no-orders">No matching orders found.</div>
-        )}
+        {recentOrders.length === 0 && <div className="no-orders">No matching orders found.</div>}
       </div>
     </article>
-  );
+  )
 }

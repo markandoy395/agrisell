@@ -1,0 +1,134 @@
+.dashboard-skeleton {
+  display: grid;
+  gap: 18px;
+}
+
+.skeleton-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.skeleton-card,
+.skeleton-panel {
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid #e6ece7;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.skeleton-card {
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.skeleton-line,
+.skeleton-chart,
+.skeleton-list-line,
+.skeleton-table-row {
+  display: block;
+  border-radius: 7px;
+  background: linear-gradient(100deg, #edf1ed 30%, #f7f9f7 48%, #edf1ed 66%);
+  background-size: 220% 100%;
+  animation: dashboard-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+.skeleton-line-short {
+  width: 42%;
+  height: 11px;
+}
+
+.skeleton-line-medium {
+  width: 67%;
+  height: 10px;
+}
+
+.skeleton-line-value {
+  width: 58%;
+  height: 30px;
+}
+
+.skeleton-line-title {
+  width: 28%;
+  height: 13px;
+}
+
+.skeleton-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.85fr);
+  gap: 18px;
+}
+
+.skeleton-panel {
+  min-height: 220px;
+}
+
+.skeleton-panel-chart {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 24px;
+}
+
+.skeleton-chart {
+  min-height: 145px;
+  border-radius: 10px 10px 5px 5px;
+}
+
+.skeleton-list-line {
+  width: 100%;
+  height: 33px;
+  margin-top: 20px;
+}
+
+.skeleton-list-line-last {
+  width: 72%;
+}
+
+.skeleton-table {
+  min-height: 270px;
+}
+
+.skeleton-table-row {
+  width: 100%;
+  height: 38px;
+  margin-top: 18px;
+}
+
+.skeleton-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@keyframes dashboard-skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .skeleton-summary-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+  .skeleton-content-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+  .skeleton-summary-grid {
+      grid-template-columns: 1fr;
+    }
+}

@@ -1,69 +1,69 @@
-import { useMemo, useState } from "react";
-import type { CSSProperties } from "react";
-import type { DeliveryStatusItem } from "../../../../types/adminData";
-import { Icon } from "../../icon/Icon";
-import { Tooltip } from "../../tooltip/Tooltip";
-import "./DeliveryStatus.css";
+import { useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
+import type { DeliveryStatusItem } from '../../../../types/adminData'
+import { Icon } from '../../icon/Icon'
+import { Tooltip } from '../../tooltip/Tooltip'
+import './DeliveryStatus.css'
 
 type DeliveryStatusProps = {
-  items: DeliveryStatusItem[];
-  panelMenu: "commodity" | "delivery" | null;
-  onNavigate: (section: string) => void;
-  onToggleMenu: () => void;
-  onExport: () => void;
-};
+  items: DeliveryStatusItem[]
+  panelMenu: 'commodity' | 'delivery' | null
+  onNavigate: (section: string) => void
+  onToggleMenu: () => void
+  onExport: () => void
+}
 
 type DeliverySegmentStyle = CSSProperties & {
-  "--segment-delay": string;
-  "--segment-x": string;
-  "--segment-y": string;
-};
+  '--segment-delay': string
+  '--segment-x': string
+  '--segment-y': string
+}
 
-const DELIVERY_CENTER = 80;
-const DELIVERY_OUTER_RADIUS = 64;
-const DELIVERY_INNER_RADIUS = 39;
-const DELIVERY_HOVER_OFFSET = 8;
+const DELIVERY_CENTER = 80
+const DELIVERY_OUTER_RADIUS = 64
+const DELIVERY_INNER_RADIUS = 39
+const DELIVERY_HOVER_OFFSET = 8
 
 type DeliverySegment = DeliveryStatusItem & {
-  endAngle: number;
-  path: string;
-  xOffset: number;
-  yOffset: number;
-};
+  endAngle: number
+  path: string
+  xOffset: number
+  yOffset: number
+}
 
 function getDeliveryPoint(radius: number, angle: number) {
-  const radians = ((angle - 90) * Math.PI) / 180;
+  const radians = ((angle - 90) * Math.PI) / 180
 
   return {
     x: DELIVERY_CENTER + radius * Math.cos(radians),
     y: DELIVERY_CENTER + radius * Math.sin(radians),
-  };
+  }
 }
 
 function getDeliverySegmentPath(startAngle: number, endAngle: number) {
-  const outerStart = getDeliveryPoint(DELIVERY_OUTER_RADIUS, startAngle);
-  const outerEnd = getDeliveryPoint(DELIVERY_OUTER_RADIUS, endAngle);
-  const innerEnd = getDeliveryPoint(DELIVERY_INNER_RADIUS, endAngle);
-  const innerStart = getDeliveryPoint(DELIVERY_INNER_RADIUS, startAngle);
-  const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
+  const outerStart = getDeliveryPoint(DELIVERY_OUTER_RADIUS, startAngle)
+  const outerEnd = getDeliveryPoint(DELIVERY_OUTER_RADIUS, endAngle)
+  const innerEnd = getDeliveryPoint(DELIVERY_INNER_RADIUS, endAngle)
+  const innerStart = getDeliveryPoint(DELIVERY_INNER_RADIUS, startAngle)
+  const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0
 
   return [
     `M ${outerStart.x} ${outerStart.y}`,
     `A ${DELIVERY_OUTER_RADIUS} ${DELIVERY_OUTER_RADIUS} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}`,
     `L ${innerEnd.x} ${innerEnd.y}`,
     `A ${DELIVERY_INNER_RADIUS} ${DELIVERY_INNER_RADIUS} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`,
-    "Z",
-  ].join(" ");
+    'Z',
+  ].join(' ')
 }
 
 const getDeliverySegmentStyle = (
   segment: DeliverySegment,
   index: number,
 ): DeliverySegmentStyle => ({
-  "--segment-delay": `${560 + index * 80}ms`,
-  "--segment-x": `${segment.xOffset.toFixed(2)}px`,
-  "--segment-y": `${segment.yOffset.toFixed(2)}px`,
-});
+  '--segment-delay': `${560 + index * 80}ms`,
+  '--segment-x': `${segment.xOffset.toFixed(2)}px`,
+  '--segment-y': `${segment.yOffset.toFixed(2)}px`,
+})
 
 export function DeliveryStatus({
   items,
@@ -72,17 +72,16 @@ export function DeliveryStatus({
   onToggleMenu,
   onExport,
 }: DeliveryStatusProps) {
-  const totalDeliveries = items.reduce((total, item) => total + item.value, 0);
+  const totalDeliveries = items.reduce((total, item) => total + item.value, 0)
   const deliverySegments = useMemo(
     () =>
       items.reduce<DeliverySegment[]>((segments, item) => {
-        const previousSegment = segments[segments.length - 1];
-        const startAngle = previousSegment?.endAngle ?? 0;
-        const sweep =
-          totalDeliveries === 0 ? 0 : (item.value / totalDeliveries) * 360;
-        const endAngle = startAngle + sweep;
-        const midAngle = startAngle + sweep / 2;
-        const offsetPoint = getDeliveryPoint(DELIVERY_HOVER_OFFSET, midAngle);
+        const previousSegment = segments[segments.length - 1]
+        const startAngle = previousSegment?.endAngle ?? 0
+        const sweep = totalDeliveries === 0 ? 0 : (item.value / totalDeliveries) * 360
+        const endAngle = startAngle + sweep
+        const midAngle = startAngle + sweep / 2
+        const offsetPoint = getDeliveryPoint(DELIVERY_HOVER_OFFSET, midAngle)
 
         return [
           ...segments,
@@ -93,12 +92,11 @@ export function DeliveryStatus({
             xOffset: offsetPoint.x - DELIVERY_CENTER,
             yOffset: offsetPoint.y - DELIVERY_CENTER,
           },
-        ];
+        ]
       }, []),
     [items, totalDeliveries],
-  );
-  const [activeSegment, setActiveSegment] =
-    useState<DeliverySegment | null>(null);
+  )
+  const [activeSegment, setActiveSegment] = useState<DeliverySegment | null>(null)
 
   return (
     <article className="delivery-panel panel">
@@ -109,19 +107,13 @@ export function DeliveryStatus({
         </div>
         <div className="panel-action">
           <Tooltip content="Delivery options">
-            <button
-              className="more-button"
-              onClick={onToggleMenu}
-              aria-label="Delivery options"
-            >
+            <button className="more-button" onClick={onToggleMenu} aria-label="Delivery options">
               <Icon name="more" size={20} />
             </button>
           </Tooltip>
-          {panelMenu === "delivery" && (
+          {panelMenu === 'delivery' && (
             <div className="dropdown-menu compact">
-              <button onClick={() => onNavigate("Deliveries")}>
-                Open deliveries
-              </button>
+              <button onClick={() => onNavigate('Deliveries')}>Open deliveries</button>
               <button onClick={onExport}>Export summary</button>
             </div>
           )}
@@ -139,7 +131,7 @@ export function DeliveryStatus({
               <g
                 key={segment.label}
                 className={`delivery-ring-slice${
-                  activeSegment?.label === segment.label ? " is-active" : ""
+                  activeSegment?.label === segment.label ? ' is-active' : ''
                 }`}
                 role="listitem"
                 tabIndex={0}
@@ -155,21 +147,15 @@ export function DeliveryStatus({
             ))}
           </svg>
           <div className="delivery-ring-center">
-            <strong>
-              {(activeSegment?.value ?? totalDeliveries).toLocaleString(
-                "en-US",
-              )}
-            </strong>
-            <small>{activeSegment?.label ?? "deliveries"}</small>
+            <strong>{(activeSegment?.value ?? totalDeliveries).toLocaleString('en-US')}</strong>
+            <small>{activeSegment?.label ?? 'deliveries'}</small>
           </div>
         </div>
         <div className="delivery-stats">
           {deliverySegments.map((segment) => (
             <button
               key={segment.label}
-              className={
-                activeSegment?.label === segment.label ? "is-active" : ""
-              }
+              className={activeSegment?.label === segment.label ? 'is-active' : ''}
               type="button"
               onBlur={() => setActiveSegment(null)}
               onFocus={() => setActiveSegment(segment)}
@@ -183,9 +169,9 @@ export function DeliveryStatus({
           ))}
         </div>
       </div>
-      <button className="text-link" onClick={() => onNavigate("Deliveries")}>
+      <button className="text-link" onClick={() => onNavigate('Deliveries')}>
         Manage deliveries <Icon name="arrow" size={16} />
       </button>
     </article>
-  );
+  )
 }

@@ -11,6 +11,7 @@ const getRequestPathname = (request) => {
 };
 
 const sendJson = (response, statusCode, body, headers = {}) => {
+  if (response.destroyed || response.writableEnded) return;
   response.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
     ...headers,
@@ -19,6 +20,7 @@ const sendJson = (response, statusCode, body, headers = {}) => {
 };
 
 const sendNoContent = (response, headers = {}) => {
+  if (response.destroyed || response.writableEnded) return;
   response.writeHead(204, headers);
   response.end();
 };

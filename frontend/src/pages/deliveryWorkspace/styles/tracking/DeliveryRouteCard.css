@@ -1,0 +1,184 @@
+.delivery-route-card {
+  min-width: 0;
+  padding: 14px 17px;
+  border: 1px solid #d7e0dc;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgb(29 58 42 / 4%);
+  font-family: var(--font-sans);
+}
+
+.delivery-route-card-heading {
+  min-height: 43px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e2e7e4;
+}
+
+.delivery-route-card-heading h3 {
+  margin: 4px 0 0;
+  color: #131b31;
+  font-family: var(--font-heading);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h4);
+  letter-spacing: var(--ls-h4);
+}
+
+.delivery-route-card-heading .delivery-status-pill {
+  min-width: 88px;
+  min-height: 32px;
+  justify-content: center;
+  padding: 0 13px;
+}
+
+.delivery-route-card-heading .delivery-status-pill i {
+  width: 10px;
+  height: 10px;
+}
+
+.delivery-route-card dl {
+  margin: 0;
+}
+
+.delivery-route-card dl > div {
+  min-height: 65px;
+  display: grid;
+  grid-template-columns: 31px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: center;
+  column-gap: 8px;
+  padding: 10px 3px;
+  border-bottom: 1px solid #e6eae8;
+}
+
+.delivery-route-card dl > div:last-child {
+  border-bottom: 0;
+}
+
+.delivery-route-card dt {
+  display: contents;
+}
+
+.delivery-route-card dt > .icon,
+.delivery-route-card dt > .delivery-route-location-icon,
+.delivery-route-card dt > .delivery-route-status-dot {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: start;
+  margin-top: 4px;
+  color: #56647a;
+}
+
+.delivery-route-card dt > span:last-child {
+  grid-column: 2;
+  grid-row: 1;
+  color: #68758a;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+}
+
+.delivery-route-card dd {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 2px 0 0;
+  color: #172132;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-small);
+  overflow-wrap: anywhere;
+}
+
+.delivery-route-card dd strong,
+.delivery-route-card dd small {
+  display: block;
+}
+
+.delivery-route-card dd strong {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-semibold);
+  color: inherit;
+}
+
+.delivery-route-card dd small {
+  margin-top: 3px;
+  color: #617088;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-caption);
+}
+
+.delivery-route-location-icon path {
+  fill: #0b8550;
+}
+
+.delivery-route-location-icon circle {
+  fill: #fff;
+}
+
+.delivery-route-location-icon.destination path {
+  fill: #dc2424;
+}
+
+.delivery-route-status-dot {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #dff4e8;
+}
+
+.delivery-route-status-dot i {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #0aaf5b;
+}
+
+.delivery-route-status-dot.overdue {
+  background: #ffe4e4;
+}
+
+.delivery-route-status-dot.overdue i {
+  background: #e12929;
+}
+
+.delivery-route-status-dot.completed,
+.delivery-route-status-dot.unassigned {
+  background: #eef1f3;
+}
+
+.delivery-route-status-dot.completed i,
+.delivery-route-status-dot.unassigned i {
+  background: #8e99a5;
+}
+
+@media (max-width: 1050px) {
+  .delivery-route-card dl {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1050px) {
+  .delivery-route-card dl > div:nth-last-child(2) {
+      border-bottom: 0;
+    }
+}
+
+@media (max-width: 700px) {
+  .delivery-route-card dl {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+  .delivery-route-card dl > div:nth-last-child(2) {
+      border-bottom: 1px solid #e6eae8;
+    }
+}
+

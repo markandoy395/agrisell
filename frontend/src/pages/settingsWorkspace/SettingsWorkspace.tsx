@@ -1,186 +1,635 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
-import type { CreateAdministratorInput } from "../../api/adminData";
-import type { AdministratorRecord } from "../../types/adminData";
-import { getApiErrorMessage } from "../../api/adminAuth";
-import { CloseButton } from "../../components/ui/closeButton/CloseButton";
-import { Icon } from "../../components/ui/icon/Icon";
-import "../../components/ui/modals/DashboardModals.css";
-import "./SettingsWorkspace.css";
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import type { CreateAdministratorInput } from '../../api/adminData'
+import type { AdministratorRecord } from '../../types/adminData'
+import { getApiErrorMessage } from '../../api/adminAuth'
+import { CloseButton } from '../../components/ui/closeButton/CloseButton'
+import { Icon } from '../../components/ui/icon/Icon'
+import '../../components/ui/modals/DashboardModals.css'
+import './SettingsWorkspace.css'
+import { SecurityCenter } from './SecurityCenter'
 
 const privileges = [
-  { key: "overview:view", label: "Overview", description: "View marketplace summaries and activity.", icon: "home" },
-  { key: "users:manage", label: "Users", description: "Create and manage user accounts.", icon: "users" },
-  { key: "farmers:manage", label: "Farmers", description: "Review and approve farmer accounts.", icon: "sprout" },
-  { key: "logistics:manage", label: "Logistics", description: "Manage riders, deliveries, and logistics companies.", icon: "truck" },
-  { key: "orders:manage", label: "Orders", description: "View and manage marketplace orders.", icon: "cart" },
-  { key: "payments:view", label: "Payments", description: "View payment and settlement information.", icon: "card" },
-  { key: "sales:manage", label: "Sales & discounts", description: "Create and manage promotional campaigns.", icon: "trend" },
-  { key: "reviews:manage", label: "Reviews", description: "View and moderate customer reviews.", icon: "star" },
-  { key: "settings:manage", label: "Settings", description: "Change regular workspace preferences.", icon: "settings" },
-] as const;
+  {
+    key: 'overview:view',
+    label: 'Overview',
+    description: 'View marketplace summaries and activity.',
+    icon: 'home',
+  },
+  {
+    key: 'users:manage',
+    label: 'Users',
+    description: 'Create and manage user accounts.',
+    icon: 'users',
+  },
+  {
+    key: 'farmers:manage',
+    label: 'Farmers',
+    description: 'Review and approve farmer accounts.',
+    icon: 'sprout',
+  },
+  {
+    key: 'logistics:manage',
+    label: 'Logistics',
+    description: 'Manage riders, delivery fulfilment, and verification.',
+    icon: 'truck',
+  },
+  {
+    key: 'orders:manage',
+    label: 'Orders',
+    description: 'View and manage marketplace orders.',
+    icon: 'cart',
+  },
+  {
+    key: 'payments:view',
+    label: 'Payments',
+    description: 'View payment and settlement information.',
+    icon: 'card',
+  },
+  {
+    key: 'payments:manage',
+    label: 'Financial operations',
+    description: 'Verify, settle, refund, dispute, and pay out funds.',
+    icon: 'shield',
+  },
+  {
+    key: 'sales:manage',
+    label: 'Sales & discounts',
+    description: 'Create and manage promotional campaigns.',
+    icon: 'trend',
+  },
+  {
+    key: 'reviews:manage',
+    label: 'Reviews',
+    description: 'View and moderate customer reviews.',
+    icon: 'star',
+  },
+  {
+    key: 'settings:manage',
+    label: 'Settings',
+    description: 'Change regular workspace preferences.',
+    icon: 'settings',
+  },
+] as const
 
-const defaultAdminPrivileges = ["overview:view", "users:manage", "farmers:manage"];
+const defaultAdminPrivileges = ['overview:view', 'users:manage', 'farmers:manage']
 
 type SettingsWorkspaceProps = {
-  administrators: AdministratorRecord[];
-  autoApprove: boolean;
-  canManageAdmins: boolean;
-  digest: boolean;
-  onCreateAdministrator: (input: CreateAdministratorInput) => Promise<void>;
-  onToggleApprove: () => void;
-  onToggleDigest: () => void;
-  onUpdateAdministratorPrivileges: (userId: string, permissions: string[]) => Promise<void>;
-  onSave: () => void;
-  onReset: () => void;
-};
+  administrators: AdministratorRecord[]
+  autoApprove: boolean
+  canManageAdmins: boolean
+  digest: boolean
+  onCreateAdministrator: (input: CreateAdministratorInput) => Promise<void>
+  onToggleApprove: () => void
+  onToggleDigest: () => void
+  onUpdateAdministratorPrivileges: (userId: string, permissions: string[]) => Promise<void>
+  onSetAdministratorEnabled: (userId: string, enabled: boolean) => Promise<void>
+  onSave: () => Promise<void>
+  onReset: () => Promise<void>
+}
 
 const emptyForm: CreateAdministratorInput = {
-  email: "", firstName: "", lastName: "", password: "", permissions: defaultAdminPrivileges,
-};
+  email: '',
+  firstName: '',
+  lastName: '',
+  password: '',
+  permissions: defaultAdminPrivileges,
+}
 
-export function SettingsWorkspace({ administrators, autoApprove, canManageAdmins, digest, onCreateAdministrator, onToggleApprove, onToggleDigest, onUpdateAdministratorPrivileges, onSave, onReset }: SettingsWorkspaceProps) {
-  const [form, setForm] = useState<CreateAdministratorInput>(emptyForm);
-  const [error, setError] = useState("");
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [editingAdmin, setEditingAdmin] = useState<AdministratorRecord | null>(null);
-  const [editPermissions, setEditPermissions] = useState<string[]>([]);
-  const [editError, setEditError] = useState("");
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [administratorSearch, setAdministratorSearch] = useState("");
+export function SettingsWorkspace({
+  administrators,
+  autoApprove,
+  canManageAdmins,
+  digest,
+  onCreateAdministrator,
+  onToggleApprove,
+  onToggleDigest,
+  onUpdateAdministratorPrivileges,
+  onSetAdministratorEnabled,
+  onSave,
+  onReset,
+}: SettingsWorkspaceProps) {
+  const [form, setForm] = useState<CreateAdministratorInput>(emptyForm)
+  const [error, setError] = useState('')
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [editingAdmin, setEditingAdmin] = useState<AdministratorRecord | null>(null)
+  const [editPermissions, setEditPermissions] = useState<string[]>([])
+  const [editError, setEditError] = useState('')
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [administratorSearch, setAdministratorSearch] = useState('')
+  const [preferenceError, setPreferenceError] = useState('')
+  const [isSavingPreferences, setIsSavingPreferences] = useState(false)
+
+  const runPreferenceAction = async (action: () => Promise<void>) => {
+    setPreferenceError('')
+    setIsSavingPreferences(true)
+    try {
+      await action()
+    } catch (actionError) {
+      setPreferenceError(
+        getApiErrorMessage(actionError, 'Workspace preferences could not be saved.'),
+      )
+    } finally {
+      setIsSavingPreferences(false)
+    }
+  }
 
   const visibleAdministrators = administrators.filter((administrator) =>
-    `${administrator.name} ${administrator.email}`.toLowerCase().includes(administratorSearch.trim().toLowerCase()),
-  );
+    `${administrator.name} ${administrator.email}`
+      .toLowerCase()
+      .includes(administratorSearch.trim().toLowerCase()),
+  )
 
   const closeAdminModal = () => {
-    if (isSubmitting) return;
-    setError("");
-    setForm(emptyForm);
-    setShowPassword(false);
-    setIsAdminModalOpen(false);
-  };
+    if (isSubmitting) return
+    setError('')
+    setForm(emptyForm)
+    setShowPassword(false)
+    setIsAdminModalOpen(false)
+  }
 
   const submitAdministrator = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
+    event.preventDefault()
+    setError('')
     if (!form.permissions.length) {
-      setError("Select at least one privilege for the new administrator.");
-      return;
+      setError('Select at least one privilege for the new administrator.')
+      return
     }
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      await onCreateAdministrator(form);
-      setForm(emptyForm);
-      setShowPassword(false);
-      setIsAdminModalOpen(false);
+      await onCreateAdministrator(form)
+      setForm(emptyForm)
+      setShowPassword(false)
+      setIsAdminModalOpen(false)
     } catch (creationError) {
-      setError(getApiErrorMessage(creationError, "The administrator could not be created."));
+      setError(getApiErrorMessage(creationError, 'The administrator could not be created.'))
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
-  const togglePrivilege = (permission: string) => setForm((current) => ({
-    ...current,
-    permissions: current.permissions.includes(permission)
-      ? current.permissions.filter((item) => item !== permission)
-      : [...current.permissions, permission],
-  }));
+  const togglePrivilege = (permission: string) =>
+    setForm((current) => ({
+      ...current,
+      permissions: current.permissions.includes(permission)
+        ? current.permissions.filter((item) => item !== permission)
+        : [...current.permissions, permission],
+    }))
 
   const openPrivilegeEditor = (administrator: AdministratorRecord) => {
-    setEditingAdmin(administrator);
-    setEditPermissions(administrator.permissions);
-    setEditError("");
-  };
+    setEditingAdmin(administrator)
+    setEditPermissions(administrator.permissions)
+    setEditError('')
+  }
 
   const closePrivilegeEditor = () => {
-    if (isUpdating) return;
-    setEditingAdmin(null);
-    setEditPermissions([]);
-    setEditError("");
-  };
+    if (isUpdating) return
+    setEditingAdmin(null)
+    setEditPermissions([])
+    setEditError('')
+  }
 
-  const toggleEditPrivilege = (permission: string) => setEditPermissions((current) =>
-    current.includes(permission)
-      ? current.filter((item) => item !== permission)
-      : [...current, permission],
-  );
+  const toggleEditPrivilege = (permission: string) =>
+    setEditPermissions((current) =>
+      current.includes(permission)
+        ? current.filter((item) => item !== permission)
+        : [...current, permission],
+    )
 
   const submitPrivilegeUpdate = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
     if (!editingAdmin || !editPermissions.length) {
-      setEditError("Select at least one privilege for this administrator.");
-      return;
+      setEditError('Select at least one privilege for this administrator.')
+      return
     }
-    setEditError("");
-    setIsUpdating(true);
+    setEditError('')
+    setIsUpdating(true)
     try {
-      await onUpdateAdministratorPrivileges(editingAdmin.userId, editPermissions);
-      setEditingAdmin(null);
-      setEditPermissions([]);
-      setEditError("");
+      await onUpdateAdministratorPrivileges(editingAdmin.userId, editPermissions)
+      setEditingAdmin(null)
+      setEditPermissions([])
+      setEditError('')
     } catch (updateError) {
-      setEditError(getApiErrorMessage(updateError, "The administrator privileges could not be updated."));
+      setEditError(
+        getApiErrorMessage(updateError, 'The administrator privileges could not be updated.'),
+      )
     } finally {
-      setIsUpdating(false);
+      setIsUpdating(false)
     }
-  };
+  }
 
-  return <div className="settings-sections">
-    <section className="settings-workspace panel">
-      <div className="settings-panel-heading"><span className="settings-heading-icon"><Icon name="settings" size={24} /></span><div><h2>Workspace settings</h2><p>Control how Agrisell handles marketplace activity.</p></div></div>
-      <div className="settings-list">
-        {canManageAdmins && <div className="settings-row"><span className="settings-row-icon"><Icon name="users" size={22} /></span><div><strong>Create administrator</strong><span>Add a new administrator to manage the system.</span></div><button type="button" className="primary-button settings-admin-button" onClick={() => setIsAdminModalOpen(true)}><Icon name="plus" size={19} />Create administrator</button></div>}
-        <div className="settings-row"><span className="settings-row-icon"><Icon name="shield" size={22} /></span><div><strong>Auto-approve verified farmer listings</strong><span>Publish commodities from verified farms immediately.</span></div><div className="setting-toggle-control"><button type="button" className={`switch ${autoApprove ? "checked" : ""}`} onClick={onToggleApprove} aria-pressed={autoApprove} aria-label="Toggle automatic farmer approvals"><i /></button><span>{autoApprove ? "Enabled" : "Disabled"}</span></div></div>
-        <div className="settings-row"><span className="settings-row-icon"><Icon name="document" size={22} /></span><div><strong>Daily admin digest</strong><span>Receive a daily summary of sales, orders, and delivery exceptions.</span></div><div className="setting-toggle-control"><button type="button" className={`switch ${digest ? "checked" : ""}`} onClick={onToggleDigest} aria-pressed={digest} aria-label="Toggle daily admin digest"><i /></button><span>{digest ? "Enabled" : "Disabled"}</span></div></div>
-      </div>
-      <div className="settings-actions"><button type="button" className="outline-button" onClick={onReset}><Icon name="refresh" size={17} />Reset</button><button type="button" className="primary-button" onClick={onSave}><Icon name="save" size={17} />Save preferences</button></div>
-    </section>
-    {canManageAdmins && <section className="settings-workspace settings-admin-management panel">
-      <div className="settings-admin-heading"><div className="settings-panel-heading"><span className="settings-heading-icon"><Icon name="users" size={24} /></span><div><h2>Administrator privileges</h2><p>Review administrator access and update the privileges assigned to regular admins.</p></div></div><label className="administrator-search"><Icon name="search" size={18} /><input value={administratorSearch} onChange={(event) => setAdministratorSearch(event.target.value)} placeholder="Search administrator..." aria-label="Search administrators" /></label></div>
-      <div className="administrator-list">
-        {visibleAdministrators.map((administrator) => <article className={`administrator-row${administrator.role === "super_admin" ? " is-superadmin" : ""}`} key={administrator.userId}>
-          <div className="administrator-identity"><span className="administrator-avatar">{administrator.name.trim().charAt(0).toUpperCase() || "A"}</span><div><strong>{administrator.name}</strong><span>{administrator.email}</span><small>{administrator.role === "super_admin" ? "Superadmin · Full system access" : `Admin · ${administrator.permissions.length} ${administrator.permissions.length === 1 ? "privilege" : "privileges"}`}</small></div></div>
-          <div className="administrator-access"><span className="administrator-access-label">MODULE ACCESS</span><div className="administrator-privileges">{administrator.permissions.map((permission) => { const privilege = privileges.find((item) => item.key === permission); const icon = privilege?.icon ?? (permission === "admin:manage" ? "shield" : "check"); return <span key={permission}><Icon name={icon} size={15} />{privilege?.label ?? (permission === "admin:manage" ? "Administrator management" : permission)}</span>; })}</div></div>
-          {administrator.role === "admin" && <button type="button" className="icon-action-button" onClick={() => openPrivilegeEditor(administrator)} aria-label={`Edit privileges for ${administrator.name}`} title="Edit privileges"><Icon name="edit" size={17} /></button>}
-        </article>)}
-        {!visibleAdministrators.length && <p className="administrator-empty">No administrator accounts match your search.</p>}
-      </div>
-    </section>}
-    {canManageAdmins && isAdminModalOpen && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeAdminModal(); }}>
-      <section className="modal-card modal-card--wide admin-creation-modal" role="dialog" aria-modal="true" aria-labelledby="create-admin-title">
-        <CloseButton label="Close create administrator form" onClick={closeAdminModal} disabled={isSubmitting} />
-        <header className="modal-header"><span className="modal-eyebrow">SUPERADMIN ONLY</span><h2 id="create-admin-title">Create administrator</h2><p className="modal-description">Create a sign-in account and choose exactly which dashboard areas it can access.</p></header>
-        <form className="admin-creation-form" onSubmit={submitAdministrator}>
-        <div className="admin-fields">
-          <label>First name<input required maxLength={100} value={form.firstName} onChange={(event) => setForm({ ...form, firstName: event.target.value })} /></label>
-          <label>Last name<input required maxLength={100} value={form.lastName} onChange={(event) => setForm({ ...form, lastName: event.target.value })} /></label>
-          <label>Email address<input required type="email" autoComplete="off" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></label>
-          <label>Temporary password<span className="admin-password-field"><input required minLength={8} type={showPassword ? "text" : "password"} autoComplete="new-password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} /><button type="button" onClick={() => setShowPassword((isVisible) => !isVisible)} aria-label={showPassword ? "Hide temporary password" : "Show temporary password"} aria-pressed={showPassword}><Icon name={showPassword ? "eyeOff" : "eye"} size={17} /></button></span></label>
+  return (
+    <div className="settings-sections">
+      <section className="settings-workspace panel">
+        <div className="settings-panel-heading">
+          <span className="settings-heading-icon">
+            <Icon name="settings" size={24} />
+          </span>
+          <div>
+            <h2>Workspace settings</h2>
+            <p>Control how Agrisell handles marketplace activity.</p>
+          </div>
         </div>
-        <fieldset className="privilege-fieldset"><legend>Administrator privileges</legend><div className="privilege-selection-summary"><p>Select one or more. The new administrator cannot create other admins.</p><button type="button" onClick={() => setForm((current) => ({ ...current, permissions: privileges.map((privilege) => privilege.key) }))}>Select all</button></div>
-          <div className="privilege-grid">{privileges.map((privilege) => <label className="privilege-option" key={privilege.key}><input type="checkbox" checked={form.permissions.includes(privilege.key)} onChange={() => togglePrivilege(privilege.key)} /><span><strong>{privilege.label}</strong><small>{privilege.description}</small></span></label>)}</div>
-        </fieldset>
-        {error && <p className="admin-form-error" role="alert">{error}</p>}
-          <div className="modal-actions"><button type="button" className="outline-button" disabled={isSubmitting} onClick={closeAdminModal}>Cancel</button><button className="primary-button" disabled={isSubmitting} type="submit">{isSubmitting ? "Creating administrator..." : "Create administrator"}</button></div>
-        </form>
+        <div className="settings-list">
+          {canManageAdmins && (
+            <div className="settings-row">
+              <span className="settings-row-icon">
+                <Icon name="users" size={22} />
+              </span>
+              <div>
+                <strong>Create administrator</strong>
+                <span>Add a new administrator to manage the system.</span>
+              </div>
+              <button
+                type="button"
+                className="primary-button settings-admin-button"
+                onClick={() => setIsAdminModalOpen(true)}
+              >
+                <Icon name="plus" size={19} />
+                Create administrator
+              </button>
+            </div>
+          )}
+          <div className="settings-row">
+            <span className="settings-row-icon">
+              <Icon name="shield" size={22} />
+            </span>
+            <div>
+              <strong>Auto-approve verified farmer listings</strong>
+              <span>Publish commodities from verified farms immediately.</span>
+            </div>
+            <div className="setting-toggle-control">
+              <button
+                type="button"
+                className={`switch ${autoApprove ? 'checked' : ''}`}
+                onClick={onToggleApprove}
+                aria-pressed={autoApprove}
+                aria-label="Toggle automatic farmer approvals"
+              >
+                <i />
+              </button>
+              <span>{autoApprove ? 'Enabled' : 'Disabled'}</span>
+            </div>
+          </div>
+          <div className="settings-row">
+            <span className="settings-row-icon">
+              <Icon name="document" size={22} />
+            </span>
+            <div>
+              <strong>Daily admin digest</strong>
+              <span>Receive a daily summary of sales, orders, and delivery exceptions.</span>
+            </div>
+            <div className="setting-toggle-control">
+              <button
+                type="button"
+                className={`switch ${digest ? 'checked' : ''}`}
+                onClick={onToggleDigest}
+                aria-pressed={digest}
+                aria-label="Toggle daily admin digest"
+              >
+                <i />
+              </button>
+              <span>{digest ? 'Enabled' : 'Disabled'}</span>
+            </div>
+          </div>
+        </div>
+        {preferenceError && (
+          <p className="settings-preference-error" role="alert">
+            {preferenceError}
+          </p>
+        )}
+        <div className="settings-actions">
+          <button
+            type="button"
+            className="outline-button"
+            disabled={isSavingPreferences}
+            onClick={() => void runPreferenceAction(onReset)}
+          >
+            <Icon name="refresh" size={17} />
+            Reset
+          </button>
+          <button
+            type="button"
+            className="primary-button"
+            disabled={isSavingPreferences}
+            onClick={() => void runPreferenceAction(onSave)}
+          >
+            <Icon name="save" size={17} />
+            {isSavingPreferences ? 'Saving...' : 'Save preferences'}
+          </button>
+        </div>
       </section>
-    </div>}
-    {canManageAdmins && editingAdmin && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closePrivilegeEditor(); }}>
-      <section className="modal-card modal-card--wide admin-creation-modal" role="dialog" aria-modal="true" aria-labelledby="edit-admin-privileges-title">
-        <CloseButton label="Close privilege editor" onClick={closePrivilegeEditor} disabled={isUpdating} />
-        <header className="modal-header"><span className="modal-eyebrow">SUPERADMIN ONLY</span><h2 id="edit-admin-privileges-title">Update administrator privileges</h2><p className="modal-description">Choose the dashboard areas that {editingAdmin.name} can access.</p></header>
-        <form className="admin-creation-form" onSubmit={submitPrivilegeUpdate}>
-          <fieldset className="privilege-fieldset"><legend>Administrator privileges</legend><div className="privilege-selection-summary"><p>{editPermissions.length} selected</p><button type="button" onClick={() => setEditPermissions(privileges.map((privilege) => privilege.key))}>Select all</button></div>
-            <div className="privilege-grid">{privileges.map((privilege) => <label className="privilege-option" key={privilege.key}><input type="checkbox" checked={editPermissions.includes(privilege.key)} onChange={() => toggleEditPrivilege(privilege.key)} /><span><strong>{privilege.label}</strong><small>{privilege.description}</small></span></label>)}</div>
-          </fieldset>
-          {editError && <p className="admin-form-error" role="alert">{editError}</p>}
-          <div className="modal-actions"><button type="button" className="outline-button" disabled={isUpdating} onClick={closePrivilegeEditor}>Cancel</button><button className="primary-button" disabled={isUpdating} type="submit">{isUpdating ? "Updating privileges..." : "Save privileges"}</button></div>
-        </form>
-      </section>
-    </div>}
-  </div>;
+      {canManageAdmins && (
+        <section className="settings-workspace settings-admin-management panel">
+          <div className="settings-admin-heading">
+            <div className="settings-panel-heading">
+              <span className="settings-heading-icon">
+                <Icon name="users" size={24} />
+              </span>
+              <div>
+                <h2>Administrator privileges</h2>
+                <p>
+                  Review administrator access and update the privileges assigned to regular admins.
+                </p>
+              </div>
+            </div>
+            <label className="administrator-search">
+              <Icon name="search" size={18} />
+              <input
+                value={administratorSearch}
+                onChange={(event) => setAdministratorSearch(event.target.value)}
+                placeholder="Search administrator..."
+                aria-label="Search administrators"
+              />
+            </label>
+          </div>
+          <div className="administrator-list">
+            {visibleAdministrators.map((administrator) => (
+              <article
+                className={`administrator-row${administrator.role === 'super_admin' ? ' is-superadmin' : ''}`}
+                key={administrator.userId}
+              >
+                <div className="administrator-identity">
+                  <span className="administrator-avatar">
+                    {administrator.name.trim().charAt(0).toUpperCase() || 'A'}
+                  </span>
+                  <div>
+                    <strong>{administrator.name}</strong>
+                    <span>{administrator.email}</span>
+                    <small>
+                      {administrator.role === 'super_admin'
+                        ? 'Superadmin · Full system access'
+                        : `Admin · ${administrator.permissions.length} ${administrator.permissions.length === 1 ? 'privilege' : 'privileges'}${administrator.enabled ? '' : ' · Disabled'}`}
+                    </small>
+                  </div>
+                </div>
+                <div className="administrator-access">
+                  <span className="administrator-access-label">MODULE ACCESS</span>
+                  <div className="administrator-privileges">
+                    {administrator.permissions.map((permission) => {
+                      const privilege = privileges.find((item) => item.key === permission)
+                      const icon =
+                        privilege?.icon ?? (permission === 'admin:manage' ? 'shield' : 'check')
+                      return (
+                        <span key={permission}>
+                          <Icon name={icon} size={15} />
+                          {privilege?.label ??
+                            (permission === 'admin:manage'
+                              ? 'Administrator management'
+                              : permission)}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+                {administrator.role === 'admin' && (
+                  <div className="administrator-row-actions">
+                    <button
+                      type="button"
+                      className="icon-action-button"
+                      onClick={() => openPrivilegeEditor(administrator)}
+                      aria-label={`Edit privileges for ${administrator.name}`}
+                      title="Edit privileges"
+                    >
+                      <Icon name="edit" size={17} />
+                    </button>
+                    <button
+                      type="button"
+                      className={`icon-action-button${administrator.enabled ? ' icon-action-button--danger' : ''}`}
+                      onClick={() =>
+                        void onSetAdministratorEnabled(
+                          administrator.userId,
+                          !administrator.enabled,
+                        ).catch(() => undefined)
+                      }
+                      aria-label={`${administrator.enabled ? 'Disable' : 'Enable'} ${administrator.name}`}
+                      title={
+                        administrator.enabled ? 'Disable administrator' : 'Enable administrator'
+                      }
+                    >
+                      <Icon name="power" size={17} />
+                    </button>
+                  </div>
+                )}
+              </article>
+            ))}
+            {!visibleAdministrators.length && (
+              <p className="administrator-empty">No administrator accounts match your search.</p>
+            )}
+          </div>
+        </section>
+      )}
+      <SecurityCenter />
+      {canManageAdmins && isAdminModalOpen && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeAdminModal()
+          }}
+        >
+          <section
+            className="modal-card modal-card--wide admin-creation-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-admin-title"
+          >
+            <CloseButton
+              label="Close create administrator form"
+              onClick={closeAdminModal}
+              disabled={isSubmitting}
+            />
+            <header className="modal-header">
+              <span className="modal-eyebrow">SUPERADMIN ONLY</span>
+              <h2 id="create-admin-title">Create administrator</h2>
+              <p className="modal-description">
+                Create a sign-in account and choose exactly which dashboard areas it can access.
+              </p>
+            </header>
+            <form className="admin-creation-form" onSubmit={submitAdministrator}>
+              <div className="admin-fields">
+                <label>
+                  First name
+                  <input
+                    required
+                    maxLength={100}
+                    value={form.firstName}
+                    onChange={(event) => setForm({ ...form, firstName: event.target.value })}
+                  />
+                </label>
+                <label>
+                  Last name
+                  <input
+                    required
+                    maxLength={100}
+                    value={form.lastName}
+                    onChange={(event) => setForm({ ...form, lastName: event.target.value })}
+                  />
+                </label>
+                <label>
+                  Email address
+                  <input
+                    required
+                    type="email"
+                    autoComplete="off"
+                    value={form.email}
+                    onChange={(event) => setForm({ ...form, email: event.target.value })}
+                  />
+                </label>
+                <label>
+                  Temporary password
+                  <span className="admin-password-field">
+                    <input
+                      required
+                      minLength={8}
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      value={form.password}
+                      onChange={(event) => setForm({ ...form, password: event.target.value })}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((isVisible) => !isVisible)}
+                      aria-label={
+                        showPassword ? 'Hide temporary password' : 'Show temporary password'
+                      }
+                      aria-pressed={showPassword}
+                    >
+                      <Icon name={showPassword ? 'eyeOff' : 'eye'} size={17} />
+                    </button>
+                  </span>
+                </label>
+              </div>
+              <fieldset className="privilege-fieldset">
+                <legend>Administrator privileges</legend>
+                <div className="privilege-selection-summary">
+                  <p>Select one or more. The new administrator cannot create other admins.</p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((current) => ({
+                        ...current,
+                        permissions: privileges.map((privilege) => privilege.key),
+                      }))
+                    }
+                  >
+                    Select all
+                  </button>
+                </div>
+                <div className="privilege-grid">
+                  {privileges.map((privilege) => (
+                    <label className="privilege-option" key={privilege.key}>
+                      <input
+                        type="checkbox"
+                        checked={form.permissions.includes(privilege.key)}
+                        onChange={() => togglePrivilege(privilege.key)}
+                      />
+                      <span>
+                        <strong>{privilege.label}</strong>
+                        <small>{privilege.description}</small>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              {error && (
+                <p className="admin-form-error" role="alert">
+                  {error}
+                </p>
+              )}
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="outline-button"
+                  disabled={isSubmitting}
+                  onClick={closeAdminModal}
+                >
+                  Cancel
+                </button>
+                <button className="primary-button" disabled={isSubmitting} type="submit">
+                  {isSubmitting ? 'Creating administrator...' : 'Create administrator'}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+      {canManageAdmins && editingAdmin && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closePrivilegeEditor()
+          }}
+        >
+          <section
+            className="modal-card modal-card--wide admin-creation-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-admin-privileges-title"
+          >
+            <CloseButton
+              label="Close privilege editor"
+              onClick={closePrivilegeEditor}
+              disabled={isUpdating}
+            />
+            <header className="modal-header">
+              <span className="modal-eyebrow">SUPERADMIN ONLY</span>
+              <h2 id="edit-admin-privileges-title">Update administrator privileges</h2>
+              <p className="modal-description">
+                Choose the dashboard areas that {editingAdmin.name} can access.
+              </p>
+            </header>
+            <form className="admin-creation-form" onSubmit={submitPrivilegeUpdate}>
+              <fieldset className="privilege-fieldset">
+                <legend>Administrator privileges</legend>
+                <div className="privilege-selection-summary">
+                  <p>{editPermissions.length} selected</p>
+                  <button
+                    type="button"
+                    onClick={() => setEditPermissions(privileges.map((privilege) => privilege.key))}
+                  >
+                    Select all
+                  </button>
+                </div>
+                <div className="privilege-grid">
+                  {privileges.map((privilege) => (
+                    <label className="privilege-option" key={privilege.key}>
+                      <input
+                        type="checkbox"
+                        checked={editPermissions.includes(privilege.key)}
+                        onChange={() => toggleEditPrivilege(privilege.key)}
+                      />
+                      <span>
+                        <strong>{privilege.label}</strong>
+                        <small>{privilege.description}</small>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              {editError && (
+                <p className="admin-form-error" role="alert">
+                  {editError}
+                </p>
+              )}
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="outline-button"
+                  disabled={isUpdating}
+                  onClick={closePrivilegeEditor}
+                >
+                  Cancel
+                </button>
+                <button className="primary-button" disabled={isUpdating} type="submit">
+                  {isUpdating ? 'Updating privileges...' : 'Save privileges'}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+    </div>
+  )
 }

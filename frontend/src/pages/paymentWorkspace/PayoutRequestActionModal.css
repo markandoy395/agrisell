@@ -1,0 +1,259 @@
+.payout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: payoutFadeIn 0.2s ease-out;
+}
+
+@keyframes payoutFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.payout-modal-card {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.payout-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.payout-modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.payout-modal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payout-modal-icon.is-info {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.payout-modal-icon.is-success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.payout-modal-icon.is-danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.payout-modal-title-group h3 {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  color: #111827;
+}
+
+.payout-modal-title-group small {
+  color: #6b7280;
+  font-size: var(--fs-caption);
+}
+
+.payout-modal-close {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.payout-modal-close:hover {
+  color: #374151;
+  background: #f3f4f6;
+}
+
+.payout-modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.payout-modal-alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: var(--fs-small);
+}
+
+.payout-modal-alert.is-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.payout-summary-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payout-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-small);
+}
+
+.payout-summary-row span {
+  color: #6b7280;
+}
+
+.payout-summary-row strong {
+  color: #111827;
+}
+
+.payout-text-danger {
+  color: #dc2626;
+  font-weight: var(--fw-semibold);
+}
+
+.payout-status-chip {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+}
+
+.payout-status-chip.is-pending {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.payout-status-chip.is-approved {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.payout-status-chip.is-paid {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.payout-status-chip.is-rejected {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.payout-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payout-form-group label {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: #374151;
+}
+
+.payout-form-group input,
+.payout-form-group textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: var(--fs-small);
+  color: #111827;
+  outline: none;
+  font-family: inherit;
+}
+
+.payout-form-group input:focus,
+.payout-form-group textarea:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+}
+
+.payout-form-hint {
+  font-size: var(--fs-xs);
+  color: #6b7280;
+}
+
+.payout-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.payout-button-secondary {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #374151;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+}
+
+.payout-button-secondary:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.payout-button-primary {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.payout-button-primary.is-success {
+  background: #059669;
+}
+
+.payout-button-primary.is-success:hover:not(:disabled) {
+  background: #047857;
+}
+
+.payout-button-primary.is-danger {
+  background: #dc2626;
+}
+
+.payout-button-primary.is-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.payout-button-primary:disabled,
+.payout-button-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

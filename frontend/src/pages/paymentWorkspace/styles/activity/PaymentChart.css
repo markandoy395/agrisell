@@ -1,0 +1,65 @@
+.payment-chart {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-rows: 166px 24px;
+  margin-top: 20px;
+}
+
+.payment-chart-y {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-direction: column;
+  padding: 0 8px 0 0;
+  color: #657269;
+  font-size: var(--fs-nano);
+}
+
+.payment-bars {
+  height: 166px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(12px, 1fr));
+  align-items: end;
+  gap: 8px;
+  margin: 0;
+  padding: 0 8px;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent 54px,
+    var(--payment-line) 55px
+  );
+}
+
+.payment-bars span {
+  min-height: 10px;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--brand-lime-green), var(--brand-forest-green));
+  box-shadow: 0 8px 18px var(--payment-brand-glow);
+}
+
+.payment-chart-x {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  color: #66736b;
+  font-size: var(--fs-nano);
+}
+
+.payment-chart-x span {
+  text-align: center;
+}
+
+@media (max-width: 620px) {
+  .payment-chart {
+      grid-template-columns: 34px minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 620px) {
+  .payment-chart-x span:nth-child(even) {
+      display: none;
+    }
+}
+

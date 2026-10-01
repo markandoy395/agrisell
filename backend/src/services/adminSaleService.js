@@ -5,86 +5,14 @@ const {
   updateSupabaseRows,
   deleteSupabaseRows,
 } = require('./supabaseService');
-
-class AdminSaleError extends Error {
-  constructor(message, statusCode = 400) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
-
-const text = (value) => (typeof value === 'string' ? value.trim() : '');
-const number = (value) => (typeof value === 'number' ? value : Number(value));
-const firstText = (value) => {
-  if (typeof value === 'string') return value.trim();
-  if (Array.isArray(value)) return text(value.find((item) => typeof item === 'string'));
-  return '';
-};
-
-const rangesOverlap = (first, second) => {
-  const firstStart = first.startsAt ? new Date(first.startsAt).getTime() : -Infinity;
-  const firstEnd = first.endsAt ? new Date(first.endsAt).getTime() : Infinity;
-  const secondStart = second.startsAt ? new Date(second.startsAt).getTime() : -Infinity;
-  const secondEnd = second.endsAt ? new Date(second.endsAt).getTime() : Infinity;
-  return firstStart < secondEnd && secondStart < firstEnd;
-};
-
-const normalizeSale = (input) => {
-  const name = text(input.name);
-  const discountType = text(input.discountType);
-  const targetUserGroup = text(input.targetUserGroup);
-  const promoteOnHome = input.promoteOnHome === true;
-  const discountValue = number(input.discountValue);
-  const commodityIds = Array.isArray(input.commodityIds)
-    ? [...new Set(input.commodityIds.map(Number).filter((id) => Number.isInteger(id) && id > 0))]
-    : [];
-  if (!name || !['sale_price', 'percentage', 'amount'].includes(discountType)) {
-    throw new AdminSaleError('Enter a sale name and a valid discount type.');
-  }
-  if (!['all_users', 'new_users_only'].includes(targetUserGroup) || !Number.isFinite(discountValue) || discountValue <= 0) {
-    throw new AdminSaleError('Enter a valid discount and target user group.');
-  }
-  if (commodityIds.length === 0) throw new AdminSaleError('Select at least one product.');
-  if (promoteOnHome && commodityIds.length < 2) {
-    throw new AdminSaleError('Home promotion is available only for campaigns with at least two products.');
-  }
-  const startsAt = text(input.startsAt) || null;
-  const endsAt = text(input.endsAt) || null;
-  if (startsAt && endsAt && new Date(endsAt) <= new Date(startsAt)) {
-    throw new AdminSaleError('The end date must be after the start date.');
-  }
-  return { name, discountType, discountValue, targetUserGroup, commodityIds, startsAt, endsAt, promoteOnHome, isEnabled: input.isEnabled !== false };
-};
-
-const assertNoSaleConflicts = ({ sale, sales, saleItems, excludeSaleId }) => {
-  if (!sale.isEnabled) return;
-  const conflict = sales.find((existing) => {
-    if (!existing.is_enabled || String(existing.sale_id) === String(excludeSaleId ?? '')) return false;
-    const existingRange = { startsAt: existing.starts_at, endsAt: existing.ends_at };
-    if (!rangesOverlap(sale, existingRange)) return false;
-    return saleItems.some((item) =>
-      String(item.sale_id) === String(existing.sale_id) &&
-      sale.commodityIds.includes(Number(item.commodity_id))
-    );
-  });
-  if (conflict) {
-    throw new AdminSaleError(`A selected product already has an overlapping promotion: ${conflict.name}.`);
-  }
-};
-
-const validateSaleProducts = (sale, commodities) => {
-  const selected = commodities.filter((commodity) => sale.commodityIds.includes(Number(commodity.commodity_id)));
-  if (selected.length !== sale.commodityIds.length) throw new AdminSaleError('One or more selected products no longer exist.');
-  for (const commodity of selected) {
-    const original = Number(commodity.price_per_unit);
-    const finalPrice = sale.discountType === 'sale_price' ? sale.discountValue
-      : sale.discountType === 'percentage' ? original * (1 - sale.discountValue / 100)
-        : original - sale.discountValue;
-    if (!(finalPrice > 0 && finalPrice < original)) {
-      throw new AdminSaleError(`The sale must lower ${commodity.commodity_name}'s original price.`);
-    }
-  }
-};
+const {
+  AdminSaleError,
+  assertNoSaleConflicts,
+  firstText,
+  normalizeSale,
+  text,
+  validateSaleProducts,
+} = require('../modules/admin/sales/adminSaleValidation');
 
 const createSale = async (input) => {
   const sale = normalizeSale(input);
@@ -96,7 +24,7 @@ const createSale = async (input) => {
   const created = await insertSupabaseRow('product_sales', {
     name: sale.name, discount_type: sale.discountType, discount_value: sale.discountValue,
     target_user_group: sale.targetUserGroup, starts_at: sale.startsAt, ends_at: sale.endsAt,
-    promote_on_home: sale.promoteOnHome,
+    promote_on_home: sale.promoteOnHome, promo_code: sale.promoCode,
     is_enabled: sale.isEnabled,
   });
   try {
@@ -132,6 +60,7 @@ const updateSale = async (saleId, input) => {
     discount_value: sale.discountValue,
     target_user_group: sale.targetUserGroup,
     promote_on_home: sale.promoteOnHome,
+    promo_code: sale.promoCode,
     starts_at: sale.startsAt,
     ends_at: sale.endsAt,
     updated_at: new Date().toISOString(),
@@ -164,6 +93,7 @@ const listSales = async () => {
     discountValue: Number(sale.discount_value), targetUserGroup: sale.target_user_group,
     startsAt: sale.starts_at, endsAt: sale.ends_at, isEnabled: sale.is_enabled,
     promoteOnHome: sale.promote_on_home === true,
+    promoCode: sale.promo_code || null,
     products: saleItems.filter((item) => String(item.sale_id) === String(sale.sale_id))
       .map((item) => ({ id: String(item.commodity_id), name: commodityNames.get(String(item.commodity_id)) ?? 'Removed product' })),
   }));

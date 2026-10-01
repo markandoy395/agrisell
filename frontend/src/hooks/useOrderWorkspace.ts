@@ -1,44 +1,30 @@
-import { useMemo, useState } from "react";
-import type {
-  OrderFilter,
-  OrderRow,
-  OrderSortDirection,
-} from "../types/dashboard";
-import { downloadOrdersCsv } from "../utils/orderCsv";
+import { useMemo, useState } from 'react'
+import type { OrderFilter, OrderRow, OrderSortDirection } from '../types/dashboard'
+import { downloadOrdersCsv } from '../utils/orderCsv'
 import {
   createOrderWorkspaceRows,
   getFilteredOrderRows,
   getOrderCsvRows,
   getOrderStatusCounts,
-} from "../utils/orderWorkspace";
+} from '../utils/orderWorkspace'
 
 type UseOrderWorkspaceParams = {
-  orders: OrderRow[];
-};
+  orders: OrderRow[]
+}
 
-const orderFilters: OrderFilter[] = ["All", "Success", "Pending", "Failed"];
-const orderPageSize = 12;
+const orderFilters: OrderFilter[] = ['All', 'Success', 'Pending', 'Failed']
+const orderPageSize = 12
 
 export function useOrderWorkspace({ orders }: UseOrderWorkspaceParams) {
-  const [activeFilter, setActiveFilter] = useState<OrderFilter>("All");
-  const [orderQuery, setOrderQuery] = useState("");
-  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(
-    () => new Set(),
-  );
-  const [sortDirection, setSortDirection] =
-    useState<OrderSortDirection>("desc");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [activeFilter, setActiveFilter] = useState<OrderFilter>('All')
+  const [orderQuery, setOrderQuery] = useState('')
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set())
+  const [sortDirection, setSortDirection] = useState<OrderSortDirection>('desc')
+  const [currentPage, setCurrentPage] = useState(1)
 
-  const displayRows = useMemo(
-    () =>
-      createOrderWorkspaceRows({ orders }),
-    [orders],
-  );
+  const displayRows = useMemo(() => createOrderWorkspaceRows({ orders }), [orders])
 
-  const statusCounts = useMemo(
-    () => getOrderStatusCounts(displayRows),
-    [displayRows],
-  );
+  const statusCounts = useMemo(() => getOrderStatusCounts(displayRows), [displayRows])
 
   const filteredRows = useMemo(
     () =>
@@ -48,84 +34,76 @@ export function useOrderWorkspace({ orders }: UseOrderWorkspaceParams) {
         sortDirection,
       }),
     [activeFilter, displayRows, orderQuery, sortDirection],
-  );
+  )
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredRows.length / orderPageSize),
-  );
-  const activePage = Math.min(currentPage, totalPages);
-  const pageRows = filteredRows.slice(
-    (activePage - 1) * orderPageSize,
-    activePage * orderPageSize,
-  );
-  const visibleOrderIds = pageRows.map((row) => row.order.id);
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / orderPageSize))
+  const activePage = Math.min(currentPage, totalPages)
+  const pageRows = filteredRows.slice((activePage - 1) * orderPageSize, activePage * orderPageSize)
+  const visibleOrderIds = pageRows.map((row) => row.order.id)
   const selectedVisibleOrderCount = visibleOrderIds.filter((orderId) =>
     selectedOrderIds.has(orderId),
-  ).length;
+  ).length
   const allVisibleOrdersSelected =
-    visibleOrderIds.length > 0 &&
-    selectedVisibleOrderCount === visibleOrderIds.length;
-  const partiallyVisibleOrdersSelected =
-    selectedVisibleOrderCount > 0 && !allVisibleOrdersSelected;
+    visibleOrderIds.length > 0 && selectedVisibleOrderCount === visibleOrderIds.length
+  const partiallyVisibleOrdersSelected = selectedVisibleOrderCount > 0 && !allVisibleOrdersSelected
 
-  const resetOrderPage = () => setCurrentPage(1);
+  const resetOrderPage = () => setCurrentPage(1)
 
   const updateOrderFilter = (filter: OrderFilter) => {
-    setActiveFilter(filter);
-    resetOrderPage();
-  };
+    setActiveFilter(filter)
+    resetOrderPage()
+  }
 
   const updateOrderQuery = (query: string) => {
-    setOrderQuery(query);
-    resetOrderPage();
-  };
+    setOrderQuery(query)
+    resetOrderPage()
+  }
 
   const clearOrderFilters = () => {
-    setActiveFilter("All");
-    setOrderQuery("");
-    resetOrderPage();
-  };
+    setActiveFilter('All')
+    setOrderQuery('')
+    resetOrderPage()
+  }
 
   const toggleAllVisibleOrders = () => {
     setSelectedOrderIds((current) => {
-      const nextSelectedOrderIds = new Set(current);
+      const nextSelectedOrderIds = new Set(current)
 
       visibleOrderIds.forEach((orderId) => {
         if (allVisibleOrdersSelected) {
-          nextSelectedOrderIds.delete(orderId);
+          nextSelectedOrderIds.delete(orderId)
         } else {
-          nextSelectedOrderIds.add(orderId);
+          nextSelectedOrderIds.add(orderId)
         }
-      });
+      })
 
-      return nextSelectedOrderIds;
-    });
-  };
+      return nextSelectedOrderIds
+    })
+  }
 
   const toggleOrderSelection = (orderId: string) => {
     setSelectedOrderIds((current) => {
-      const nextSelectedOrderIds = new Set(current);
+      const nextSelectedOrderIds = new Set(current)
 
       if (nextSelectedOrderIds.has(orderId)) {
-        nextSelectedOrderIds.delete(orderId);
+        nextSelectedOrderIds.delete(orderId)
       } else {
-        nextSelectedOrderIds.add(orderId);
+        nextSelectedOrderIds.add(orderId)
       }
 
-      return nextSelectedOrderIds;
-    });
-  };
+      return nextSelectedOrderIds
+    })
+  }
 
   const toggleSortDirection = () => {
-    setSortDirection((direction) => (direction === "desc" ? "asc" : "desc"));
-  };
+    setSortDirection((direction) => (direction === 'desc' ? 'asc' : 'desc'))
+  }
 
   const downloadFilteredOrders = () => {
-    if (filteredRows.length === 0) return;
+    if (filteredRows.length === 0) return
 
-    downloadOrdersCsv(getOrderCsvRows(filteredRows));
-  };
+    downloadOrdersCsv(getOrderCsvRows(filteredRows))
+  }
 
   return {
     activeFilter,
@@ -135,8 +113,7 @@ export function useOrderWorkspace({ orders }: UseOrderWorkspaceParams) {
     downloadFilteredOrders,
     filters: orderFilters,
     filteredOrderCount: filteredRows.length,
-    hasActiveOrderFilters:
-      activeFilter !== "All" || orderQuery.trim().length > 0,
+    hasActiveOrderFilters: activeFilter !== 'All' || orderQuery.trim().length > 0,
     hasDownloadableOrders: filteredRows.length > 0,
     orderQuery,
     pageNumbers: Array.from({ length: totalPages }, (_, index) => index + 1),
@@ -152,5 +129,5 @@ export function useOrderWorkspace({ orders }: UseOrderWorkspaceParams) {
     totalPages,
     updateOrderFilter,
     updateOrderQuery,
-  };
+  }
 }

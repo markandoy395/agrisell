@@ -1,0 +1,44 @@
+/* Keep each dashboard summary group in one row at every viewport width. */
+.dashboard .workspace-stats-grid,
+.dashboard .category-stats-grid,
+.dashboard .riders-stats-grid,
+.dashboard .safety-metrics-grid,
+.dashboard .support-metrics-grid,
+.dashboard .payout-metrics-grid,
+.dashboard .farmer-requests-metrics,
+.dashboard .user-summary-grid,
+.dashboard .order-summary-grid,
+.dashboard .delivery-summary,
+.dashboard .payment-summary-grid,
+.dashboard .sale-summary-grid,
+.dashboard .skeleton-summary-grid,
+.dashboard .review-overview > .workspace-stats-grid,
+.dashboard .delivery-summary.order-summary-grid {
+  min-width: 0;
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(180px, 1fr);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.dashboard .support-metrics-grid {
+  grid-auto-columns: minmax(150px, 1fr);
+}
+
+.dashboard .workspace-stats-grid > *,
+.dashboard .category-stats-grid > *,
+.dashboard .riders-stats-grid > *,
+.dashboard .safety-metrics-grid > *,
+.dashboard .support-metrics-grid > *,
+.dashboard .payout-metrics-grid > *,
+.dashboard .farmer-requests-metrics > *,
+.dashboard .user-summary-grid > *,
+.dashboard .order-summary-grid > *,
+.dashboard .delivery-summary > *,
+.dashboard .payment-summary-grid > *,
+.dashboard .sale-summary-grid > *,
+.dashboard .skeleton-summary-grid > * {
+  min-width: 0;
+}

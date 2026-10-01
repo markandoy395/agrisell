@@ -1,0 +1,144 @@
+.delivery-loading-popup {
+  position: fixed;
+  z-index: 31;
+  right: 24px;
+  bottom: 23px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 15px;
+  color: #fff;
+  border-radius: 9px;
+  background: var(--brand-forest-green);
+  box-shadow: 0 12px 25px #24452d45;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+  animation: delivery-loading-popup-in 0.18s ease-out;
+}
+
+.delivery-loading-popup .icon {
+  flex: 0 0 auto;
+  animation: delivery-loading-spin 0.9s linear infinite;
+}
+
+@keyframes delivery-loading-popup-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes delivery-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.delivery-workspace-header {
+  margin-bottom: 24px;
+}
+
+.delivery-workspace-header h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--ls-h1);
+  margin: 0;
+}
+
+.delivery-workspace-header p {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  letter-spacing: var(--ls-small);
+  margin: 4px 0 0;
+}
+
+.delivery-workspace-header .delivery-header-refresh {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  color: var(--order-brand);
+  border: 1px solid var(--order-line);
+  border-radius: 9px;
+  background: #fff;
+}
+
+.delivery-workspace-header .delivery-header-refresh:hover:not(:disabled) {
+  background: var(--order-brand-soft);
+}
+
+.delivery-workspace-header .order-sort-button,
+.delivery-workspace-header .order-download-button {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+}
+
+.delivery-workspace-header .delivery-add-button {
+  min-width: 132px;
+  min-height: 42px;
+  height: 42px;
+  gap: 7px;
+  padding: 0 15px;
+  border-radius: 9px;
+  box-shadow: 0 8px 16px rgba(15, 116, 59, 0.24); /* fallback for browsers without color-mix() */
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--order-brand) 24%, transparent);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+}
+
+@media (max-width: 1260px) {
+  .delivery-workspace-header {
+      align-items: flex-start;
+    }
+}
+
+@media (max-width: 1260px) {
+  .delivery-workspace-header .order-header-actions {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+}
+
+@media (max-width: 760px) {
+  .delivery-loading-popup {
+      right: 15px;
+      bottom: 15px;
+      left: 15px;
+      justify-content: center;
+    }
+}
+
+@media (max-width: 760px) {
+  .delivery-workspace-header .order-header-actions {
+      justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+  .delivery-workspace-header .order-sort-button {
+      flex: 1 1 160px;
+    }
+}
+
+@media (max-width: 760px) {
+  .delivery-workspace-header .delivery-add-button {
+      flex: 1 1 132px;
+      margin-left: 0;
+    }
+}
+

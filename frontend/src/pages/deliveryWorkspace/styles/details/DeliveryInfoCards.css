@@ -1,0 +1,115 @@
+.delivery-info-card {
+  grid-column: span 3;
+  min-width: 0;
+  min-height: 192px;
+  padding: 12px 15px 14px;
+  border: 1px solid #dce4df;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.delivery-info-card.compact {
+  grid-column: span 2;
+  min-height: 150px;
+}
+
+.delivery-info-card > header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.delivery-info-card > header > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #087a40;
+  border-radius: 50%;
+  background: #e0f3e8;
+}
+
+.delivery-info-card > header h3 {
+  margin: 0;
+  color: #131b31;
+  font-family: var(--font-heading);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h4);
+  letter-spacing: var(--ls-h4);
+}
+
+.delivery-info-card dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.delivery-info-row {
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr);
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-small);
+}
+
+.delivery-info-card.compact .delivery-info-row {
+  grid-template-columns: 90px minmax(0, 1fr);
+}
+
+.delivery-info-row dt {
+  color: #68758a;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-medium);
+}
+
+.delivery-info-row dd {
+  min-width: 0;
+  margin: 0;
+  color: #273348;
+  font-family: var(--font-sans);
+  overflow-wrap: anywhere;
+}
+
+.delivery-info-row .delivery-status-pill {
+  min-width: 91px;
+  min-height: 31px;
+  gap: 8px;
+  padding: 0 12px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.delivery-info-row .delivery-status-pill i {
+  width: 9px;
+  height: 9px;
+}
+
+.delivery-info-empty-note {
+  color: #919bab;
+  font-style: italic;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+}
+
+@media (max-width: 700px) {
+  .delivery-info-card,
+    .delivery-info-card.compact {
+      grid-column: auto;
+      min-height: 0;
+    }
+}
+
+@media (max-width: 700px) {
+  .delivery-info-row,
+    .delivery-info-card.compact .delivery-info-row {
+      grid-template-columns: minmax(95px, 0.7fr) minmax(0, 1fr);
+    }
+}
+

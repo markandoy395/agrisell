@@ -1,0 +1,158 @@
+:root {
+  --brand-lime-green: #93cf3c;
+  --brand-forest-green: #0f743b;
+  --brand-black: #0b0b0b;
+  /* Static fallbacks for browsers without color-mix() support (Chrome <111, Firefox <113) */
+  --brand-forest-green-dark: #0c6333;
+  --brand-forest-green-dark: color-mix(in srgb, var(--brand-forest-green) 85%, var(--brand-black));
+  --brand-forest-green-soft: #e5f2eb;
+  --brand-forest-green-soft: color-mix(in srgb, var(--brand-forest-green) 11%, white);
+  --brand-lime-green-soft: #e8f6d0;
+  --brand-lime-green-soft: color-mix(in srgb, var(--brand-lime-green) 16%, white);
+  --ink: var(--brand-black);
+  --muted: #77817d;
+  --line: #e8ede9;
+  --bg: #f7f9f7;
+}
+
+/* Windows High Contrast / forced-colors support */
+@media (forced-colors: active) {
+  :root {
+    --brand-lime-green: Highlight;
+    --brand-forest-green: Highlight;
+    --brand-black: ButtonText;
+    --brand-forest-green-dark: Highlight;
+    --brand-forest-green-soft: Canvas;
+    --brand-lime-green-soft: Canvas;
+    --ink: ButtonText;
+    --muted: GrayText;
+    --line: ButtonBorder;
+    --bg: Canvas;
+  }
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* High visibility focus indicator for laptop keyboard arrow navigation */
+[data-keyboard-focused='true'],
+.dashboard button:focus-visible,
+.dashboard a:focus-visible,
+.dashboard input:focus-visible,
+.dashboard select:focus-visible,
+.dashboard [tabindex]:focus-visible,
+.dashboard [role='button']:focus-visible,
+.dashboard [role='tab']:focus-visible {
+  outline: 2.5px solid var(--brand-forest-green, #0f743b) !important;
+  outline-offset: 2.5px !important;
+  box-shadow: 0 0 0 4px rgba(15, 116, 59, 0.22) !important;
+}
+
+@media (forced-colors: active) {
+  [data-keyboard-focused='true'],
+  .dashboard *:focus-visible {
+    outline: 3px solid Highlight !important;
+  }
+}
+
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+.main-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.page-content {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 33px 43px 45px;
+}
+
+/* Keep table workspaces within the viewport and let their rows use the spare height. */
+.dashboard--table {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dashboard--table .main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.dashboard--table .topbar,
+.dashboard--table .page-heading {
+  flex-shrink: 0;
+}
+
+.dashboard--table .page-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.dashboard--table :is(.user-workspace, .order-workspace, .riders-workspace, .safety-workspace, .support-workspace) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.dashboard--table :is(.user-table-panel, .order-board, .riders-table-card) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.dashboard--table :is(.user-table-wrap, .order-table-wrap, .riders-table-wrap) {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.dashboard--table :is(.user-table, .order-table, .riders-table) thead th {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}
+
+.dashboard--table .riders-table thead th {
+  background: #fff;
+}
+
+.dashboard--table :is(.user-table-footer, .order-table-footer, .riders-table-footer) {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1120px) {
+  .page-content {
+      padding-right: 28px;
+      padding-left: 28px;
+    }
+}
+
+@media (max-width: 700px) {
+  .page-content {
+      padding: 25px 17px;
+    }
+}

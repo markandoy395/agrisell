@@ -1,0 +1,59 @@
+.payment-customer {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-avatar {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+}
+
+.payment-avatar.tone-red {
+  color: #52645a;
+  background: #f2f2f2; /* fallback for browsers without color-mix() */
+  background: color-mix(in srgb, var(--brand-black) 5%, white);
+}
+
+.payment-avatar.tone-blue {
+  color: var(--brand-forest-green-dark);
+  background: var(--brand-lime-green-soft);
+}
+
+.payment-avatar.tone-purple {
+  color: #3d6642; /* fallback for browsers without color-mix() */
+  color: color-mix(in srgb, var(--brand-forest-green) 46%, var(--brand-black));
+  background: #f2f2f2; /* fallback for browsers without color-mix() */
+  background: color-mix(in srgb, var(--brand-black) 5%, white);
+}
+
+.payment-avatar.tone-green {
+  color: var(--brand-forest-green);
+  background: var(--brand-forest-green-soft);
+}
+
+.payment-avatar.tone-gold {
+  color: #4e8827; /* fallback for browsers without color-mix() */
+  color: color-mix(in srgb, var(--brand-lime-green) 50%, var(--brand-forest-green-dark));
+  background: var(--brand-lime-green-soft);
+}
+
+.payment-customer-details {
+  min-width: 0;
+  display: block;
+}
+
+.payment-customer-details strong,
+.payment-customer-details small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+

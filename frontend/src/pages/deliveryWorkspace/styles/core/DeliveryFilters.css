@@ -1,0 +1,69 @@
+.delivery-filters.order-list-controls {
+  display: grid;
+  grid-template-columns: minmax(260px, 2fr) repeat(3, minmax(135px, 0.8fr)) auto;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 20px;
+  border: 1px solid var(--order-line);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: #fff;
+}
+
+.dashboard .delivery-filters.order-list-controls.dashboard-filter-grid {
+  display: flex;
+  align-items: end;
+  gap: 18px;
+  padding: 0 0 16px;
+  border: 0;
+  background: transparent;
+}
+
+.delivery-filters.dashboard-filter-grid > .dashboard-filter-field {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+
+.delivery-filters.dashboard-filter-grid .delivery-list-search,
+.delivery-filters.dashboard-filter-grid .delivery-filter-select,
+.delivery-filters.dashboard-filter-grid .delivery-date-filter {
+  height: auto;
+}
+
+.delivery-filters.dashboard-filter-grid .delivery-date-filter {
+  display: grid !important;
+  gap: 8px !important;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.delivery-filters.dashboard-filter-grid .delivery-date-filter::after {
+  display: none;
+}
+
+.delivery-filters.dashboard-filter-grid .delivery-date-filter .dashboard-filter-control {
+  position: relative;
+}
+
+.delivery-filters.dashboard-filter-grid .delivery-date-filter input {
+  cursor: pointer;
+}
+
+.delivery-filters.dashboard-filter-grid .delivery-overdue-filter {
+  height: 42px;
+}
+
+@media (max-width: 1260px) {
+  .delivery-filters.order-list-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .delivery-filters.order-list-controls {
+    grid-template-columns: 1fr;
+  }
+}

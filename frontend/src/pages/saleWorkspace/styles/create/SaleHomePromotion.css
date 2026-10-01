@@ -1,0 +1,96 @@
+.sale-home-toggle {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--user-line-strong);
+  border-radius: 9px;
+  background: white;
+  cursor: pointer;
+}
+
+.sale-home-toggle.is-selected {
+  border-color: var(--user-brand);
+  background: var(--user-brand-soft);
+}
+
+.sale-home-toggle.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.sale-home-toggle > input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sale-home-toggle-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--user-brand);
+  border-radius: 8px;
+  background: var(--user-brand-soft);
+}
+
+.sale-home-toggle > span:nth-of-type(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.sale-home-toggle strong {
+  color: var(--brand-black);
+  font-size: var(--fs-caption);
+}
+
+.sale-home-toggle small,
+.sale-home-rule {
+  color: var(--user-muted);
+  font-size: var(--fs-micro);
+}
+
+.sale-home-toggle-control {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--user-control-border);
+  transition: background 0.15s ease;
+}
+
+.sale-home-toggle-control::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.15s ease;
+}
+
+.sale-home-toggle.is-selected .sale-home-toggle-control {
+  background: var(--user-brand);
+}
+
+.sale-home-toggle.is-selected .sale-home-toggle-control::after {
+  transform: translateX(14px);
+}
+
+.sale-home-rule {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 8px 0 0;
+}
+
+.sale-home-rule .icon {
+  color: var(--user-brand);
+}
+

@@ -1,0 +1,234 @@
+.sale-panel-total {
+  padding: 5px 8px;
+  color: var(--user-muted);
+  border-radius: 999px;
+  background: var(--user-neutral-soft);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+}
+
+.sale-header-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sale-panel-substat {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  color: var(--user-muted);
+  background: #f1f5f9;
+  border: 1px solid var(--user-line);
+}
+
+.sale-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--user-line);
+}
+
+.sale-tabs button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 9px 9px;
+  color: var(--user-muted);
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.sale-tabs button::after {
+  content: '';
+  position: absolute;
+  right: 7px;
+  bottom: -1px;
+  left: 7px;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: transparent;
+}
+
+.sale-tabs button.is-active {
+  color: var(--user-brand);
+}
+
+.sale-tabs button.is-active::after {
+  background: var(--user-brand);
+}
+
+.sale-tabs button span {
+  min-width: 17px;
+  padding: 2px 4px;
+  border-radius: 999px;
+  background: var(--user-neutral-soft);
+  font-size: var(--fs-micro);
+}
+
+/* Scope and Ownership Filter Toolbar */
+.sale-scope-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #fbfdf9;
+  border-bottom: 1px solid var(--user-line);
+}
+
+.dashboard .sale-scope-toolbar.dashboard-filter-grid {
+  align-items: end;
+  padding: 0 18px 14px;
+  border: 0;
+  background: transparent;
+}
+
+.sale-scope-toolbar.dashboard-filter-grid .sale-scope-filters {
+  display: contents;
+}
+
+.sale-scope-toolbar.dashboard-filter-grid .sale-farm-filter-wrap,
+.sale-scope-toolbar.dashboard-filter-grid .sale-search-wrap {
+  flex: 1 1 170px;
+  height: auto;
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.sale-scope-toolbar.dashboard-filter-grid .sale-farm-filter-wrap select {
+  max-width: none;
+}
+
+.sale-scope-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sale-scope-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--user-muted);
+  background: white;
+  border: 1px solid var(--user-line);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sale-scope-btn:hover {
+  background: var(--user-neutral-soft);
+  color: var(--user-ink);
+}
+
+.sale-scope-btn.is-active {
+  color: var(--user-brand);
+  background: var(--user-brand-soft);
+  border-color: var(--user-brand);
+  font-weight: var(--fw-bold);
+}
+
+.sale-scope-count {
+  font-size: var(--fs-micro);
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  font-weight: var(--fw-bold);
+}
+
+.sale-scope-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sale-farm-filter-wrap,
+.sale-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--user-line);
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 34px;
+}
+
+.sale-farm-filter-wrap .icon,
+.sale-search-wrap .icon {
+  color: var(--user-muted);
+  flex: 0 0 auto;
+  margin-right: 6px;
+}
+
+.sale-farm-filter-wrap select {
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--user-ink);
+  outline: none;
+  cursor: pointer;
+  max-width: 200px;
+}
+
+.sale-search-wrap input {
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-caption);
+  color: var(--user-ink);
+  outline: none;
+  width: 190px;
+}
+
+.sale-search-clear {
+  border: 0;
+  background: transparent;
+  color: var(--user-muted);
+  font-size: var(--fs-body);
+  cursor: pointer;
+  line-height: var(--lh-solid);
+  padding: 0 2px;
+}
+
+.sale-search-clear:hover {
+  color: var(--brand-black);
+}
+
+@media (max-width: 768px) {
+  .sale-scope-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sale-farm-filter-wrap select,
+  .sale-search-wrap input {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .sale-tabs {
+    overflow-x: auto;
+  }
+  .sale-tabs button {
+    flex: 0 0 auto;
+  }
+}

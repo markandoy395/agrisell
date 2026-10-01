@@ -1,40 +1,34 @@
-import type { ReactNode } from "react";
-import { useSmallScreenAccessBlock } from "../../hooks/useSmallScreenAccessBlock";
-import "./SmallScreenAccessGuard.css";
+import type { ReactNode } from 'react'
+import { useSmallScreenAccessBlock } from '../../hooks/useSmallScreenAccessBlock'
+import './SmallScreenAccessGuard.css'
+
+// Temporarily disabled while fixing small-screen issues. Set to true to restore the block.
+const SMALL_SCREEN_ACCESS_BLOCK_ENABLED = false
 
 type SmallScreenAccessGuardProps = {
-  children: ReactNode;
-};
+  children: ReactNode
+}
 
-export function SmallScreenAccessGuard({
-  children,
-}: SmallScreenAccessGuardProps) {
-  const shouldBlockAccess = useSmallScreenAccessBlock();
+export function SmallScreenAccessGuard({ children }: SmallScreenAccessGuardProps) {
+  const shouldBlockAccess = useSmallScreenAccessBlock()
 
-  if (shouldBlockAccess) {
+  if (SMALL_SCREEN_ACCESS_BLOCK_ENABLED && shouldBlockAccess) {
     return (
-      <main
-        className="small-screen-access-notice"
-        aria-labelledby="small-screen-access-title"
-      >
+      <main className="small-screen-access-notice" aria-labelledby="small-screen-access-title">
         <section className="small-screen-access-card">
-          <div
-            className="small-screen-access-brand"
-            role="img"
-            aria-label="Agrisell"
-          >
+          <div className="small-screen-access-brand" role="img" aria-label="Agrisell">
             <span className="brand-mark" aria-hidden="true" />
           </div>
           <p className="small-screen-access-eyebrow">ADMIN WORKSPACE</p>
           <h1 id="small-screen-access-title">Desktop access required</h1>
           <p>
-            Agrisell Admin cannot be accessed from mobile devices, tablets, or
-            small screens. Please use a desktop or laptop to continue.
+            Agrisell Admin cannot be accessed from mobile devices, tablets, or small screens. Please
+            use a desktop or laptop to continue.
           </p>
         </section>
       </main>
-    );
+    )
   }
 
-  return children;
+  return children
 }

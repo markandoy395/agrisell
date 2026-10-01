@@ -1,0 +1,117 @@
+.review-moderation-dialog {
+  width: min(680px, 100%);
+}
+
+.review-moderation-content {
+  display: grid;
+  gap: 17px;
+}
+
+.review-moderation-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #e4ebe5;
+  border-radius: 10px;
+  background: #f8fbf8;
+}
+
+.review-moderation-status span {
+  display: grid;
+  gap: 3px;
+  color: #718078;
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+}
+
+.review-moderation-status strong {
+  color: #31493a;
+  font-size: var(--fs-caption);
+}
+
+.review-moderation-note {
+  display: grid;
+  gap: 7px;
+  color: #405849;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+}
+
+.review-moderation-note textarea {
+  min-height: 92px;
+  padding: 11px;
+  border: 1px solid #dce5dd;
+  border-radius: 9px;
+  resize: vertical;
+  font: inherit;
+}
+
+.review-moderation-note small {
+  color: #87958b;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-medium);
+}
+
+.review-moderation-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.review-moderation-actions h4 {
+  margin: 0;
+  color: #31493a;
+  font-size: var(--fs-caption);
+}
+
+.review-moderation-actions button {
+  min-height: 34px;
+  padding: 7px 11px;
+  color: #405849;
+  border: 1px solid #dce5dd;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.review-moderation-actions button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.review-flag-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.review-flag-grid button.is-applied {
+  color: #a33a2f;
+  border-color: #e8b8b2;
+  background: #fff0ee;
+}
+
+.review-moderation-history {
+  padding-top: 14px;
+  border-top: 1px solid #e4ebe5;
+}
+
+.review-moderation-history h4 {
+  margin: 0;
+  color: #31493a;
+  font-size: var(--fs-caption);
+}
+
+.review-moderation-history > p {
+  margin: 7px 0 0;
+  color: #87958b;
+  font-size: var(--fs-micro);
+}
+
+@media (max-width: 700px) {
+  .review-flag-grid {
+    grid-template-columns: 1fr;
+  }
+}

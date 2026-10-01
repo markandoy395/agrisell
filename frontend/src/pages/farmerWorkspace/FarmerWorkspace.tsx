@@ -1,23 +1,24 @@
-import type { EntityRecord, FarmerFarm } from "../../types/dashboard";
-import { FarmerControls } from "../../components/ui/farmerWorkspace/FarmerControls";
-import { FarmerSummaryGrid } from "../../components/ui/farmerWorkspace/FarmerSummaryGrid";
-import { FarmerTable } from "../../components/ui/farmerWorkspace/FarmerTable";
-import { FarmerFarmDrilldown } from "../../components/ui/farmerFarmDrilldown/FarmerFarmDrilldown";
-import { useFarmerWorkspace } from "../../hooks/useFarmerWorkspace";
-import "./FarmerWorkspace.css";
+import type { EntityRecord, FarmerFarm } from '../../types/dashboard'
+import { FarmerControls } from '../../components/ui/farmerWorkspace/FarmerControls'
+import { FarmerSummaryGrid } from '../../components/ui/farmerWorkspace/FarmerSummaryGrid'
+import { FarmerTable } from '../../components/ui/farmerWorkspace/FarmerTable'
+import { FarmerFarmDrilldown } from '../../components/ui/farmerFarmDrilldown/FarmerFarmDrilldown'
+import { useFarmerWorkspace } from '../../hooks/useFarmerWorkspace'
+import './FarmerWorkspace.css'
 
 type FarmerWorkspaceProps = {
-  farmers: EntityRecord[];
-  farms: FarmerFarm[];
-  search: string;
-  created: EntityRecord[];
-  onAdd: () => void;
-  onOpen: (record: EntityRecord) => void;
+  farmers: EntityRecord[]
+  farms: FarmerFarm[]
+  search: string
+  created: EntityRecord[]
+  onAdd: () => void
+  onOpen: (record: EntityRecord) => void
   onReviewAction: (
-    action: "approved" | "requested-information",
+    action: 'approved' | 'requested-information',
     farmer: EntityRecord,
-  ) => Promise<void>;
-};
+  ) => Promise<void>
+  onOpenVerification: (farmer: EntityRecord) => void
+}
 
 export function FarmerWorkspace({
   farmers,
@@ -27,6 +28,7 @@ export function FarmerWorkspace({
   onAdd,
   onOpen,
   onReviewAction,
+  onOpenVerification,
 }: FarmerWorkspaceProps) {
   const workspace = useFarmerWorkspace({
     created,
@@ -35,7 +37,7 @@ export function FarmerWorkspace({
     onOpen,
     onReviewAction,
     search,
-  });
+  })
 
   if (workspace.selectedFarmer) {
     return (
@@ -49,16 +51,13 @@ export function FarmerWorkspace({
         onOpenImageGallery={workspace.onOpenImageGallery}
         onCloseImageGallery={workspace.onCloseImageGallery}
         onApproveFarmer={workspace.approveSelectedFarmer}
-        onRequestInformation={workspace.requestSelectedFarmerInformation}
+        onOpenVerification={() => onOpenVerification(workspace.selectedFarmer!)}
       />
-    );
+    )
   }
 
   return (
-    <section
-      className="user-workspace farmer-workspace"
-      aria-labelledby="farmers-title"
-    >
+    <section className="user-workspace farmer-workspace" aria-labelledby="farmers-title">
       <h1 className="user-workspace-title" id="farmers-title">
         Farmers
       </h1>
@@ -88,5 +87,5 @@ export function FarmerWorkspace({
         onToggleFarmerSelection={workspace.toggleFarmerSelection}
       />
     </section>
-  );
+  )
 }

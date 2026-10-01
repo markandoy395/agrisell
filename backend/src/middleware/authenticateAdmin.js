@@ -19,8 +19,8 @@ const getSessionToken = (request) => {
   return getBearerToken(request) ?? cookies[config.sessionCookieName] ?? null;
 };
 
-const authenticateAdmin = (request, response) => {
-  const admin = verifyAdminSession(getSessionToken(request));
+const authenticateAdmin = async (request, response) => {
+  const admin = await verifyAdminSession(getSessionToken(request));
 
   if (!admin) {
     sendJson(response, 401, {

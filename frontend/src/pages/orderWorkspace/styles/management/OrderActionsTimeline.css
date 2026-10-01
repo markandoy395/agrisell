@@ -1,0 +1,118 @@
+.order-action-section,
+.order-timeline {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--order-line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.order-action-section h3,
+.order-timeline h3 {
+  margin: 0 0 14px;
+  color: var(--order-ink-strong);
+  font-size: var(--fs-small);
+}
+
+.order-action-section form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.order-action-section label {
+  display: grid;
+  gap: 6px;
+  color: var(--order-muted-strong);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+.order-action-section label:has(textarea),
+.order-action-section .label-textarea,
+.order-action-section .primary-button {
+  grid-column: 1/-1;
+}
+
+.order-action-section input,
+.order-action-section select,
+.order-action-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  color: var(--order-ink);
+  border: 1px solid var(--order-line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-weight: var(--fw-medium);
+}
+
+.order-action-section textarea {
+  resize: vertical;
+}
+
+.order-action-section .primary-button {
+  justify-self: end;
+}
+
+.order-timeline article {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 10px;
+  position: relative;
+  padding: 0 0 18px;
+}
+
+.order-timeline article:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 11px;
+  bottom: 0;
+  width: 1px;
+  background: var(--order-line-strong);
+}
+
+.order-timeline article > i {
+  width: 9px;
+  height: 9px;
+  margin-top: 3px;
+  z-index: 1;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--order-brand);
+  box-shadow: 0 0 0 1px var(--order-brand);
+}
+
+.order-timeline article strong {
+  font-size: var(--fs-xs);
+}
+
+.order-timeline article p {
+  margin: 4px 0;
+  color: var(--order-muted-strong);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-small);
+}
+
+.order-timeline article small {
+  color: var(--order-muted);
+  font-size: var(--fs-nano);
+}
+
+@media (max-width: 560px) {
+  .order-action-section form,
+    .order-detail-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+  .order-action-section label:has(textarea),
+    .order-action-section .label-textarea,
+    .order-action-section .primary-button {
+      grid-column: auto;
+    }
+}
+

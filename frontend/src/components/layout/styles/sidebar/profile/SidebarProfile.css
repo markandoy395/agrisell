@@ -1,0 +1,105 @@
+.help-card strong,
+.profile-mini strong {
+  display: block;
+  color: #37433b;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+}
+
+.help-card span,
+.profile-mini span {
+  display: block;
+  margin-top: 2px;
+  color: #86948b;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-small);
+}
+
+.help-card > span:nth-child(2),
+.profile-mini > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-mini strong,
+.profile-mini small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-area {
+  position: relative;
+}
+
+.profile-mini {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 5px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  text-align: left;
+  cursor: default;
+}
+
+.profile-more {
+  width: 45px;
+  height: 45px;
+  display: grid !important;
+  flex: 0 0 45px;
+  place-items: center;
+  margin: 0 0 0 auto !important;
+  color: #3d4942 !important;
+  border-radius: 12px;
+  background: #f4f5f4;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.profile-mini:hover .profile-more,
+.profile-mini[aria-expanded='true'] .profile-more {
+  color: #28342d !important;
+  background: #e9ecea;
+}
+
+.profile-mini small {
+  display: block;
+  margin-top: 2px;
+  color: #86948b;
+  font-size: var(--fs-micro);
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  color: #fff;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #76af62, var(--brand-forest-green));
+  box-shadow: 0 6px 16px rgb(15 116 59 / 22%);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar.has-photo {
+  border-color: #c9e5ce;
+  background: #fff;
+}

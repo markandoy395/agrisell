@@ -1,0 +1,79 @@
+.user-identity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--user-brand);
+  border: 1px solid var(--user-line-strong);
+  border-radius: 50%;
+  background: var(--user-brand-soft);
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+}
+
+.user-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+.user-status i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.user-status.active {
+  color: var(--user-brand);
+  background: var(--user-brand-soft);
+}
+
+.user-status.inactive,
+.user-status.deactivated,
+.user-status.suspended,
+.user-status.rejected {
+  color: var(--user-muted);
+  background: var(--user-neutral-soft);
+}
+
+.user-status.pending {
+  color: #8a5a00;
+  background: #fff3d6;
+}
+
+.user-row-action {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--user-muted);
+  border: 0;
+  border-radius: var(--user-radius);
+  background: transparent;
+}
+
+.user-row-action:hover {
+  color: var(--user-brand);
+  background: var(--user-brand-soft);
+}
+
+.user-empty-state {
+  padding: 28px;
+  color: var(--user-muted);
+  font-size: var(--fs-caption);
+  text-align: center;
+}
+

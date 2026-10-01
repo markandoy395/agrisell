@@ -1,0 +1,67 @@
+.payment-workspace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 2px 4px;
+}
+
+.payment-workspace-header h1 {
+  margin: 5px 0 0;
+  color: #132018;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--fw-bold);
+}
+
+.payment-workspace-header p {
+  margin: 7px 0 0;
+  color: #69766e;
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+}
+
+.payment-period-button,
+.payment-workspace .ghost-button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13px;
+  color: #27352d;
+  border: 1px solid #dce3de;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 5px 14px rgb(23 43 31 / 4%);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+}
+
+.payment-period-button .icon:last-child,
+.payment-workspace .ghost-button .icon:last-child {
+  margin-left: 8px;
+}
+
+.payment-kicker {
+  display: block;
+  color: #6fad85; /* fallback for browsers without color-mix() */
+  color: color-mix(in srgb, var(--brand-forest-green) 70%, white);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+@media (max-width: 820px) {
+  .payment-workspace-header {
+      display: grid;
+    }
+}
+
+@media (max-width: 820px) {
+  .payment-period-button {
+      justify-self: start;
+    }
+}
+

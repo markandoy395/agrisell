@@ -67,14 +67,14 @@
 }
 .delivery-ring strong {
   color: #2a4936;
-  font-size: 20px;
-  line-height: 1.1;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-hero);
 }
 .delivery-ring small {
   max-width: 62px;
   color: #92a098;
-  font-size: 8.5px;
-  line-height: 1.25;
+  font-size: var(--fs-nano);
+  line-height: var(--lh-h2);
   overflow-wrap: anywhere;
 }
 .delivery-stats {
@@ -90,7 +90,7 @@
   color: #748178;
   border: 0;
   background: transparent;
-  font-size: 10px;
+  font-size: var(--fs-micro);
   text-align: left;
   transition: color 0.2s ease;
 }
@@ -119,11 +119,10 @@
 }
 .delivery-stats strong {
   color: #43574b;
-  font-size: 10px;
+  font-size: var(--fs-micro);
 }
 .overview-dashboard .delivery-ring-slice {
-  animation: delivery-slice-in 0.52s cubic-bezier(0.2, 0.8, 0.2, 1)
-    var(--segment-delay) backwards;
+  animation: delivery-slice-in 0.52s cubic-bezier(0.2, 0.8, 0.2, 1) var(--segment-delay) backwards;
 }
 
 @keyframes delivery-slice-in {

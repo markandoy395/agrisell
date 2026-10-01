@@ -1,0 +1,110 @@
+.dashboard-filter-field {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  color: #213527;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+}
+
+.dashboard .dashboard-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.dashboard-filter-grid > .dashboard-filter-field {
+  flex: 1 1 165px;
+}
+
+.dashboard-filter-grid > .dashboard-filter-actions {
+  margin-left: auto;
+}
+
+.dashboard .dashboard-filter-actions > button {
+  min-height: 42px;
+  border: 1px solid var(--brand-forest-green);
+  border-radius: 8px;
+  background: var(--brand-forest-green);
+  color: #fff;
+  box-shadow: 0 10px 22px rgb(15 116 59 / 14%);
+}
+
+.dashboard .dashboard-filter-actions > button:hover:not(:disabled) {
+  background: var(--brand-forest-green-dark);
+  color: #fff;
+}
+
+.dashboard .dashboard-filter-control,
+.dashboard .dashboard-filter-field > select {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid #ddeae1;
+  border-radius: 8px;
+  background-color: #f6faf7;
+  box-shadow: 0 8px 18px rgb(15 116 59 / 7%);
+  color: #213527;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+}
+
+.dashboard .dashboard-filter-control .icon {
+  flex: 0 0 auto;
+  color: var(--brand-forest-green);
+}
+
+.dashboard .dashboard-filter-control input {
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.dashboard .dashboard-filter-control input::placeholder {
+  color: #77817d;
+}
+
+.dashboard .dashboard-filter-field > select {
+  appearance: none;
+  padding-right: 36px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--brand-forest-green) 50%),
+    linear-gradient(135deg, var(--brand-forest-green) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+}
+
+.dashboard .dashboard-filter-control:focus-within,
+.dashboard .dashboard-filter-field > select:focus {
+  border-color: var(--brand-forest-green);
+  background-color: #fff;
+  box-shadow: 0 0 0 3px var(--brand-forest-green-soft);
+  outline: 0;
+}
+
+.dashboard-filter-actions {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dashboard-filter-actions > button {
+  min-height: 42px;
+  white-space: nowrap;
+}

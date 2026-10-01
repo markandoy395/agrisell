@@ -31,7 +31,7 @@ const routeAuthRequest = async (request, response, pathname) => {
   }
 
   if (pathname === '/api/auth/logout' && request.method === 'POST') {
-    logoutAdmin(request, response);
+    await logoutAdmin(request, response);
     return true;
   }
 

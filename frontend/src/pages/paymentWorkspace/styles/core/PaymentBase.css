@@ -1,0 +1,54 @@
+.payment-workspace {
+  --payment-ink: #263b30;
+  --payment-muted: var(--muted);
+  --payment-line: var(--line);
+  --payment-surface: #fff;
+  --payment-surface-soft: #fbfdf8;
+  --payment-brand-glow: rgba(15, 116, 59, 0.18); /* fallback for browsers without color-mix() */
+  --payment-brand-glow: color-mix(in srgb, var(--brand-forest-green) 18%, transparent);
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid #e5ebe6;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 16px 42px rgb(28 58 39 / 7%);
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.25fr) minmax(300px, 0.95fr);
+  gap: 16px;
+}
+
+.payment-panel {
+  min-width: 0;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgb(28 58 39 / 3%);
+}
+
+.payment-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.payment-panel-heading h3 {
+  margin: 5px 0 0;
+  color: var(--payment-ink);
+  font-size: var(--fs-body);
+}
+
+@media (max-width: 1180px) {
+  .payment-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+  .payment-workspace {
+      padding: 15px;
+    }
+}
+

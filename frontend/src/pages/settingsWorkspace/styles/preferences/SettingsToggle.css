@@ -1,0 +1,78 @@
+.switch {
+  position: relative;
+  width: 34px;
+  height: 19px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: #dce3de;
+  transition: 0.18s;
+}
+
+.switch i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  transition: 0.18s;
+}
+
+.switch.checked {
+  background: var(--brand-forest-green);
+}
+
+.switch.checked i {
+  transform: translateX(15px);
+}
+
+.settings-list .settings-row > div:not(.setting-toggle-control) {
+  min-width: 0;
+  flex: 1;
+}
+
+.setting-toggle-control {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-list .setting-toggle-control > span {
+  width: 54px;
+  margin: 0;
+  color: #536675;
+  font-size: var(--fs-xs);
+}
+
+.switch {
+  width: 48px;
+  height: 27px;
+  background: #d8e0db;
+}
+
+.switch i {
+  top: 4px;
+  left: 4px;
+  width: 19px;
+  height: 19px;
+  box-shadow: 0 1px 4px rgb(20 50 32 / 18%);
+}
+
+.switch.checked {
+  background: linear-gradient(120deg, #047b42, #06a15a);
+}
+
+.switch.checked i {
+  transform: translateX(21px);
+}
+
+@media (max-width: 700px) {
+  .settings-admin-button,
+    .setting-toggle-control {
+      margin-left: 68px;
+    }
+}

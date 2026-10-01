@@ -1,0 +1,95 @@
+.sale-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 3px 6px;
+  border-radius: 999px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.sale-status-active {
+  color: #0c7138;
+  background: #e8f7ed;
+}
+
+.sale-status-scheduled {
+  color: #326b8a;
+  background: #eaf4f9;
+}
+
+.sale-status-expired {
+  color: #7a6646;
+  background: #f4f0e9;
+}
+
+.sale-status-disabled {
+  color: #676f6b;
+  background: #edf0ee;
+}
+
+.sale-home-badge {
+  display: inline-flex;
+  padding: 3px 6px;
+  color: var(--user-brand-dark);
+  border-radius: 999px;
+  background: var(--user-lime-soft);
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.sale-promo-badge {
+  display: inline-flex;
+  padding: 3px 6px;
+  color: #1e40af;
+  border-radius: 999px;
+  background: #dbeafe;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.sale-scope-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  white-space: nowrap;
+}
+
+.sale-scope-platform {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.sale-scope-farmer {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.sale-owner-warning {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+}
+
+

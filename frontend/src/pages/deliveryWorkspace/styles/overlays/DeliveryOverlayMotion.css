@@ -1,0 +1,13 @@
+@keyframes delivery-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes delivery-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.98);
+  }
+}
+

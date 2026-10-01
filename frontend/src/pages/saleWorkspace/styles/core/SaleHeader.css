@@ -1,0 +1,87 @@
+.sale-page-header,
+.sale-panel-heading,
+.sale-section-title,
+.sale-submit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sale-page-header {
+  margin-bottom: 18px;
+}
+
+.sale-page-header h1 {
+  margin: 4px 0 2px;
+  color: var(--brand-black);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--fw-bold);
+}
+
+.sale-page-header p,
+.sale-panel-heading p {
+  margin: 0;
+  color: var(--user-muted);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+}
+
+.sale-price-safety {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  color: var(--user-brand-dark);
+  border: 1px solid var(--user-line-strong);
+  border-radius: 999px;
+  background: var(--user-brand-soft);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+
+.sale-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.sale-header-button {
+  min-width: 116px;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .sale-page-header {
+      align-items: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+  .sale-price-safety {
+      display: none;
+    }
+}
+
+@media (max-width: 520px) {
+  .sale-page-header {
+      flex-direction: column;
+      gap: 10px;
+    }
+}
+
+@media (max-width: 520px) {
+  .sale-header-actions {
+      align-self: stretch;
+    }
+}
+
+@media (max-width: 520px) {
+  .sale-header-button {
+      width: 100%;
+    }
+}
+

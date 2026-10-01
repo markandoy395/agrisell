@@ -1,0 +1,38 @@
+.order-card-menu {
+  width: 23px;
+  height: 23px;
+  display: none;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-left: auto;
+  color: var(--order-muted);
+}
+
+.order-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  padding: 4px 6px;
+  border-radius: 7px;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+}
+
+.order-summary-value .order-growth {
+  grid-column: 3;
+  grid-row: 2;
+  align-self: center;
+}
+
+.order-growth.tone-green {
+  color: var(--order-brand);
+  background: var(--order-brand-soft);
+}
+
+.order-growth.tone-red {
+  color: var(--order-muted-strong);
+  background: var(--order-neutral-soft);
+}
+

@@ -1,0 +1,156 @@
+.user-controls {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 1.05fr)
+    minmax(160px, 0.9fr)
+    minmax(170px, 0.95fr)
+    minmax(150px, 0.8fr)
+    auto;
+  gap: 18px;
+  align-items: end;
+  margin-top: 22px;
+}
+
+.user-search-field,
+.user-select-field {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.user-search-field > span:first-child,
+.user-select-field > span {
+  color: var(--user-ink);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+}
+
+.user-search-field > span:last-child,
+.user-select-field select {
+  width: 100%;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--user-ink);
+  border: 1px solid var(--user-control-border);
+  border-radius: var(--user-radius);
+  background-color: var(--user-control-surface);
+  box-shadow: 0 8px 18px rgba(15, 116, 59, 0.07); /* fallback for browsers without color-mix() */
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--user-brand) 7%, transparent);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.user-search-field > span:last-child:hover,
+.user-select-field select:hover {
+  border-color: var(--user-line-strong);
+  background-color: var(--user-surface);
+}
+
+.user-search-field > span:last-child:focus-within,
+.user-select-field select:focus {
+  border-color: var(--user-brand);
+  background-color: var(--user-surface);
+  box-shadow: 0 0 0 3px var(--user-brand-soft);
+  outline: 0;
+}
+
+.user-search-field .icon {
+  flex: 0 0 auto;
+  color: var(--user-brand);
+}
+
+.user-search-field input {
+  min-width: 0;
+  flex: 1;
+  color: var(--user-ink);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: var(--fs-caption);
+}
+
+.user-search-field input::placeholder {
+  color: var(--user-muted);
+}
+
+.user-select-field select {
+  appearance: none;
+  padding-right: 36px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--user-brand) 50%),
+    linear-gradient(135deg, var(--user-brand) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+}
+
+.user-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.user-add-button,
+.user-download-button {
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--user-surface);
+  border: 0;
+  border-radius: var(--user-radius);
+  background: var(--user-brand);
+  box-shadow: 0 10px 22px var(--user-shadow);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+
+.user-add-button {
+  min-width: 137px;
+  padding: 0 18px;
+}
+
+.user-download-button {
+  min-width: 116px;
+  padding: 0 14px;
+}
+
+.user-add-button:hover,
+.user-download-button:hover {
+  background: var(--user-brand-dark);
+}
+
+.user-add-button:disabled,
+.user-download-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.user-add-button:disabled:hover,
+.user-download-button:disabled:hover {
+  background: var(--user-brand);
+}
+
+@media (max-width: 1220px) {
+  .user-controls {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1220px) {
+  .user-actions {
+      justify-content: flex-start;
+    }
+}
+

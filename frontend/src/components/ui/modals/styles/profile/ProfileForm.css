@@ -1,0 +1,99 @@
+.profile-fields {
+  display: grid;
+  gap: 14px;
+}
+
+.profile-modal form.profile-information-form {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #dce4df;
+}
+
+.profile-personal-heading {
+  margin-bottom: 20px;
+}
+
+.profile-modal .profile-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 22px;
+}
+
+.profile-input {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  color: #71808d;
+  border: 1px solid #ccd8d1;
+  border-radius: 11px;
+  background: #fff;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.profile-input:focus-within {
+  border-color: #159052;
+  box-shadow: 0 0 0 3px rgb(21 144 82 / 10%);
+}
+
+.profile-modal .profile-input input {
+  min-width: 0;
+  height: 48px;
+  flex: 1;
+  padding: 0;
+  color: #1c2730;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  outline: 0;
+  font-size: var(--fs-small);
+}
+
+.profile-modal .profile-input input[readonly] {
+  cursor: default;
+}
+
+.profile-input > .icon:last-child {
+  margin-left: auto;
+}
+
+.profile-modal-actions {
+  margin-top: 22px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.profile-modal .profile-modal-actions button {
+  min-width: 142px;
+  min-height: 52px;
+  justify-content: center;
+  border-radius: 11px;
+  font-size: var(--fs-small);
+}
+
+.profile-modal .profile-modal-actions .primary-button {
+  min-width: 205px;
+  gap: 10px;
+  background: linear-gradient(120deg, #078146, #009454);
+}
+
+@media (max-width: 620px) {
+  .profile-modal-actions {
+      position: sticky;
+      bottom: -20px;
+      padding: 12px 0 4px;
+      background: #fff;
+    }
+}
+
+@media (max-width: 620px) {
+  .profile-modal .profile-modal-actions button,
+    .profile-modal .profile-modal-actions .primary-button {
+      min-width: 0;
+      flex: 1;
+    }
+}
+

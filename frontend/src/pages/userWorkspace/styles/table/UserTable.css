@@ -1,0 +1,110 @@
+.user-table-panel {
+  margin-top: 24px;
+  border: 1px solid var(--user-line);
+  border-radius: var(--user-radius);
+  background: var(--user-surface);
+}
+
+.user-table-wrap {
+  overflow-x: auto;
+}
+
+.user-table {
+  width: 100%;
+  min-width: 1180px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.user-col-select {
+  width: 42px;
+}
+
+.user-col-name {
+  width: 190px;
+}
+
+.user-col-contact {
+  width: 190px;
+}
+
+.user-col-status {
+  width: 128px;
+}
+
+.user-col-type {
+  width: 128px;
+}
+
+.user-col-location {
+  width: 180px;
+}
+
+.user-col-wallet {
+  width: 170px;
+}
+
+.user-col-joined {
+  width: 145px;
+}
+
+.user-col-actions {
+  width: 78px;
+}
+
+.user-table th {
+  height: 44px;
+  padding: 0 10px;
+  color: var(--user-muted);
+  border-bottom: 1px solid var(--user-line);
+  background: var(--user-surface);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.user-table td {
+  height: 70px;
+  padding: 0 10px;
+  color: var(--user-ink);
+  border-bottom: 1px solid var(--user-line);
+  font-size: var(--fs-xs);
+  vertical-align: middle;
+}
+
+.user-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.user-table tbody tr:hover td {
+  background: var(--user-brand-soft);
+}
+
+.user-table input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--user-brand);
+}
+
+.user-table strong,
+.user-table small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-table strong {
+  color: var(--user-ink);
+  font-size: var(--fs-xs);
+}
+
+.user-table small {
+  margin-top: 3px;
+  color: var(--user-muted);
+  font-size: var(--fs-micro);
+}
+

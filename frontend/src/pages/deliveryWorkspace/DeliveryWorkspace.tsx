@@ -1,260 +1,193 @@
-import { useMemo, useState } from "react";
-import { UserSummaryGrid } from "../../components/ui/userWorkspace/UserSummaryGrid";
-import { Icon } from "../../components/ui/icon/Icon";
-import type { EntityRecord, UserWorkspaceSummaryCard } from "../../types/dashboard";
-import "./DeliveryWorkspace.css";
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Icon } from '../../components/ui/icon/Icon'
+import { fetchFarmerRiderRequests } from '../../api/deliveries'
+import { RiderTracking } from './RiderTracking'
+import { FarmerRiderRequestsPanel } from './FarmerRiderRequestsPanel'
+import { DeliveryActionMenu } from './DeliveryActionMenu'
+import { DeliveryConfirmationOverlays } from './DeliveryConfirmationOverlays'
+import { DeliveryCreateForm } from './DeliveryCreateForm'
+import { DeliveryDetailOverlays } from './DeliveryDetailOverlays'
+import { DeliveryFilters } from './DeliveryFilters'
+import { DeliveryHeader } from './DeliveryHeader'
+import { DeliverySummary } from './DeliverySummary'
+import { DeliveryTable } from './DeliveryTable'
+import { useDeliveryActions } from './useDeliveryActions'
+import { useDeliveryData } from './useDeliveryData'
+import type { EntityRecord } from '../../types/dashboard'
+import type { GlobalIssuePayload } from '../../types/globalIssue'
+import type { FarmerRiderRequest } from '../../types/delivery'
+import '../orderWorkspace/OrderWorkspace.css'
+import './DeliveryWorkspace.css'
 
 type DeliveryWorkspaceProps = {
-  created: EntityRecord[];
-  records: EntityRecord[];
-  search: string;
-  onAdd: () => void;
-  onOpen: (record: EntityRecord) => void;
-};
-
-const DELIVERIES_PER_PAGE = 10;
-const ALL_STATUSES = "All statuses";
-const ALL_ORDERS = "All orders";
-
-const getDeliveryKey = (delivery: EntityRecord) =>
-  delivery.entityId ?? `${delivery.primary}-${delivery.secondary}`;
-
-const isDelivered = (status: string) => /delivered|completed/i.test(status);
-const isActive = (status: string) =>
-  /to deliver|in transit|on delivery|processing|active/i.test(status);
-
-const createSummaryCards = (
-  deliveries: EntityRecord[],
-): UserWorkspaceSummaryCard[] => {
-  const delivered = deliveries.filter((delivery) => isDelivered(delivery.status));
-  const active = deliveries.filter((delivery) => isActive(delivery.status));
-  const attention = deliveries.filter(
-    (delivery) => !isDelivered(delivery.status) && !isActive(delivery.status),
-  );
-
-  return [
-    {
-      detail: "All database delivery assignments",
-      icon: "truck",
-      label: "Total deliveries",
-      trend: "Live",
-      value: deliveries.length.toLocaleString("en-US"),
-    },
-    {
-      detail: "Routes currently being fulfilled",
-      icon: "route",
-      label: "Active routes",
-      trend: "Live",
-      value: active.length.toLocaleString("en-US"),
-    },
-    {
-      detail: "Successfully completed deliveries",
-      icon: "check",
-      label: "Delivered",
-      trend: "Live",
-      value: delivered.length.toLocaleString("en-US"),
-    },
-    {
-      detail: "Pending or exception records",
-      icon: "alert",
-      label: "Need attention",
-      trend: "Live",
-      value: attention.length.toLocaleString("en-US"),
-    },
-  ];
-};
-
-const downloadDeliveriesCsv = (deliveries: EntityRecord[]) => {
-  const escape = (value: string) => `"${value.replaceAll('"', '""')}"`;
-  const rows = [
-    ["Delivery", "Destination", "Order / route", "Schedule", "Status"],
-    ...deliveries.map((delivery) => [
-      delivery.primary,
-      delivery.secondary,
-      delivery.category,
-      delivery.value,
-      delivery.status,
-    ]),
-  ];
-  const file = new Blob(
-    [rows.map((row) => row.map(escape).join(",")).join("\n")],
-    { type: "text/csv;charset=utf-8" },
-  );
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = "agrisell-deliveries.csv";
-  link.click();
-  URL.revokeObjectURL(url);
-};
+  search: string
+  fallbackRecords?: EntityRecord[]
+  onNotice?: (message: string) => void
+  onDataChanged?: () => void
+  onReportIssue?: (issue: GlobalIssuePayload | null) => void
+  initialDeliveryId?: number | null
+  onInitialDeliveryOpened?: () => void
+}
 
 export function DeliveryWorkspace({
-  created,
-  records,
   search,
-  onAdd,
-  onOpen,
+  fallbackRecords,
+  onNotice,
+  onDataChanged,
+  onReportIssue,
+  initialDeliveryId,
+  onInitialDeliveryOpened,
 }: DeliveryWorkspaceProps) {
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState(ALL_STATUSES);
-  const [orderFilter, setOrderFilter] = useState(ALL_ORDERS);
-  const [selected, setSelected] = useState<Set<string>>(() => new Set());
-  const [currentPage, setCurrentPage] = useState(1);
-  const deliveries = useMemo(() => [...created, ...records], [created, records]);
-  const summaryCards = useMemo(() => createSummaryCards(deliveries), [deliveries]);
-  const statuses = useMemo(
-    () => [ALL_STATUSES, ...Array.from(new Set(deliveries.map((item) => item.status))).sort()],
-    [deliveries],
-  );
-  const orders = useMemo(
-    () => [ALL_ORDERS, ...Array.from(new Set(deliveries.map((item) => item.category))).sort()],
-    [deliveries],
-  );
-  const filteredDeliveries = useMemo(() => {
-    const terms = `${search} ${query}`.trim().toLowerCase();
+  const [view, setView] = useState<'list' | 'tracking' | 'farmer-requests'>('list')
+  const [trackedId, setTrackedId] = useState<number | null>(null)
+  const [creating, setCreating] = useState(false)
+  const [farmerRequests, setFarmerRequests] = useState<FarmerRiderRequest[]>([])
+  const [pendingRequestsCount, setPendingRequestsCount] = useState<number>(0)
+  const data = useDeliveryData(search, fallbackRecords)
+  const actions = useDeliveryActions({
+    data,
+    initialDeliveryId,
+    onDataChanged,
+    onNotice,
+  })
 
-    return deliveries.filter((delivery) => {
-      const matchesSearch =
-        !terms ||
-        `${delivery.primary} ${delivery.secondary} ${delivery.category} ${delivery.value} ${delivery.status}`
-          .toLowerCase()
-          .includes(terms);
+  useEffect(() => {
+    let active = true
+    void fetchFarmerRiderRequests()
+      .then((res) => {
+        if (!active) return
+        setFarmerRequests(res.rows)
+        setPendingRequestsCount(res.pending_count)
+      })
+      .catch(() => undefined)
+    return () => {
+      active = false
+    }
+  }, [data.reload])
 
-      return (
-        matchesSearch &&
-        (statusFilter === ALL_STATUSES || delivery.status === statusFilter) &&
-        (orderFilter === ALL_ORDERS || delivery.category === orderFilter)
-      );
-    });
-  }, [deliveries, orderFilter, query, search, statusFilter]);
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredDeliveries.length / DELIVERIES_PER_PAGE),
-  );
-  const activePage = Math.min(currentPage, totalPages);
-  const pageDeliveries = filteredDeliveries.slice(
-    (activePage - 1) * DELIVERIES_PER_PAGE,
-    activePage * DELIVERIES_PER_PAGE,
-  );
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
-  const visibleKeys = pageDeliveries.map(getDeliveryKey);
-  const allVisibleSelected =
-    visibleKeys.length > 0 && visibleKeys.every((key) => selected.has(key));
-  const resetPage = () => setCurrentPage(1);
-  const toggleAllVisible = () => {
-    setSelected((current) => {
-      const next = new Set(current);
+  useEffect(() => {
+    if (!initialDeliveryId || data.loading) return
+    if (!data.deliveries.some((delivery) => delivery.delivery_id === initialDeliveryId)) return
+    onInitialDeliveryOpened?.()
+  }, [data.deliveries, data.loading, initialDeliveryId, onInitialDeliveryOpened])
 
-      visibleKeys.forEach((key) =>
-        allVisibleSelected ? next.delete(key) : next.add(key),
-      );
-      return next;
-    });
-  };
-  const toggleDelivery = (key: string) => {
-    setSelected((current) => {
-      const next = new Set(current);
+  const reportIssueRef = useRef(onReportIssue)
+  useEffect(() => {
+    reportIssueRef.current = onReportIssue
+  }, [onReportIssue])
 
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
-  };
+  useEffect(() => {
+    if (data.error) {
+      reportIssueRef.current?.({
+        actionLabel: 'Reload Deliveries',
+        category: 'Delivery',
+        level: 'error',
+        message: data.error,
+        onAction: data.refresh,
+        title: 'Delivery Synchronization Issue',
+      })
+    } else {
+      reportIssueRef.current?.(null)
+    }
+  }, [data.error, data.refresh])
 
+  const handleCountsChanged = useCallback(({ pending }: { pending: number }) => {
+    setPendingRequestsCount((prev) => (prev === pending ? prev : pending))
+  }, [])
+
+  const track = (id: number) => {
+    setTrackedId(id)
+    setView('tracking')
+    actions.setSelectedId(null)
+  }
   return (
-    <section className="user-workspace delivery-workspace" aria-labelledby="deliveries-title">
-      <h1 className="user-workspace-title" id="deliveries-title">Deliveries</h1>
-
-      <UserSummaryGrid cards={summaryCards} ariaLabel="Deliveries summary" />
-
-      <div className="user-controls delivery-controls">
-        <label className="user-search-field">
-          <span>Search</span>
-          <span>
-            <Icon name="search" size={15} />
-            <input
-              type="search"
-              placeholder="Deliveries..."
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                resetPage();
-              }}
-            />
-          </span>
-        </label>
-        <label className="user-select-field">
-          <span>Order / route</span>
-          <select value={orderFilter} onChange={(event) => { setOrderFilter(event.target.value); resetPage(); }}>
-            {orders.map((option) => <option key={option}>{option}</option>)}
-          </select>
-        </label>
-        <label className="user-select-field">
-          <span>Status</span>
-          <select value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); resetPage(); }}>
-            {statuses.map((option) => <option key={option}>{option}</option>)}
-          </select>
-        </label>
-        <div className="user-actions">
-          <button className="user-add-button" type="button" onClick={onAdd}>
-            <Icon name="plus" size={15} /> Add delivery
-          </button>
-          <button className="user-download-button" type="button" disabled={!filteredDeliveries.length} onClick={() => downloadDeliveriesCsv(filteredDeliveries)}>
-            Download <Icon name="download" size={16} />
-          </button>
-        </div>
+    <section
+      className="user-workspace delivery-workspace order-workspace"
+      aria-labelledby="deliveries-title"
+    >
+      <DeliveryHeader data={data} onCreate={() => setCreating(true)} />
+      <DeliverySummary data={data} />
+      <div className="delivery-view-tabs" aria-label="Delivery views">
+        <button
+          type="button"
+          aria-pressed={view === 'list'}
+          onClick={() => {
+            setView('list')
+            data.refresh()
+          }}
+        >
+          Delivery List
+        </button>
+        <button
+          type="button"
+          aria-pressed={view === 'tracking'}
+          onClick={() => setView('tracking')}
+        >
+          Live Tracking
+        </button>
+        <button
+          type="button"
+          aria-pressed={view === 'farmer-requests'}
+          onClick={() => setView('farmer-requests')}
+        >
+          Farmer Invitations
+          {pendingRequestsCount > 0 && (
+            <span className="pill-count" style={{ marginLeft: 6 }}>
+              {pendingRequestsCount}
+            </span>
+          )}
+        </button>
       </div>
-
-      <div className="user-table-panel">
-        <div className="user-table-wrap">
-          <table className="user-table delivery-table">
-            <colgroup>
-              <col className="delivery-col-select" />
-              <col className="delivery-col-id" />
-              <col className="delivery-col-order" />
-              <col className="delivery-col-schedule" />
-              <col className="delivery-col-status" />
-              <col className="delivery-col-action" />
-            </colgroup>
-            <thead><tr>
-              <th><input type="checkbox" checked={allVisibleSelected} disabled={!pageDeliveries.length} onChange={toggleAllVisible} aria-label="Select all visible deliveries" /></th>
-              <th>Delivery and destination</th>
-              <th>Order / route</th>
-              <th>Schedule</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr></thead>
-            <tbody>
-              {pageDeliveries.map((delivery) => {
-                const key = getDeliveryKey(delivery);
-
-                return <tr key={key}>
-                  <td><input type="checkbox" checked={selected.has(key)} onChange={() => toggleDelivery(key)} aria-label={`Select ${delivery.primary}`} /></td>
-                  <td><span className="user-identity"><span className="user-avatar delivery-avatar" aria-hidden="true"><Icon name="truck" size={15} /></span><span><strong>{delivery.primary}</strong><small>{delivery.secondary}</small></span></span></td>
-                  <td><strong>{delivery.category}</strong><small>Assigned delivery route</small></td>
-                  <td><strong>{delivery.value}</strong><small>Estimated arrival</small></td>
-                  <td><span className={`user-status ${delivery.tone}`}><i aria-hidden="true" />{delivery.status}</span></td>
-                  <td><button className="user-row-action" type="button" onClick={() => onOpen(delivery)} aria-label={`Open ${delivery.primary}`} title="Open delivery"><Icon name="more" size={18} /></button></td>
-                </tr>;
-              })}
-            </tbody>
-          </table>
-          {!pageDeliveries.length && <div className="user-empty-state">No matching deliveries found.</div>}
-        </div>
-
-        <div className="user-table-footer">
-          <span>Showing {(activePage - 1) * DELIVERIES_PER_PAGE + (pageDeliveries.length ? 1 : 0)} to {(activePage - 1) * DELIVERIES_PER_PAGE + pageDeliveries.length} of {filteredDeliveries.length} deliveries</span>
-          <nav className="user-pagination" aria-label="Delivery pages">
-            <button type="button" disabled={activePage === 1} onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} aria-label="Previous page"><Icon name="chevron" size={15} /></button>
-            {pageNumbers.map((page) => <button className={activePage === page ? "is-active" : ""} type="button" key={page} onClick={() => setCurrentPage(page)} aria-current={activePage === page ? "page" : undefined}>{page}</button>)}
-            <button type="button" disabled={activePage === totalPages} onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))} aria-label="Next page"><Icon name="chevron" size={15} /></button>
-          </nav>
-        </div>
-      </div>
+      {view === 'tracking' ? (
+        <RiderTracking search={search} selectedId={trackedId} onSelect={setTrackedId} />
+      ) : view === 'farmer-requests' ? (
+        <>
+          <FarmerRiderRequestsPanel
+            search={search}
+            onAssignRider={(deliveryId, preferredRiderId) => {
+              actions.openAssignmentForDelivery(deliveryId, preferredRiderId)
+            }}
+            onViewDelivery={(deliveryId) => {
+              setView('list')
+              actions.setSelectedMode('details')
+              actions.setSelectedId(deliveryId)
+            }}
+            onCountsChanged={handleCountsChanged}
+          />
+          <DeliveryDetailOverlays
+            actions={actions}
+            data={data}
+            farmerRequests={farmerRequests}
+            onTrack={track}
+          />
+          <DeliveryConfirmationOverlays actions={actions} />
+        </>
+      ) : (
+        <>
+          {data.error && (
+            <p role="alert" className="rider-tracking-error">
+              {data.error}
+            </p>
+          )}
+          {data.loading && (
+            <div className="delivery-loading-popup" role="status" aria-live="polite">
+              <Icon name="refresh" size={16} />
+              <span>Loading deliveries…</span>
+            </div>
+          )}
+          {creating && <DeliveryCreateForm data={data} onClose={() => setCreating(false)} />}
+          <DeliveryFilters data={data} />
+          <DeliveryTable actions={actions} data={data} farmerRequests={farmerRequests} />
+          <DeliveryActionMenu actions={actions} />
+          <DeliveryDetailOverlays
+            actions={actions}
+            data={data}
+            farmerRequests={farmerRequests}
+            onTrack={track}
+          />
+          <DeliveryConfirmationOverlays actions={actions} />
+        </>
+      )}
     </section>
-  );
+  )
 }

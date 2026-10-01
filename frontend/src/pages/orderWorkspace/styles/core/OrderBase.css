@@ -1,0 +1,43 @@
+.order-workspace {
+  min-width: 0;
+  --order-radius-sm: 8px;
+  --order-ink: #213c2e;
+  --order-ink-strong: var(--brand-black);
+  --order-muted: var(--muted);
+  --order-muted-strong: #52645a;
+  --order-line: var(--line);
+  --order-line-strong: #dce9de;
+  --order-surface: #fff;
+  --order-surface-soft: var(--bg);
+  --order-surface-hover: var(--brand-forest-green-soft);
+  --order-brand: var(--brand-forest-green);
+  --order-brand-dark: var(--brand-forest-green-dark);
+  --order-brand-soft: var(--brand-forest-green-soft);
+  --order-lime: var(--brand-lime-green);
+  --order-lime-soft: var(--brand-lime-green-soft);
+  /* Static fallbacks for browsers without color-mix() support */
+  --order-neutral-accent: #3d6642;
+  --order-neutral-accent: color-mix(in srgb, var(--brand-forest-green) 46%, var(--brand-black));
+  --order-neutral-soft: #f2f2f2;
+  --order-neutral-soft: color-mix(in srgb, var(--brand-black) 5%, white);
+  --order-shadow: rgb(39 65 48 / 5%);
+}
+
+.order-workspace h1 {
+  margin: 0;
+  color: var(--order-ink-strong);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+

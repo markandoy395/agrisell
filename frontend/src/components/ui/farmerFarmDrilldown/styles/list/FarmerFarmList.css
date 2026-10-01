@@ -1,0 +1,148 @@
+.farm-card-list {
+  height: var(--farm-detail-height);
+  max-height: none;
+  display: grid;
+  align-content: start;
+  align-self: stretch;
+  gap: 9px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+
+.farmer-review-actions {
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+  border: 1px solid #dbeadb;
+  border-radius: 12px;
+  background: #f8fcf5;
+}
+
+.farmer-review-actions strong {
+  color: #365241;
+  font-size: var(--fs-caption);
+}
+
+.farmer-review-actions p {
+  margin: 0;
+  color: #718078;
+  font-size: var(--fs-nano);
+  line-height: var(--lh-small);
+}
+
+.farmer-review-actions > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.farmer-review-actions button {
+  min-height: 30px;
+  padding: 6px 7px;
+  border-radius: 7px;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h2);
+}
+
+.farmer-approve-button {
+  color: #fff;
+  border: 1px solid var(--brand-forest-green);
+  background: var(--brand-forest-green);
+}
+
+.farmer-approve-button:hover:not(:disabled) {
+  background: var(--brand-forest-green-dark);
+}
+
+.farmer-approve-button:disabled {
+  color: #5d8065;
+  border-color: #d3e5d2;
+  background: #e9f4e6;
+  cursor: default;
+}
+
+.farmer-request-info-button {
+  color: #776032;
+  border: 1px solid #eadcb9;
+  background: #fffaf0;
+}
+
+.farmer-request-info-button:hover {
+  background: #fff4db;
+}
+
+.farm-card {
+  width: 100%;
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 74px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: #596b60;
+  border: 1px solid #e2ebe3;
+  border-radius: 12px;
+  background: #fff;
+  text-align: left;
+  transition: 0.18s ease;
+}
+
+.farm-card:hover,
+.farm-card.is-selected {
+  border-color: #b9d7ad;
+  background: #f2f8ee;
+  box-shadow: 0 10px 22px rgb(35 89 51 / 8%);
+}
+
+.farm-card strong {
+  color: #324a3d;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-h3);
+}
+
+.farm-card small,
+.farm-card span {
+  color: #87958d;
+  font-size: var(--fs-nano);
+  font-style: normal;
+  line-height: var(--lh-small);
+}
+
+.farm-card-copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.farm-card-copy > .status {
+  justify-self: start;
+  margin-bottom: 1px;
+}
+
+.farm-card-thumbnail {
+  width: 74px;
+  height: 78px;
+  display: block;
+  overflow: hidden;
+  border: 1px solid #e3ece3;
+  border-radius: 10px;
+  background: #edf3ee;
+}
+
+.farm-card-thumbnail img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+@media (max-width: 1050px) {
+  .farm-card-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+

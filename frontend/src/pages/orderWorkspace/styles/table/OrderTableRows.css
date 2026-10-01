@@ -1,0 +1,142 @@
+.order-tracking-number,
+.order-date,
+.order-destination,
+.order-person-name,
+.order-service-type {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.order-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.order-tracking-number,
+.order-date,
+.order-person-name {
+  color: var(--order-ink-strong);
+  font-weight: var(--fw-bold);
+}
+
+.order-person {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.order-avatar {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+}
+
+.order-avatar.tone-red {
+  color: var(--order-muted-strong);
+  background: var(--order-neutral-soft);
+}
+
+.order-avatar.tone-blue {
+  color: var(--order-brand-dark);
+  background: var(--order-lime-soft);
+}
+
+.order-avatar.tone-purple {
+  color: var(--order-neutral-accent);
+  background: var(--order-neutral-soft);
+}
+
+.order-avatar.tone-green {
+  color: var(--order-brand);
+  background: var(--order-brand-soft);
+}
+
+.order-avatar.tone-gold {
+  color: #4e8827; /* fallback for browsers without color-mix() */
+  color: color-mix(in srgb, var(--order-lime) 50%, var(--order-brand-dark));
+  background: var(--order-lime-soft);
+}
+
+.order-destination,
+.order-service-type {
+  color: var(--order-ink);
+  font-weight: var(--fw-semibold);
+}
+
+.order-status-pill {
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  padding: 5px 7px;
+  border-radius: 999px;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.order-status-pill.completed,
+.order-status-pill.success {
+  color: var(--order-brand);
+  background: var(--order-brand-soft);
+}
+
+.order-status-pill.delivering,
+.order-status-pill.pending {
+  color: #4e8827; /* fallback for browsers without color-mix() */
+  color: color-mix(in srgb, var(--order-lime) 46%, var(--order-brand-dark));
+  background: var(--order-lime-soft);
+}
+
+.order-status-pill.failed {
+  color: var(--order-muted-strong);
+  background: var(--order-neutral-soft);
+}
+
+.order-status-pill.overdue {
+  color: #c62828;
+  background: #fdecec;
+}
+
+.order-row-action {
+  min-width: 74px;
+  height: 27px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 9px;
+  color: var(--brand-forest-green);
+  border: 1px solid var(--order-line);
+  border-radius: 7px;
+  background: var(--order-surface);
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+
+.order-row-action:hover {
+  border-color: var(--brand-forest-green);
+  background: var(--order-brand-soft);
+}
+
+.order-empty-state {
+  padding: 28px;
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  text-align: center;
+}

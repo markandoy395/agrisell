@@ -1,0 +1,104 @@
+.delivery-status-col {
+  width: 140px;
+}
+
+.delivery-status-pill {
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  padding: 5px 7px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  line-height: var(--lh-solid);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delivery-status-pill i {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.delivery-status-pill.active {
+  color: #07934e;
+  background: #e5f7ee;
+}
+
+.delivery-status-pill.unassigned,
+.delivery-status-pill.completed {
+  color: #586579;
+  background: #f0f2f4;
+}
+
+.delivery-status-pill.unassigned i,
+.delivery-status-pill.completed i {
+  color: #8e99a5;
+}
+
+.delivery-status-pill.overdue {
+  color: #e12929;
+  background: #ffe5e5;
+}
+
+.delivery-row-actions {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.delivery-workspace .delivery-table .delivery-row-menu {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  color: var(--order-muted);
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.delivery-workspace .delivery-table .delivery-row-menu:hover {
+  color: var(--brand-forest-green) !important;
+  background: var(--order-brand-soft) !important;
+}
+
+.delivery-workspace .delivery-table .delivery-row-menu .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.delivery-list-panel .order-table-footer {
+  min-height: 66px;
+  padding: 12px 20px;
+  color: var(--order-muted);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-small);
+}
+
+.delivery-list-panel .order-pagination button {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+}
+
+@media (max-width: 760px) {
+  .delivery-list-panel .order-table-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+

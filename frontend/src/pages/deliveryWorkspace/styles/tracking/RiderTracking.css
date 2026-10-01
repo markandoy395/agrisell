@@ -1,0 +1,153 @@
+.rider-tracking {
+  color: #344055;
+  font-family: var(--font-sans);
+}
+
+.rider-tracking-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.rider-tracking h2 {
+  margin: 0;
+  color: #172132;
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--fw-bold);
+}
+
+.rider-tracking-toolbar p,
+.rider-tracking-empty p {
+  color: #6f7b90;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  letter-spacing: var(--ls-small);
+  margin: 5px 0 11px;
+}
+
+.rider-tracking-toolbar small {
+  color: #697589;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+}
+
+.rider-tracking-toolbar small strong {
+  color: #344055;
+  font-family: var(--font-sans);
+}
+
+.rider-tracking-toolbar > button {
+  min-width: 176px;
+  min-height: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2px;
+  color: #087a40 !important;
+  border-color: #16824b !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small) !important;
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+}
+
+.rider-tracking-empty {
+  padding: 65px 24px;
+  border: 1px dashed #bcd4c2;
+  border-radius: 12px;
+  background: #f3f8f4;
+  text-align: center;
+}
+
+.rider-tracking-empty h3 {
+  margin: 0;
+  color: #28523a;
+  font-family: var(--font-heading);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h4);
+  letter-spacing: var(--ls-h4);
+}
+
+.rider-tracking-error {
+  padding: 12px;
+  background: #fff0ee;
+  color: #a33a2f;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+}
+
+.rider-tracking > p:not(.rider-tracking-error):not([role='status']) {
+  margin: 11px 0 16px;
+  color: #68758a;
+  font-size: var(--fs-small);
+}
+
+.rider-tracking-search {
+  max-width: none;
+  margin: 0;
+}
+
+.rider-tracking-search-box {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  color: #667387;
+  border: 1px solid #d4ddd9;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgb(32 61 46 / 3%);
+}
+
+.rider-tracking-search-box:focus-within {
+  border-color: #16824b;
+  box-shadow: 0 0 0 3px rgb(22 130 75 / 10%);
+}
+
+.rider-tracking-search-box input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: #344055;
+  background: transparent;
+  font-size: var(--fs-small);
+}
+
+.rider-tracking-search-box input::placeholder {
+  color: #6e7b8e;
+}
+
+.rider-follow {
+  margin: 14px 0 17px;
+  color: #354157;
+}
+
+.rider-follow input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #087a40;
+}
+
+@media (max-width: 700px) {
+  .rider-tracking-toolbar > button {
+      align-self: flex-start;
+    }
+}
+

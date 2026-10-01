@@ -1,0 +1,55 @@
+.overview-dashboard .sales-area-path {
+  animation: sales-area-in 0.72s ease-out 520ms backwards;
+}
+
+.overview-dashboard .sales-reveal-rect {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: sales-chart-reveal 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) 520ms backwards;
+}
+
+.overview-dashboard .sales-line-point {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sales-point-in 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) 1.42s backwards;
+}
+
+@keyframes sales-area-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sales-chart-reveal {
+  from {
+    width: 0;
+    transform: scaleX(0);
+  }
+  to {
+    width: 650px;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes sales-point-in {
+  from {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overview-dashboard .sales-area-path,
+    .overview-dashboard .sales-reveal-rect,
+    .overview-dashboard .sales-line-point {
+      animation-duration: 1ms !important;
+      animation-delay: 0ms !important;
+    }
+}

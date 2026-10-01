@@ -1,0 +1,217 @@
+.order-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.order-detail-grid > div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--order-line);
+  border-radius: 9px;
+  background: #fff;
+}
+
+.order-detail-grid span,
+.order-detail-grid strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.order-detail-grid span {
+  margin-bottom: 5px;
+  color: var(--order-muted);
+  font-size: var(--fs-nano);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+}
+
+.order-detail-grid strong {
+  color: var(--order-ink-strong);
+  font-size: var(--fs-caption);
+}
+
+.order-detail-grid small {
+  display: block;
+  margin-top: 4px;
+  color: var(--order-muted);
+  font-size: var(--fs-nano);
+  line-height: var(--lh-caption);
+}
+
+.order-detail-grid .order-detail-wide {
+  grid-column: 1 / -1;
+}
+
+.order-information-section {
+  margin-top: 14px;
+  padding: 18px;
+  border: 1px solid var(--order-line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.order-information-section h3 {
+  margin: 0;
+  color: var(--order-ink-strong);
+  font-size: var(--fs-small);
+}
+
+.order-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.order-section-heading p,
+.order-information-empty {
+  margin: 5px 0 0;
+  color: var(--order-muted);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-small);
+}
+
+.order-item-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.order-item-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 12px;
+  border-radius: 8px;
+  background: var(--order-surface-soft);
+  font-size: var(--fs-xs);
+}
+
+.order-item-list span,
+.order-item-list small {
+  display: block;
+}
+
+.order-item-list small,
+.order-logistics-grid small {
+  margin-top: 3px;
+  color: var(--order-muted);
+  font-size: var(--fs-nano);
+}
+
+.order-logistics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 0;
+}
+
+.order-logistics-grid > div {
+  min-width: 0;
+  padding: 11px 12px;
+  border-radius: 8px;
+  background: var(--order-surface-soft);
+}
+
+.order-logistics-grid dt {
+  margin-bottom: 4px;
+  color: var(--order-muted);
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.order-logistics-grid dd {
+  margin: 0;
+  color: var(--order-ink-strong);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  overflow-wrap: anywhere;
+}
+
+.order-manage-delivery,
+.order-print-waybill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 11px;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  background: var(--order-brand);
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+
+.order-print-waybill {
+  margin-top: 12px;
+  color: var(--order-brand-dark);
+  border: 1px solid var(--order-line);
+  background: var(--order-brand-soft);
+}
+
+.order-manage-delivery:hover,
+.order-print-waybill:hover {
+  filter: brightness(0.96);
+}
+
+.order-detail-grid strong.is-overdue {
+  color: #c62828;
+}
+
+.order-case-card {
+  margin: 12px 0;
+  padding: 15px;
+  border: 1px solid #efcf76;
+  border-radius: 9px;
+  background: #fff9e7;
+}
+
+.order-case-card.is-exception {
+  border-color: #efaaa4;
+  background: #fff2f1;
+}
+
+.order-case-card > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #775400;
+  font-size: var(--fs-caption);
+}
+
+.order-case-card.is-exception > div {
+  color: #a52d24;
+}
+
+.order-case-card p {
+  margin: 9px 0 5px;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-small);
+}
+
+.order-case-card small {
+  color: var(--order-muted);
+  font-size: var(--fs-nano);
+}
+
+@media (max-width: 560px) {
+  .order-detail-grid .order-detail-wide {
+    grid-column: auto;
+  }
+
+  .order-section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .order-logistics-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,108 @@
+.sale-workspace {
+  padding: 0;
+  color: var(--user-ink);
+}
+
+.sale-workspace button,
+.sale-workspace input,
+.sale-workspace select {
+  font: inherit;
+}
+
+.sale-eyebrow {
+  color: var(--user-brand);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+}
+
+.sale-panel {
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid var(--user-line);
+  border-radius: 10px;
+  background: var(--user-surface);
+  box-shadow: 0 10px 24px rgba(15, 116, 59, 0.04); /* fallback for browsers without color-mix() */
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--user-brand) 4%, transparent);
+}
+
+.sale-panel-heading {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--user-line);
+}
+
+.sale-panel-heading h2 {
+  margin: 3px 0 0;
+  color: var(--brand-black);
+  font-size: var(--fs-h4);
+  letter-spacing: var(--ls-h3);
+}
+
+.sale-text-button {
+  padding: 6px 0;
+  color: var(--user-brand);
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.sale-primary-button {
+  min-width: 126px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 14px;
+  color: white;
+  border: 0;
+  border-radius: 7px;
+  background: var(--user-brand);
+  box-shadow: 0 8px 16px var(--user-shadow);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.sale-primary-button:hover:not(:disabled) {
+  background: var(--user-brand-dark);
+}
+
+.sale-empty {
+  min-height: 96px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 18px;
+  color: var(--user-muted);
+  text-align: center;
+}
+
+.sale-empty .icon {
+  color: var(--user-brand);
+}
+
+.sale-empty strong {
+  color: var(--user-ink);
+  font-size: var(--fs-small);
+}
+
+.sale-empty span {
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 760px) {
+  .sale-primary-button {
+      width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+  .sale-panel-heading {
+      align-items: flex-start;
+    }
+}
+

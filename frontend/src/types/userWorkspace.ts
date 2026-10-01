@@ -1,6 +1,6 @@
 import type { IconName } from './icon'
 
-export type UserAccountStatus = 'Active' | 'Inactive'
+export type UserAccountStatus = 'Active' | 'Pending' | 'Suspended' | 'Deactivated' | 'Rejected'
 
 export type UserDateFilter = 'All' | 'Recent'
 

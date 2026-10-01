@@ -37,6 +37,15 @@ const parsePositiveInteger = (value, fallback, name) => {
   return parsed;
 };
 
+const parseNonNegativeInteger = (value, fallback, name) => {
+  if (value === undefined || value === '') return fallback;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    throw new Error(`${name} must be a non-negative integer.`);
+  }
+  return parsed;
+};
+
 const parseAllowedOrigins = (value, isProduction) => {
   if (!value) {
     return isProduction ? [] : DEFAULT_DEV_ORIGINS;
@@ -79,13 +88,9 @@ if (isProduction && !sessionSecret) {
   throw new Error('ADMIN_SESSION_SECRET is required in production.');
 }
 
-if (
-  isProduction &&
-  !Boolean(supabaseUrl && supabaseServiceRoleKey) &&
-  (!adminEmail || !adminPasswordHash)
-) {
+if (isProduction && !Boolean(supabaseUrl && supabaseServiceRoleKey)) {
   throw new Error(
-    'Configure SUPABASE_URL with SUPABASE_SERVICE_ROLE_KEY or ADMIN_EMAIL with ADMIN_PASSWORD_HASH in production.',
+    'SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required in production for distributed sessions.',
   );
 }
 
@@ -118,6 +123,11 @@ const config = {
   isProduction,
   nodeEnv,
   port: parsePort(process.env.PORT),
+  rateLimitTrustProxyHops: parseNonNegativeInteger(
+    process.env.RATE_LIMIT_TRUST_PROXY_HOPS,
+    0,
+    'RATE_LIMIT_TRUST_PROXY_HOPS',
+  ),
   requireHttps:
     process.env.REQUIRE_HTTPS === 'true' ||
     (isProduction && process.env.REQUIRE_HTTPS !== 'false'),

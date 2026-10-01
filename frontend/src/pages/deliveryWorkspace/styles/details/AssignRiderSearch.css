@@ -1,0 +1,56 @@
+.assign-rider-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 22px 0 11px;
+}
+
+.assign-rider-list-heading h3 {
+  margin: 0;
+  color: #172132;
+  font-family: var(--font-heading);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h4);
+  letter-spacing: var(--ls-h4);
+}
+
+.assign-rider-list-heading label {
+  width: min(240px, 48%);
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 13px;
+  color: #68758a;
+  border: 1px solid #d6dfda;
+  border-radius: 7px;
+}
+
+.assign-rider-list-heading input {
+  min-width: 0;
+  flex: 1;
+  padding: 0;
+  color: #344055;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-body);
+}
+
+@media (max-width: 700px) {
+  .assign-rider-list-heading {
+      align-items: stretch;
+      flex-direction: column;
+    }
+}
+
+@media (max-width: 700px) {
+  .assign-rider-list-heading label {
+      width: 100%;
+    }
+}
+

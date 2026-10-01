@@ -1,7 +1,12 @@
 export type EntityRecord = {
+  abuseFlags?: ReviewAbuseFlag[]
+  adminResponse?: string
+  adminResponseMode?: 'public' | 'direct'
   approvalStatus?: string
   approvalTone?: string
   entityId?: string
+  moderationHistory?: ReviewModerationHistoryItem[]
+  moderationVisibility?: 'published' | 'hidden'
   primary: string
   secondary: string
   category: string
@@ -16,14 +21,30 @@ export type EntityRecord = {
   reviewDate?: string
   reviewedName?: string
   reviewedType?: 'Farmer' | 'Rider'
+  reportStatus?: 'none' | 'open' | 'resolved' | 'dismissed'
 }
 
-export type EntityRecordField =
-  | 'primary'
-  | 'secondary'
-  | 'category'
-  | 'value'
-  | 'status'
+export type ReviewAbuseFlag =
+  'spam' | 'harassment' | 'hate_speech' | 'profanity' | 'scam' | 'personal_information' | 'other'
+
+export type ReviewModerationAction =
+  | 'hide'
+  | 'publish'
+  | 'resolve_report'
+  | 'dismiss_report'
+  | 'reopen_report'
+  | 'add_abuse_flag'
+  | 'remove_abuse_flag'
+
+export type ReviewModerationHistoryItem = {
+  actor: string
+  createdAt: string
+  eventType: string
+  label: string
+  message?: string
+}
+
+export type EntityRecordField = 'primary' | 'secondary' | 'category' | 'value' | 'status'
 
 export type EntityTableColumn = {
   label: string

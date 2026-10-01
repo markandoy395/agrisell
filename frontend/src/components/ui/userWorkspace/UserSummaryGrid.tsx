@@ -1,35 +1,11 @@
-import type { UserWorkspaceSummaryCard } from "../../../types/dashboard";
-import { Icon } from "../icon/Icon";
+import type { UserWorkspaceSummaryCard } from '../../../types/dashboard'
+import { WorkspaceStatsGrid } from '../workspaceStats/WorkspaceStatsGrid'
 
 type UserSummaryGridProps = {
-  ariaLabel?: string;
-  cards: UserWorkspaceSummaryCard[];
-};
+  ariaLabel?: string
+  cards: UserWorkspaceSummaryCard[]
+}
 
-export function UserSummaryGrid({ ariaLabel = "Users summary", cards }: UserSummaryGridProps) {
-  return (
-    <div className="user-summary-grid" aria-label={ariaLabel}>
-      {cards.map((card) => (
-        <article className="user-summary-card" key={card.label}>
-          <div className="user-summary-top">
-            <span className="user-summary-icon" aria-hidden="true">
-              <Icon name={card.icon} size={15} />
-            </span>
-            <span>{card.label}</span>
-            <span className="user-card-menu" aria-hidden="true">
-              <Icon name="more" size={16} />
-            </span>
-          </div>
-          <div className="user-summary-value">
-            <strong>{card.value}</strong>
-            <span className="user-growth">
-              {card.trend}
-              <Icon name="trend" size={11} />
-            </span>
-          </div>
-          <small>{card.detail}</small>
-        </article>
-      ))}
-    </div>
-  );
+export function UserSummaryGrid({ ariaLabel = 'Users summary', cards }: UserSummaryGridProps) {
+  return <WorkspaceStatsGrid ariaLabel={ariaLabel} cards={cards} />
 }

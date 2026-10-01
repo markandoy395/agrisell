@@ -5,13 +5,22 @@ import './CloseButton.css'
 
 type TooltipSide = 'top' | 'bottom' | 'left' | 'right'
 
-type CloseButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'type' | 'aria-label'> & {
+type CloseButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'children' | 'type' | 'aria-label'
+> & {
   label: string
   tooltip?: string
   tooltipSide?: TooltipSide
 }
 
-export function CloseButton({ className, label, tooltip = 'Close', tooltipSide = 'top', ...buttonProps }: CloseButtonProps) {
+export function CloseButton({
+  className,
+  label,
+  tooltip = 'Close',
+  tooltipSide = 'top',
+  ...buttonProps
+}: CloseButtonProps) {
   const button = (
     <button
       {...buttonProps}

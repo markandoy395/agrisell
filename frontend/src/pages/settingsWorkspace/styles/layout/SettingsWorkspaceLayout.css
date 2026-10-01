@@ -1,0 +1,74 @@
+.settings-sections {
+  display: grid;
+  gap: 20px;
+}
+
+.settings-workspace {
+  min-height: 420px;
+}
+
+.settings-admin-button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 700px) {
+  .settings-workspace {
+      min-height: 380px;
+    }
+}
+
+/* Settings management workspace */
+.settings-sections {
+  gap: 20px;
+}
+
+.settings-workspace {
+  min-height: 0;
+  padding: 16px 22px 18px;
+  border-color: #dfe7e2;
+  border-radius: 16px;
+  box-shadow: 0 7px 22px rgb(31 54 40 / 5%);
+}
+
+.settings-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.settings-heading-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+}
+
+.settings-panel-heading h2 {
+  margin: 0;
+  color: #15212b;
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-h3);
+}
+
+.settings-panel-heading p {
+  margin: 4px 0 0;
+  color: #697987;
+  font-size: var(--fs-xs);
+}
+
+.settings-admin-button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  border-radius: 9px;
+  background: linear-gradient(120deg, #078047, #009153);
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 700px) {
+  .settings-workspace {
+      min-height: 0;
+      padding: 14px;
+    }
+}

@@ -1,0 +1,67 @@
+.location-map-list {
+  max-height: 360px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+}
+
+.location-map-list button {
+  width: 100%;
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: 11px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  color: #596b60;
+  border: 1px solid #e2ebe3;
+  border-radius: 9px;
+  background: #fff;
+  text-align: left;
+}
+
+.location-map-list button:hover,
+.location-map-list button.is-selected {
+  border-color: #b9d7ad;
+  background: #f2f8ee;
+}
+
+.location-map-list strong,
+.location-map-list small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.location-map-list strong {
+  color: #324a3d;
+  font-size: var(--fs-micro);
+}
+
+.location-map-list small {
+  margin-top: 2px;
+  color: #87958d;
+  font-size: var(--fs-nano);
+}
+
+.location-map-list em {
+  color: #8c9b92;
+  font-size: var(--fs-nano);
+  font-style: normal;
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.location-pin-dot {
+  width: 9px;
+  height: 9px;
+  display: block;
+  border-radius: 50%;
+}

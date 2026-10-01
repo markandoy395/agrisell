@@ -1,0 +1,92 @@
+.rider-tracking-table {
+  min-width: 900px;
+}
+
+.rider-tracking .location-pin-rider {
+  background: #08753a;
+}
+
+.rider-tracking .location-map-detail p {
+  white-space: pre-line;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.rider-tracking .user-table-panel {
+  margin-top: 19px;
+  overflow: hidden;
+  border-color: #d7e0dc;
+  border-radius: 11px;
+  box-shadow: 0 8px 22px rgb(29 58 42 / 5%);
+}
+
+.rider-tracking-table {
+  min-width: 900px;
+}
+
+.rider-tracking-table th {
+  height: 52px;
+  padding: 0 22px;
+  color: #354157;
+  background: #fff;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-solid);
+}
+
+.rider-tracking-table td {
+  height: 68px;
+  padding: 0 22px;
+  color: #566276;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-small);
+}
+
+.rider-tracking-table td:first-child {
+  color: #172132;
+  font-weight: var(--fw-medium);
+}
+
+.rider-tracking-table th:last-child {
+  width: 140px;
+}
+
+.rider-tracking-table td:last-child > button,
+.rider-tracking-table td:nth-child(5) button {
+  min-width: 92px;
+  color: #087a40 !important;
+  border-color: #16824b !important;
+  border-radius: 7px;
+  background: #fff !important;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+  cursor: pointer;
+}
+
+.rider-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+}
+
+.rider-status i {
+  width: 10px;
+  height: 10px;
+  display: block;
+  border-radius: 50%;
+  background: #9ba4ac;
+}
+
+.rider-status.online i {
+  background: #16824b;
+}
+

@@ -1,54 +1,60 @@
-import { useEffect, useState } from "react";
-import type { LoginCredentials } from "./api/adminAuth";
-import type { AuthenticatedAdmin } from "./api/adminAuth";
-import { getAdminSession, loginAdmin, logoutAdmin } from "./api/adminAuth";
-import { SmallScreenAccessGuard } from "./components/layout/SmallScreenAccessGuard";
-import { AdminDashboardPage } from "./pages/adminDashboard/AdminDashboardPage";
-import { LoginPage } from "./pages/login/LoginPage";
-import agrisellLogo from "./assets/image/logo/Agrisell - Landscape Logo with out tagline.png";
+import { useEffect, useState } from 'react'
+import type { LoginCredentials } from './api/adminAuth'
+import type { AuthenticatedAdmin } from './api/adminAuth'
+import { completeAdminMfa, getAdminSession, loginAdmin, logoutAdmin } from './api/adminAuth'
+import { SmallScreenAccessGuard } from './components/layout/SmallScreenAccessGuard'
+import { AdminDashboardPage } from './pages/adminDashboard/AdminDashboardPage'
+import { LoginPage } from './pages/login/LoginPage'
+import agrisellLogo from './assets/image/logo/Agrisell - Landscape Logo with out tagline.png'
 
-type AuthStatus = "checking" | "authenticated" | "unauthenticated";
+type AuthStatus = 'checking' | 'authenticated' | 'unauthenticated'
 
 function AdminAppShell() {
-  const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
-  const [authenticatedAdmin, setAuthenticatedAdmin] = useState<AuthenticatedAdmin | null>(null);
+  const [authStatus, setAuthStatus] = useState<AuthStatus>('checking')
+  const [authenticatedAdmin, setAuthenticatedAdmin] = useState<AuthenticatedAdmin | null>(null)
 
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true
 
     getAdminSession()
       .then((session) => {
-        if (!isMounted) return;
+        if (!isMounted) return
 
-        setAuthenticatedAdmin(session.authenticated ? session.admin : null);
-        setAuthStatus(session.authenticated ? "authenticated" : "unauthenticated");
+        setAuthenticatedAdmin(session.authenticated ? session.admin : null)
+        setAuthStatus(session.authenticated ? 'authenticated' : 'unauthenticated')
       })
       .catch(() => {
-        if (isMounted) setAuthStatus("unauthenticated");
-      });
+        if (isMounted) setAuthStatus('unauthenticated')
+      })
 
     return () => {
-      isMounted = false;
-    };
-  }, []);
+      isMounted = false
+    }
+  }, [])
 
   const handleLogin = async (credentials: LoginCredentials) => {
-    const session = await loginAdmin(credentials);
+    const session = await loginAdmin(credentials)
 
-    setAuthenticatedAdmin(session.authenticated ? session.admin : null);
-    setAuthStatus(session.authenticated ? "authenticated" : "unauthenticated");
-  };
+    setAuthenticatedAdmin(session.authenticated ? session.admin : null)
+    setAuthStatus(session.authenticated ? 'authenticated' : 'unauthenticated')
+  }
 
   const handleSignOut = () => {
     void logoutAdmin().finally(() => {
-      setAuthenticatedAdmin(null);
-      setAuthStatus("unauthenticated");
-    });
-  };
+      setAuthenticatedAdmin(null)
+      setAuthStatus('unauthenticated')
+    })
+  }
+
+  const handleMfa = async (code: string) => {
+    const session = await completeAdminMfa(code)
+    setAuthenticatedAdmin(session.authenticated ? session.admin : null)
+    setAuthStatus(session.authenticated ? 'authenticated' : 'unauthenticated')
+  }
 
   return (
     <>
-      {authStatus === "checking" ? (
+      {authStatus === 'checking' ? (
         <main className="auth-loading" aria-busy="true">
           <div className="auth-loading-card">
             <img className="auth-loading-logo" src={agrisellLogo} alt="Agrisell" />
@@ -63,13 +69,13 @@ function AdminAppShell() {
             </div>
           </div>
         </main>
-      ) : authStatus === "authenticated" && authenticatedAdmin ? (
+      ) : authStatus === 'authenticated' && authenticatedAdmin ? (
         <AdminDashboardPage admin={authenticatedAdmin} onSignOut={handleSignOut} />
       ) : (
-        <LoginPage onLogin={handleLogin} />
+        <LoginPage onLogin={handleLogin} onMfa={handleMfa} />
       )}
     </>
-  );
+  )
 }
 
 function App() {
@@ -77,7 +83,7 @@ function App() {
     <SmallScreenAccessGuard>
       <AdminAppShell />
     </SmallScreenAccessGuard>
-  );
+  )
 }
 
-export default App;
+export default App

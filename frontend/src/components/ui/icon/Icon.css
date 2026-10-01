@@ -1,6 +1,12 @@
 .icon-button,
 .more-button,
-.table-more { display: grid; place-items: center; color: #77857e; border: 0; background: transparent; }
+.table-more {
+  display: grid;
+  place-items: center;
+  color: #77857e;
+  border: 0;
+  background: transparent;
+}
 
 .icon-action-button {
   display: inline-flex;

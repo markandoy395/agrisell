@@ -1,98 +1,45 @@
-import { useMemo, useState } from "react";
-import type { EntityRecord, FarmerSummaryCard } from "../../types/dashboard";
-import { FarmerSummaryGrid } from "../../components/ui/farmerWorkspace/FarmerSummaryGrid";
-import { Icon } from "../../components/ui/icon/Icon";
-import "./LogisticsWorkspace.css";
+import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import type { EntityRecord } from '../../types/dashboard'
+import { Icon } from '../../components/ui/icon/Icon'
+import {
+  createLogisticsSummaryCards,
+  downloadRidersCsv,
+  getRiderInitials,
+  getRiderRecordKey,
+  ridersPerPage,
+} from './logisticsWorkspace.utils'
+import { useLogisticsWorkspace } from './useLogisticsWorkspace'
+import './LogisticsWorkspace.css'
 
 type LogisticsWorkspaceProps = {
-  created: EntityRecord[];
-  onAdd: () => void;
-  onApproveRider: (rider: EntityRecord) => Promise<void>;
-  onOpen: (record: EntityRecord) => void;
-  records: EntityRecord[];
-  search: string;
-};
+  created: EntityRecord[]
+  onAdd: () => void
+  onApproveRider: (rider: EntityRecord) => Promise<void>
+  onOpen: (record: EntityRecord) => void
+  records: EntityRecord[]
+  search: string
+  onEditRider?: (rider: EntityRecord) => void
+  onAssignDelivery?: (rider: EntityRecord) => void
+  onChangeAvailability?: (rider: EntityRecord, status: string) => void
+  onDeleteRider?: (rider: EntityRecord) => void
+}
 
-const RIDERS_PER_PAGE = 10;
-const ALL_COMPANIES = "All logistics companies";
-const ALL_AVAILABILITY = "All availability";
+const getAvailabilityClass = (status: string) => {
+  const s = status.toLowerCase()
+  if (s.includes('offline')) return 'is-offline'
+  if (s.includes('available')) return 'is-available'
+  if (s.includes('delivery')) return 'is-ondelivery'
+  return 'is-offline'
+}
 
-const getRecordKey = (record: EntityRecord) =>
-  record.entityId ?? `${record.primary}-${record.secondary}`;
-
-const getInitials = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase() || "RD";
-
-const createSummaryCards = (riders: EntityRecord[]): FarmerSummaryCard[] => {
-  const available = riders.filter((rider) => /available/i.test(rider.status));
-  const onDelivery = riders.filter((rider) => /on delivery/i.test(rider.status));
-  const companies = new Set(
-    riders
-      .map((rider) => rider.category)
-      .filter((company) => company !== "Logistics company not recorded"),
-  );
-
-  return [
-    {
-      detail: "Rider records from the database",
-      icon: "rider",
-      label: "Registered riders",
-      trend: "Live",
-      value: riders.length.toLocaleString("en-US"),
-    },
-    {
-      detail: "Available for delivery assignment",
-      icon: "trend",
-      label: "Available riders",
-      trend: "Live",
-      value: available.length.toLocaleString("en-US"),
-    },
-    {
-      detail: "Currently handling deliveries",
-      icon: "truck",
-      label: "On delivery",
-      trend: "Live",
-      value: onDelivery.length.toLocaleString("en-US"),
-    },
-    {
-      detail: "Companies with assigned riders",
-      icon: "users",
-      label: "Logistics companies",
-      trend: "Live",
-      value: companies.size.toLocaleString("en-US"),
-    },
-  ];
-};
-
-const downloadRidersCsv = (riders: EntityRecord[]) => {
-  const escape = (value: string) => `"${value.replaceAll('"', '""')}"`;
-  const rows = [
-    ["Rider", "Contact", "Logistics company", "Vehicle / deliveries", "Availability"],
-    ...riders.map((rider) => [
-      rider.primary,
-      rider.secondary,
-      rider.category,
-      rider.value,
-      rider.status,
-    ]),
-  ];
-  const file = new Blob([rows.map((row) => row.map(escape).join(",")).join("\n")], {
-    type: "text/csv;charset=utf-8",
-  });
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = "agrisell-riders.csv";
-  link.click();
-  URL.revokeObjectURL(url);
-};
+const getApprovalClass = (approval: string | undefined) => {
+  const a = (approval ?? '').toLowerCase()
+  if (a.includes('approved') || a.includes('active')) return 'is-approved'
+  if (a.includes('pending')) return 'is-pending'
+  if (a.includes('rejected') || a.includes('suspend')) return 'is-rejected'
+  return 'is-approved'
+}
 
 export function LogisticsWorkspace({
   created,
@@ -101,178 +48,449 @@ export function LogisticsWorkspace({
   onOpen,
   records,
   search,
+  onEditRider,
+  onAssignDelivery,
+  onChangeAvailability,
+  onDeleteRider,
 }: LogisticsWorkspaceProps) {
-  const [query, setQuery] = useState("");
-  const [companyFilter, setCompanyFilter] = useState(ALL_COMPANIES);
-  const [availabilityFilter, setAvailabilityFilter] = useState(ALL_AVAILABILITY);
-  const [selected, setSelected] = useState<Set<string>>(() => new Set());
-  const [currentPage, setCurrentPage] = useState(1);
-  const [approvingRiderId, setApprovingRiderId] = useState<string | null>(null);
-  const allRiders = useMemo(() => [...created, ...records], [created, records]);
-  const companies = useMemo(
-    () => [
-      ALL_COMPANIES,
-      ...Array.from(new Set(allRiders.map((rider) => rider.category))).sort(),
-    ],
-    [allRiders],
-  );
-  const availabilityOptions = useMemo(
-    () => [
-      ALL_AVAILABILITY,
-      ...Array.from(new Set(allRiders.map((rider) => rider.status))).sort(),
-    ],
-    [allRiders],
-  );
-  const filteredRiders = useMemo(() => {
-    const terms = `${search} ${query}`.trim().toLowerCase();
+  const workspace = useLogisticsWorkspace({
+    created,
+    onApproveRider,
+    records,
+    search,
+  })
 
-    return allRiders.filter((rider) => {
-      const matchesQuery =
-        !terms ||
-        `${rider.primary} ${rider.secondary} ${rider.category} ${rider.value} ${rider.status} ${rider.approvalStatus ?? ""}`
-          .toLowerCase()
-          .includes(terms);
+  const {
+    activePage,
+    allVisibleSelected,
+    availabilityFilter,
+    availabilityOptions,
+    closeMenu,
+    companies,
+    companyFilter,
+    deleteRiderRecord,
+    filteredRiders,
+    menuPosition,
+    openMenuKey,
+    pageNumbers,
+    pageRiders,
+    query,
+    selected,
+    setSubmenuOpen,
+    submenuOpen,
+    toggleMenu,
+    totalPages,
+    setCurrentPage,
+    toggleAllVisible,
+    toggleRiderSelection,
+    updateAvailabilityFilter,
+    updateCompanyFilter,
+    updateQuery,
+    updateRiderStatus,
+  } = workspace
 
-      return (
-        matchesQuery &&
-        (companyFilter === ALL_COMPANIES || rider.category === companyFilter) &&
-        (availabilityFilter === ALL_AVAILABILITY ||
-          rider.status === availabilityFilter)
-      );
-    });
-  }, [allRiders, availabilityFilter, companyFilter, query, search]);
-  const totalPages = Math.max(1, Math.ceil(filteredRiders.length / RIDERS_PER_PAGE));
-  const activePage = Math.min(currentPage, totalPages);
-  const pageRiders = filteredRiders.slice(
-    (activePage - 1) * RIDERS_PER_PAGE,
-    activePage * RIDERS_PER_PAGE,
-  );
-  const visibleKeys = pageRiders.map(getRecordKey);
-  const allVisibleSelected =
-    visibleKeys.length > 0 && visibleKeys.every((key) => selected.has(key));
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
-  const resetPage = () => setCurrentPage(1);
-  const toggleAllVisible = () => {
-    setSelected((current) => {
-      const next = new Set(current);
-      visibleKeys.forEach((key) => (allVisibleSelected ? next.delete(key) : next.add(key)));
-      return next;
-    });
-  };
-  const approveRider = async (rider: EntityRecord) => {
-    if (!rider.entityId || rider.approvalStatus === "Approved") return;
+  const summaryCards = createLogisticsSummaryCards(workspace.allRiders)
 
-    setApprovingRiderId(rider.entityId);
-    try {
-      await onApproveRider(rider);
-    } catch {
-      // The page-level handler gives the administrator feedback for failures.
-    } finally {
-      setApprovingRiderId(null);
+  useEffect(() => {
+    if (!openMenuKey) return
+
+    const handleDocumentClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      if (!target) return
+      if (target.closest('.riders-menu-trigger') || target.closest('.riders-dropdown-menu')) {
+        return
+      }
+      closeMenu()
     }
-  };
+
+    const handleScroll = (event: Event) => {
+      const target = event.target as HTMLElement | null
+      if (target?.closest?.('.riders-dropdown-menu')) return
+      closeMenu()
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeMenu()
+      }
+    }
+
+    document.addEventListener('mousedown', handleDocumentClick)
+    window.addEventListener('scroll', handleScroll, true)
+    window.addEventListener('resize', closeMenu)
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentClick)
+      window.removeEventListener('scroll', handleScroll, true)
+      window.removeEventListener('resize', closeMenu)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [openMenuKey, closeMenu])
 
   return (
-    <section className="user-workspace logistics-workspace" aria-labelledby="logistics-title">
-      <h1 className="user-workspace-title" id="logistics-title">Logistics Companies</h1>
-      <FarmerSummaryGrid cards={createSummaryCards(allRiders)} />
+    <section className="riders-workspace" aria-labelledby="riders-title">
+      <h1 className="riders-visually-hidden" id="riders-title">Riders</h1>
 
-      <div className="user-controls logistics-controls">
-        <label className="user-search-field">
-          <span>Search</span>
-          <span>
-            <Icon name="search" size={15} />
-            <input
-              type="search"
-              placeholder="Riders..."
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                resetPage();
-              }}
+      {/* Summary Cards */}
+      <div className="riders-stats-grid" aria-label="Riders summary statistics">
+        {summaryCards.map((card) => (
+          <div key={card.key} className={`riders-stat-card riders-stat-card--${card.key}`}>
+            <div className="riders-stat-top">
+              <div
+                className={`riders-stat-icon-wrap ${card.solidIcon ? 'is-solid' : ''}`}
+                aria-hidden="true"
+              >
+                <Icon name={card.icon} size={16} />
+              </div>
+              <span className="riders-stat-label">{card.label}</span>
+              <button
+                type="button"
+                className="riders-stat-more"
+                aria-label={`Options for ${card.label}`}
+              >
+                <Icon name="more" size={16} />
+              </button>
+            </div>
+            <div className="riders-stat-mid">
+              <span className="riders-stat-value">{card.value}</span>
+              <span className="riders-stat-live-badge">
+                Live
+                <Icon name="trend" size={12} />
+              </span>
+            </div>
+            <div className="riders-stat-bottom">
+              <span className="riders-stat-detail">{card.detail}</span>
+            </div>
+            <div
+              className="riders-stat-accent-bar"
+              style={{ backgroundColor: card.accentColor }}
+              aria-hidden="true"
             />
-          </span>
-        </label>
-        <label className="user-select-field">
-          <span>Logistics company</span>
-          <select
-            value={companyFilter}
-            onChange={(event) => {
-              setCompanyFilter(event.target.value);
-              resetPage();
-            }}
+          </div>
+        ))}
+      </div>
+
+      {/* Search and Filters Toolbar */}
+      <div className="riders-controls-bar dashboard-filter-grid">
+        <div className="riders-controls-left">
+          <label className="riders-search-wrap dashboard-filter-field">
+            <span>Search</span>
+            <span className="dashboard-filter-control">
+              <Icon name="search" size={16} />
+              <input
+                type="search"
+                className="riders-search-input"
+                placeholder="Riders..."
+                value={query}
+                onChange={(event) => updateQuery(event.target.value)}
+              />
+            </span>
+          </label>
+
+          <label className="riders-select-wrap dashboard-filter-field">
+            <span>Company</span>
+            <select
+              className="riders-select"
+              value={companyFilter}
+              onChange={(event) => updateCompanyFilter(event.target.value)}
+              aria-label="Filter by affiliation"
+            >
+              {companies.map((company) => (
+                <option key={company} value={company}>
+                  {company}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="riders-select-wrap dashboard-filter-field">
+            <span>Availability</span>
+            <select
+              className="riders-select"
+              value={availabilityFilter}
+              onChange={(event) => updateAvailabilityFilter(event.target.value)}
+              aria-label="Filter by availability"
+            >
+              {availabilityOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="riders-controls-right dashboard-filter-actions">
+          <button className="riders-action-btn" type="button" onClick={onAdd}>
+            <Icon name="plus" size={15} />
+            Add rider
+          </button>
+          <button
+            className="riders-action-btn is-secondary"
+            type="button"
+            onClick={() => downloadRidersCsv(filteredRiders)}
           >
-            {companies.map((company) => <option key={company}>{company}</option>)}
-          </select>
-        </label>
-        <label className="user-select-field">
-          <span>Availability</span>
-          <select
-            value={availabilityFilter}
-            onChange={(event) => {
-              setAvailabilityFilter(event.target.value);
-              resetPage();
-            }}
-          >
-            {availabilityOptions.map((status) => <option key={status}>{status}</option>)}
-          </select>
-        </label>
-        <div className="user-actions">
-          <button className="user-add-button" type="button" onClick={onAdd}>+ Add rider</button>
-          <button className="user-download-button" type="button" onClick={() => downloadRidersCsv(filteredRiders)}>
-            Download <Icon name="download" size={16} />
+            <Icon name="download" size={15} />
+            Download
           </button>
         </div>
       </div>
 
-      <div className="user-table-panel">
-        <div className="user-table-wrap">
-          <table className="user-table logistics-table">
-            <colgroup>
-              <col className="logistics-col-select" />
-              <col className="logistics-col-rider" />
-              <col className="logistics-col-company" />
-              <col className="logistics-col-vehicle" />
-              <col className="logistics-col-status" />
-              <col className="logistics-col-approval" />
-              <col className="logistics-col-actions" />
-            </colgroup>
-            <thead><tr>
-              <th><input type="checkbox" checked={allVisibleSelected} onChange={toggleAllVisible} aria-label="Select all visible riders" /></th>
-              <th>rider / contact</th><th>logistics company</th><th>vehicle / deliveries</th><th>availability</th><th>approval</th><th>Actions</th>
-            </tr></thead>
-            <tbody>{pageRiders.map((rider) => {
-              const recordKey = getRecordKey(rider);
-              return <tr key={recordKey}>
-                <td><input type="checkbox" checked={selected.has(recordKey)} onChange={() => setSelected((current) => {
-                  const next = new Set(current);
-                  if (next.has(recordKey)) {
-                    next.delete(recordKey);
-                  } else {
-                    next.add(recordKey);
-                  }
-                  return next;
-                })} aria-label={`Select ${rider.primary}`} /></td>
-                <td><span className="user-identity"><span className="user-avatar" aria-hidden="true">{getInitials(rider.primary)}</span><span><strong>{rider.primary}</strong><small>{rider.secondary}</small></span></span></td>
-                <td><strong>{rider.category}</strong></td>
-                <td><strong>{rider.value}</strong></td>
-                <td><span className={`user-status ${rider.tone}`}><i aria-hidden="true" />{rider.status}</span></td>
-                <td><span className={`user-status ${rider.approvalTone ?? "blue"}`}><i aria-hidden="true" />{rider.approvalStatus ?? "Not recorded"}</span></td>
-                <td><div className="logistics-row-actions"><button className="icon-action-button" type="button" disabled={!rider.entityId || rider.approvalStatus === "Approved" || approvingRiderId === rider.entityId} onClick={() => { void approveRider(rider); }} aria-label={rider.approvalStatus === "Approved" ? `${rider.primary} is approved` : approvingRiderId === rider.entityId ? `Approving ${rider.primary}` : `Approve ${rider.primary}`} title={rider.approvalStatus === "Approved" ? "Approved" : approvingRiderId === rider.entityId ? "Approving…" : "Approve"}><Icon name="check" size={17} /></button><button className="user-row-action" type="button" onClick={() => onOpen(rider)} aria-label={`Open ${rider.primary}`}><Icon name="more" size={18} /></button></div></td>
-              </tr>;
-            })}</tbody>
+      {/* Table Card */}
+      <div className="riders-table-card">
+        <div className="riders-table-wrap">
+          <table className="riders-table">
+            <thead>
+              <tr>
+                <th className="riders-col-select">
+                  <input
+                    type="checkbox"
+                    className="riders-checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleAllVisible}
+                    aria-label="Select all visible riders"
+                  />
+                </th>
+                <th className="riders-col-index">#</th>
+                <th className="riders-col-rider">Rider</th>
+                <th className="riders-col-company">Affiliation / Company</th>
+                <th className="riders-col-vehicle">Vehicle / Deliveries</th>
+                <th className="riders-col-status">Availability</th>
+                <th className="riders-col-approval">Approval</th>
+                <th className="riders-col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pageRiders.map((rider, index) => {
+                const recordKey = getRiderRecordKey(rider)
+                const isSelected = selected.has(recordKey)
+                const isMenuOpen = openMenuKey === recordKey
+                const rowIndex = (activePage - 1) * ridersPerPage + index + 1
+
+                return (
+                  <tr key={recordKey} className={isSelected ? 'is-selected' : undefined}>
+                    <td className="riders-col-select">
+                      <input
+                        type="checkbox"
+                        className="riders-checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleRiderSelection(recordKey)}
+                        aria-label={`Select ${rider.primary}`}
+                      />
+                    </td>
+                    <td className="riders-col-index">
+                      <span className="riders-index-number">{rowIndex}</span>
+                    </td>
+                    <td className="riders-col-rider">
+                      <div className="riders-profile-cell">
+                        <span className="riders-avatar" aria-hidden="true">
+                          {getRiderInitials(rider.primary)}
+                        </span>
+                        <div className="riders-profile-text">
+                          <strong className="riders-name">{rider.primary}</strong>
+                          <span className="riders-contact">{rider.secondary}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="riders-col-company">
+                      <span className="riders-company-text">{rider.category}</span>
+                    </td>
+                    <td className="riders-col-vehicle">
+                      <span className="riders-vehicle-text">{rider.value}</span>
+                    </td>
+                    <td className="riders-col-status">
+                      <span className={`riders-status-pill ${getAvailabilityClass(rider.status)}`}>
+                        <span className="riders-pill-dot" aria-hidden="true" />
+                        {rider.status}
+                      </span>
+                    </td>
+                    <td className="riders-col-approval">
+                      <span
+                        className={`riders-status-pill ${getApprovalClass(rider.approvalStatus)}`}
+                      >
+                        <span className="riders-pill-dot" aria-hidden="true" />
+                        {rider.approvalStatus ?? 'Approved'}
+                      </span>
+                    </td>
+                    <td className="riders-col-actions">
+                      <div className="riders-actions-wrap">
+                        <button
+                          type="button"
+                          className={`riders-menu-trigger ${isMenuOpen ? 'is-active' : ''}`}
+                          onClick={(event) => toggleMenu(recordKey, event.currentTarget)}
+                          aria-expanded={isMenuOpen}
+                          aria-label={`Actions for ${rider.primary}`}
+                        >
+                          <Icon name="more" size={18} />
+                        </button>
+
+                        {isMenuOpen &&
+                          menuPosition &&
+                          createPortal(
+                            <div
+                              className={`riders-dropdown-menu placement-${menuPosition.placement}`}
+                              role="menu"
+                              style={{
+                                top: menuPosition.top,
+                                bottom: menuPosition.bottom,
+                                right: menuPosition.right,
+                              }}
+                            >
+                              <button
+                                type="button"
+                                className="riders-dropdown-item"
+                                role="menuitem"
+                                onClick={() => {
+                                  closeMenu()
+                                  onOpen(rider)
+                                }}
+                              >
+                                <Icon name="eye" size={16} />
+                                <span>View profile</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className="riders-dropdown-item"
+                                role="menuitem"
+                                onClick={() => {
+                                  closeMenu()
+                                  if (onEditRider) {
+                                    onEditRider(rider)
+                                  } else {
+                                    onOpen(rider)
+                                  }
+                                }}
+                              >
+                                <Icon name="edit" size={16} />
+                                <span>Edit rider</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className="riders-dropdown-item"
+                                role="menuitem"
+                                onClick={() => {
+                                  closeMenu()
+                                  onAssignDelivery?.(rider)
+                                }}
+                              >
+                                <Icon name="truck" size={16} />
+                                <span>Assign delivery</span>
+                              </button>
+
+                              <div
+                                className="riders-submenu-container"
+                                onMouseEnter={() => setSubmenuOpen(true)}
+                                onMouseLeave={() => setSubmenuOpen(false)}
+                              >
+                                <button
+                                  type="button"
+                                  className="riders-dropdown-item riders-dropdown-item--has-submenu"
+                                  role="menuitem"
+                                  onClick={() => setSubmenuOpen(!submenuOpen)}
+                                >
+                                  <Icon name="refresh" size={16} />
+                                  <span>Change availability</span>
+                                  <span className="riders-submenu-chevron">›</span>
+                                </button>
+
+                                {submenuOpen && (
+                                  <div className="riders-dropdown-submenu" role="menu">
+                                    {['Available', 'On delivery', 'Offline'].map((status) => (
+                                      <button
+                                        key={status}
+                                        type="button"
+                                        className={`riders-dropdown-subitem ${rider.status === status ? 'is-active' : ''}`}
+                                        role="menuitem"
+                                        onClick={() => {
+                                          updateRiderStatus(recordKey, status)
+                                          onChangeAvailability?.(rider, status)
+                                        }}
+                                      >
+                                        <span
+                                          className={`riders-subitem-dot ${getAvailabilityClass(status)}`}
+                                        />
+                                        <span>{status}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="riders-dropdown-divider" />
+
+                              <button
+                                type="button"
+                                className="riders-dropdown-item is-danger"
+                                role="menuitem"
+                                onClick={() => {
+                                  if (
+                                    window.confirm(
+                                      `Are you sure you want to delete rider ${rider.primary}?`,
+                                    )
+                                  ) {
+                                    deleteRiderRecord(recordKey)
+                                    onDeleteRider?.(rider)
+                                  }
+                                }}
+                              >
+                                <Icon name="trash" size={16} />
+                                <span>Delete rider</span>
+                              </button>
+                            </div>,
+                            document.body,
+                          )}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
           </table>
-          {pageRiders.length === 0 && <div className="user-empty-state">No matching riders found.</div>}
+
+          {pageRiders.length === 0 && (
+            <div className="riders-empty-state">No matching riders found.</div>
+          )}
         </div>
-        <div className="user-table-footer">
-          <span>Showing {(activePage - 1) * RIDERS_PER_PAGE + (pageRiders.length ? 1 : 0)} to {(activePage - 1) * RIDERS_PER_PAGE + pageRiders.length} of {filteredRiders.length} riders</span>
-          <nav className="user-pagination" aria-label="Riders pages">
-            <button type="button" disabled={activePage === 1} onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} aria-label="Previous page"><Icon name="chevron" size={15} /></button>
-            {pageNumbers.map((page) => <button className={activePage === page ? "is-active" : ""} type="button" key={page} onClick={() => setCurrentPage(page)} aria-current={activePage === page ? "page" : undefined}>{page}</button>)}
-            <button type="button" disabled={activePage === totalPages} onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))} aria-label="Next page"><Icon name="chevron" size={15} /></button>
+
+        <div className="riders-table-footer">
+          <span className="riders-showing-count">
+            Showing {(activePage - 1) * ridersPerPage + (pageRiders.length ? 1 : 0)} to{' '}
+            {(activePage - 1) * ridersPerPage + pageRiders.length} of {filteredRiders.length} riders
+          </span>
+          <nav className="riders-pagination" aria-label="Riders pages">
+            <button
+              type="button"
+              className="riders-page-btn"
+              disabled={activePage === 1}
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            >
+              Prev
+            </button>
+            {pageNumbers.map((page) => (
+              <button
+                key={page}
+                type="button"
+                className={`riders-page-number ${activePage === page ? 'is-active' : ''}`}
+                onClick={() => setCurrentPage(page)}
+                aria-current={activePage === page ? 'page' : undefined}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="riders-page-btn"
+              disabled={activePage === totalPages}
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+            >
+              Next
+            </button>
           </nav>
         </div>
       </div>
     </section>
-  );
+  )
 }

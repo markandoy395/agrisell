@@ -1,0 +1,102 @@
+.overview-dashboard .stat-card,
+.overview-dashboard .sales-panel,
+.overview-dashboard .category-panel,
+.overview-dashboard .orders-panel,
+.overview-dashboard .delivery-panel {
+  animation: overview-panel-in 0.56s var(--overview-ease) backwards;
+}
+
+.overview-dashboard .stat-card:nth-child(1) {
+  animation-delay: 40ms;
+}
+
+.overview-dashboard .stat-card:nth-child(2) {
+  animation-delay: 110ms;
+}
+
+.overview-dashboard .stat-card:nth-child(3) {
+  animation-delay: 180ms;
+}
+
+.overview-dashboard .stat-card:nth-child(4) {
+  animation-delay: 250ms;
+}
+
+.overview-dashboard .sales-panel {
+  animation-delay: 330ms;
+}
+
+.overview-dashboard .category-panel {
+  animation-delay: 410ms;
+}
+
+.overview-dashboard .orders-panel {
+  animation-delay: 490ms;
+}
+
+.overview-dashboard .delivery-panel {
+  animation-delay: 570ms;
+}
+
+.overview-dashboard .stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(147, 207, 60, 0.12) 48%,
+    transparent 76%
+  ); /* fallback for browsers without color-mix() */
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    color-mix(in srgb, var(--card-color) 12%, transparent) 48%,
+    transparent 76%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-120%);
+  animation: overview-card-sheen 0.82s ease-out backwards;
+}
+
+.overview-dashboard .stat-card:nth-child(1)::after {
+  animation-delay: 180ms;
+}
+
+.overview-dashboard .stat-card:nth-child(2)::after {
+  animation-delay: 250ms;
+}
+
+.overview-dashboard .stat-card:nth-child(3)::after {
+  animation-delay: 320ms;
+}
+
+.overview-dashboard .stat-card:nth-child(4)::after {
+  animation-delay: 390ms;
+}
+
+@keyframes overview-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes overview-card-sheen {
+  0% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  28% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}

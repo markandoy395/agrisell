@@ -1,6 +1,7 @@
 const { config, normalizeEmail } = require('../config/environment');
 const { SupabaseRequestError, requestSupabaseAuth } = require('./supabaseService');
 const { isSupabaseAdminEmail } = require('./supabaseAdminAuthService');
+const { invalidateAdminSessions } = require('./sessionService');
 
 class AdminPasswordResetError extends Error {
   constructor(code, message, statusCode) {
@@ -95,6 +96,7 @@ const resetAdminPasswordWithCode = async ({ code, email, password }) => {
 
   const accessToken = await verifyRecoveryCode({ code, email: normalizedEmail });
 
+  await invalidateAdminSessions(normalizedEmail);
   await requestSupabaseAuth('/auth/v1/user', {
     body: JSON.stringify({ password }),
     headers: {

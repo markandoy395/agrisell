@@ -1,48 +1,120 @@
 /* Load the bundled Poppins files so the dashboard works without external fonts. */
 @font-face {
-  font-family: "Poppins";
-  src: url("./assets/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins/Poppins-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Poppins";
-  src: url("./assets/fonts/Poppins/Poppins-Medium.ttf") format("truetype");
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins/Poppins-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Poppins";
-  src: url("./assets/fonts/Poppins/Poppins-SemiBold.ttf") format("truetype");
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins/Poppins-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Poppins";
-  src: url("./assets/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+  font-family: 'Poppins';
+  src: url('./assets/fonts/Poppins/Poppins-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
-* {
+/* ============================================================================
+ * FLUID TYPOGRAPHY & DESIGN TOKENS (Agrisell Design System)
+ * Viewport Scaling: 375px (Mobile) -> 1440px (Desktop)
+ * Base Font: 16px (1rem)
+ * ============================================================================ */
+
+:root {
+  /* Font Families */
+  --font-sans: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-heading: 'Poppins', var(--font-sans);
+
+  /* Fluid Font Sizes (clamp(min, intercept + slope, max)) */
+  --fs-hero: clamp(2.5rem, 1.925rem + 2.36vw, 3.8125rem);      /* 40px -> 61px */
+  --fs-h1: clamp(2rem, 1.648rem + 1.5vw, 3rem);              /* 32px -> 48px */
+  --fs-h2: clamp(1.625rem, 1.361rem + 1.13vw, 2.375rem);     /* 26px -> 38px */
+  --fs-h3: clamp(1.375rem, 1.243rem + 0.56vw, 1.75rem);       /* 22px -> 28px */
+  --fs-h4: clamp(1.1875rem, 1.02rem + 0.67vw, 1.5625rem);    /* 19px -> 25px */
+  --fs-lead: clamp(1.0625rem, 0.98rem + 0.34vw, 1.25rem);    /* 17px -> 20px */
+  --fs-body: clamp(1rem, 0.967rem + 0.14vw, 1.094rem);        /* 16px -> 17.5px */
+  --fs-small: clamp(0.8125rem, 0.791rem + 0.09vw, 0.875rem);  /* 13px -> 14px */
+  --fs-caption: 0.75rem;                                      /* 12px */
+  --fs-xs: 0.6875rem;                                         /* 11px */
+  --fs-micro: 0.625rem;                                       /* 10px */
+  --fs-nano: 0.5625rem;                                       /* 9px */
+
+  /* Line Heights (Proportional Vertical Rhythm) */
+  --lh-hero: 1.08;
+  --lh-h1: 1.15;
+  --lh-h2: 1.22;
+  --lh-h3: 1.30;
+  --lh-h4: 1.30;
+  --lh-body: 1.62;
+  --lh-small: 1.45;
+  --lh-caption: 1.40;
+  --lh-btn: 1;
+  --lh-solid: 1;
+
+  /* Letter Spacing (Tracking) */
+  --ls-hero: -0.035em;
+  --ls-h1: -0.025em;
+  --ls-h2: -0.018em;
+  --ls-h3: -0.012em;
+  --ls-h4: -0.01em;
+  --ls-body: 0em;
+  --ls-small: 0.01em;
+  --ls-caption: 0.01em;
+  --ls-btn: -0.01em;
+  --ls-caps: 0.05em;
+
+  /* Font Weights (Aligned with loaded Poppins weights) */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
+
 html {
   min-width: 320px;
   background: #f7f9f7;
+  font-size: 100%; /* 16px base */
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
+
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  font-weight: var(--fw-regular);
+  overflow-x: hidden;
 }
 
 button,
@@ -57,6 +129,185 @@ option {
   min-height: 100vh;
 }
 
+/* ============================================================================
+ * BASE SEMANTIC HEADINGS
+ * ============================================================================ */
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  margin-top: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--ls-h1);
+  font-weight: var(--fw-bold);
+  margin-bottom: clamp(1rem, 0.75rem + 1vw, 1.5rem);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--fw-bold);
+  margin-bottom: clamp(0.75rem, 0.5rem + 0.8vw, 1.25rem);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  font-weight: var(--fw-semibold);
+  margin-bottom: clamp(0.5rem, 0.35rem + 0.5vw, 0.875rem);
+}
+
+/* ============================================================================
+ * PARAGRAPHS & RUNNING PROSE
+ * ============================================================================ */
+
+p {
+  margin-top: 0;
+  margin-bottom: 1.25em;
+  text-wrap: pretty;
+  max-width: 72ch;
+}
+
+small,
+.text-small {
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  letter-spacing: var(--ls-small);
+}
+
+/* ============================================================================
+ * BUTTONS (.btn)
+ * ============================================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+  font-weight: var(--fw-semibold);
+  padding: 0.625rem 1.125rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--brand-forest-green, #0f743b);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background-color: var(--brand-forest-green, #0f743b);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-forest-green-dark, #0c6333);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--ink, #0b0b0b);
+  border-color: var(--line, #e8ede9);
+}
+
+.btn-secondary:hover {
+  background-color: var(--brand-forest-green-soft, #e5f2eb);
+  border-color: var(--brand-forest-green, #0f743b);
+}
+
+h4 {
+  font-size: var(--fs-h4);
+  line-height: var(--lh-h4);
+  letter-spacing: var(--ls-h4);
+  font-weight: var(--fw-semibold);
+  margin-bottom: clamp(0.375rem, 0.25rem + 0.3vw, 0.625rem);
+}
+
+.display-hero {
+  font-family: var(--font-heading);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  font-weight: var(--fw-bold);
+  text-wrap: balance;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-solid);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.text-caption {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-caption);
+}
+
+.text-xs {
+  font-size: var(--fs-xs);
+  line-height: var(--lh-small);
+}
+
+.text-micro {
+  font-size: var(--fs-micro);
+  line-height: var(--lh-solid);
+}
+
+.text-nano {
+  font-size: var(--fs-nano);
+  line-height: var(--lh-solid);
+}
+
+.btn-sm {
+  font-size: var(--fs-micro);
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.btn-lg {
+  font-size: var(--fs-body);
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.625rem;
+}
+
 .auth-loading {
   min-height: 100vh;
   display: grid;
@@ -66,8 +317,7 @@ option {
   color: var(--brand-forest-green-dark, #244d35);
   background:
     radial-gradient(circle at 18% 18%, #e5f3dc 0, transparent 31%),
-    radial-gradient(circle at 84% 82%, #e3f0e3 0, transparent 29%),
-    #f8fbf6;
+    radial-gradient(circle at 84% 82%, #e3f0e3 0, transparent 29%), #f8fbf6;
 }
 
 .auth-loading-card {
@@ -123,7 +373,7 @@ option {
   border-top-color: #4d8655;
   border-right-color: #91b86e;
   border-radius: 50%;
-  animation: auth-spinner-rotate .85s linear infinite;
+  animation: auth-spinner-rotate 0.85s linear infinite;
 }
 
 .auth-loading-spinner i {
@@ -135,5 +385,67 @@ option {
 }
 
 @keyframes auth-spinner-rotate {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
+
+/* Windows High Contrast / Contrast Themes Mode Support (Windows 10 and 11) */
+@media (forced-colors: active) {
+  * {
+    forced-color-adjust: auto;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    border: 1px solid ButtonText !important;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+  }
+
+  /* Ensure card containers and modals have clear borders in high-contrast mode */
+  .modal-backdrop,
+  .payment-details-backdrop,
+  .review-compose-backdrop,
+  .sale-modal-backdrop,
+  .delivery-route-overlay-backdrop {
+    background: Canvas !important;
+    opacity: 0.85;
+  }
+
+  .admin-modal,
+  .payment-details-modal,
+  .review-compose-dialog,
+  .profile-modal,
+  .delivery-info-modal,
+  .edit-delivery-modal,
+  .assign-rider-modal,
+  .delivery-delete-modal,
+  .delivery-complete-modal,
+  .delivery-cancel-modal,
+  .order-management-panel,
+  .stat-card,
+  .workspace-stat-card {
+    border: 2px solid CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  /* Status pills and chips maintain clear boundaries */
+  .order-status-pill,
+  .payment-status-badge,
+  .delivery-status,
+  .status-badge {
+    border: 1px solid Highlight !important;
+  }
+}
+

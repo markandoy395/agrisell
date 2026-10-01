@@ -1,0 +1,53 @@
+.account-tool-modal {
+  max-width: 570px;
+}
+.account-tool-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+.account-tool-form label {
+  color: #34423a;
+  display: grid;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  gap: 7px;
+}
+.account-tool-form input,
+.account-tool-form textarea {
+  border: 1px solid #dce5df;
+  border-radius: 10px;
+  font: inherit;
+  padding: 11px 12px;
+  resize: vertical;
+}
+.account-tool-form input:focus,
+.account-tool-form textarea:focus {
+  border-color: #4b8f62;
+  box-shadow: 0 0 0 3px rgba(75, 143, 98, 0.13);
+  outline: none;
+}
+.help-topics {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+.help-topics article {
+  align-items: flex-start;
+  background: #f7faf8;
+  border: 1px solid #e5ece7;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  padding: 15px;
+}
+.help-topics svg {
+  color: #367a50;
+  flex: 0 0 auto;
+}
+.help-topics p {
+  color: #68756d;
+  font-size: var(--fs-small);
+  line-height: var(--lh-body);
+  margin: 4px 0 0;
+}

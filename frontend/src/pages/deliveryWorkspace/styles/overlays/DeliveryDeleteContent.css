@@ -1,0 +1,155 @@
+.delivery-delete-icon {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  color: #ef2029;
+  border-radius: 50%;
+  background: #ffe5e7;
+}
+
+.delivery-delete-subtitle {
+  margin: 6px 0 23px;
+  color: #65728a;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  letter-spacing: var(--ls-small);
+}
+
+.delivery-delete-warning {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 20px;
+  color: #df1822;
+  border-radius: 10px;
+  background: #ffe7e9;
+}
+
+.delivery-delete-warning .icon {
+  flex: 0 0 auto;
+}
+
+.delivery-delete-warning p {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-body);
+}
+
+.delivery-delete-summary {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 17px;
+  margin-top: 18px;
+  padding: 17px 20px;
+  border: 1px solid #e7ebea;
+  border-radius: 10px;
+  background: #fafcfb;
+}
+
+.delivery-delete-summary div {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+}
+
+.delivery-delete-summary small {
+  color: #68758a;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-caption);
+}
+
+.delivery-delete-summary strong {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #172132;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  overflow-wrap: anywhere;
+}
+
+.delivery-delete-summary .delivery-location-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  fill: #0b8a4a;
+}
+
+.delivery-delete-error {
+  margin: 13px 0 0;
+  color: #c81720;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+}
+
+.delivery-delete-modal footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 13px;
+  margin-top: 23px;
+  padding-top: 19px;
+  border-top: 1px solid #e4e9e6;
+}
+
+.delivery-delete-modal footer button {
+  min-width: 145px;
+  height: 48px;
+  padding: 0 20px;
+  border: 1px solid #d6ddda;
+  border-radius: 8px;
+  background: #fff;
+  color: #172132;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+  cursor: pointer;
+}
+
+.delivery-delete-modal footer .confirm {
+  min-width: 207px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  color: #fff;
+  border-color: #dc101a;
+  background: #dc101a;
+  box-shadow: 0 7px 15px rgb(220 16 26 / 18%);
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-btn);
+  letter-spacing: var(--ls-btn);
+}
+
+@media (max-width: 700px) {
+  .delivery-delete-summary {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+  .delivery-delete-modal footer {
+      flex-direction: column-reverse;
+    }
+}
+
+@media (max-width: 700px) {
+  .delivery-delete-modal footer button,
+    .delivery-delete-modal footer .confirm {
+      width: 100%;
+      min-width: 0;
+    }
+}
+

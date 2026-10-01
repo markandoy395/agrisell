@@ -1,0 +1,123 @@
+.security-center {
+  margin-top: 20px;
+}
+.security-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 22px;
+}
+.security-card {
+  background: #f9fbfa;
+  border: 1px solid #e2eae5;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+}
+.security-card-heading {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+.security-card-heading > div {
+  display: grid;
+  gap: 3px;
+}
+.security-card-heading span,
+.security-session-list small {
+  color: #718078;
+  font-size: var(--fs-caption);
+}
+.security-card-heading svg {
+  color: #43805a;
+}
+.security-session-list {
+  display: grid;
+  gap: 10px;
+}
+.security-session-list > div {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+}
+.security-session-list > div > div {
+  display: grid;
+  gap: 2px;
+}
+.security-status-dot {
+  background: #45a466;
+  border: 3px solid #dcefe2;
+  border-radius: 50%;
+  height: 12px;
+  width: 12px;
+}
+.security-activity {
+  grid-column: 1 / -1;
+}
+.security-event-list {
+  display: grid;
+  max-height: 360px;
+  overflow: auto;
+}
+.security-event-list > div {
+  align-items: center;
+  border-top: 1px solid #e7ece9;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 12px 2px;
+}
+.security-event-list > div:first-child {
+  border-top: 0;
+}
+.security-event-list span {
+  display: grid;
+  gap: 3px;
+}
+.security-event-list small,
+.security-event-list p,
+.security-empty,
+.security-loading {
+  color: #718078;
+  font-size: var(--fs-caption);
+  margin: 0;
+}
+.mfa-enrollment {
+  display: grid;
+  gap: 12px;
+}
+.mfa-enrollment img {
+  background: white;
+  border-radius: 8px;
+  height: 150px;
+  width: 150px;
+}
+.mfa-enrollment p {
+  color: #65736b;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-small);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.mfa-enrollment > div {
+  display: flex;
+  gap: 8px;
+}
+.mfa-enrollment input {
+  border: 1px solid #d8e2dc;
+  border-radius: 9px;
+  font: inherit;
+  letter-spacing: var(--ls-caps);
+  padding: 9px;
+  width: 120px;
+}
+@media (max-width: 850px) {
+  .security-grid {
+    grid-template-columns: 1fr;
+  }
+  .security-activity {
+    grid-column: auto;
+  }
+}

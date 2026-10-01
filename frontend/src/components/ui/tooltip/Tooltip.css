@@ -15,9 +15,9 @@
   border-radius: 10px;
   background: var(--brand-forest-green);
   box-shadow: 0 8px 18px rgb(15 116 59 / 24%);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.25;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h2);
   pointer-events: none;
   animation: tooltip-enter 0.12s ease-out;
 }
@@ -25,37 +25,37 @@
   --tooltip-caret-size: 6px;
   padding: 5px 8px;
   border-radius: 7px;
-  font-size: 10px;
+  font-size: var(--fs-micro);
 }
 .tooltip-content::after {
   position: absolute;
   width: 0;
   height: 0;
   border: var(--tooltip-caret-size) solid transparent;
-  content: "";
+  content: '';
 }
-.tooltip-content[data-side="top"]::after {
+.tooltip-content[data-side='top']::after {
   top: 100%;
   left: 50%;
   border-top-color: var(--brand-forest-green);
   border-bottom: 0;
   transform: translateX(-50%);
 }
-.tooltip-content[data-side="bottom"]::after {
+.tooltip-content[data-side='bottom']::after {
   bottom: 100%;
   left: 50%;
   border-top: 0;
   border-bottom-color: var(--brand-forest-green);
   transform: translateX(-50%);
 }
-.tooltip-content[data-side="left"]::after {
+.tooltip-content[data-side='left']::after {
   top: 50%;
   left: 100%;
   border-right: 0;
   border-left-color: var(--brand-forest-green);
   transform: translateY(-50%);
 }
-.tooltip-content[data-side="right"]::after {
+.tooltip-content[data-side='right']::after {
   top: 50%;
   right: 100%;
   border-right-color: var(--brand-forest-green);

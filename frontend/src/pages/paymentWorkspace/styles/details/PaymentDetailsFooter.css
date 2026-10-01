@@ -1,0 +1,72 @@
+.payment-details-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 0 25px;
+  padding: 14px 0 13px;
+  border-top: 1px solid var(--details-line);
+}
+
+.payment-details-footer button {
+  min-width: 75px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 18px;
+  color: #26334b;
+  border: 1px solid #d2dce2;
+  border-radius: 9px;
+  background: #fff;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.payment-details-footer button:hover {
+  border-color: #aebbc3;
+  box-shadow: 0 4px 12px rgb(16 35 27 / 8%);
+  transform: translateY(-1px);
+}
+
+.payment-details-footer .payment-details-print {
+  min-width: 137px;
+  color: #fff;
+  border-color: #087841;
+  background: linear-gradient(135deg, #0b914c, #05713c);
+  box-shadow: 0 3px 8px rgb(7 121 64 / 16%);
+}
+
+.payment-details-footer .payment-details-print:hover {
+  border-color: #056b38;
+  box-shadow: 0 5px 14px rgb(7 121 64 / 24%);
+}
+
+@media (max-width: 760px) {
+  .payment-details-footer {
+    margin: 0 17px;
+  }
+}
+
+@media (max-width: 420px) {
+  .payment-details-footer button {
+    flex: 1;
+  }
+
+  .payment-details-footer .payment-details-print {
+    flex: 1.45;
+  }
+}
+
+@media print {
+  .payment-details-backdrop,
+  .payment-details-footer,
+  .payment-details-header > button {
+    display: none !important;
+  }
+}

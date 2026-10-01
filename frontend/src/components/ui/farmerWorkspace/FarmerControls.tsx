@@ -1,20 +1,20 @@
-import { Icon } from "../icon/Icon";
+import { Icon } from '../icon/Icon'
 
 type FarmerControlsProps = {
-  locationFilter: string;
-  locationOptions: string[];
-  query: string;
-  specialtyFilter: string;
-  specialtyOptions: string[];
-  statusFilter: string;
-  statusOptions: string[];
-  onAdd: () => void;
-  onDownload: () => void;
-  onLocationFilterChange: (location: string) => void;
-  onQueryChange: (query: string) => void;
-  onSpecialtyFilterChange: (specialty: string) => void;
-  onStatusFilterChange: (status: string) => void;
-};
+  locationFilter: string
+  locationOptions: string[]
+  query: string
+  specialtyFilter: string
+  specialtyOptions: string[]
+  statusFilter: string
+  statusOptions: string[]
+  onAdd: () => void
+  onDownload: () => void
+  onLocationFilterChange: (location: string) => void
+  onQueryChange: (query: string) => void
+  onSpecialtyFilterChange: (specialty: string) => void
+  onStatusFilterChange: (status: string) => void
+}
 
 export function FarmerControls({
   locationFilter,
@@ -72,10 +72,7 @@ export function FarmerControls({
 
       <label className="user-select-field">
         <span>Verification</span>
-        <select
-          value={statusFilter}
-          onChange={(event) => onStatusFilterChange(event.target.value)}
-        >
+        <select value={statusFilter} onChange={(event) => onStatusFilterChange(event.target.value)}>
           {statusOptions.map((option) => (
             <option key={option}>{option}</option>
           ))}
@@ -97,5 +94,5 @@ export function FarmerControls({
         </button>
       </div>
     </div>
-  );
+  )
 }

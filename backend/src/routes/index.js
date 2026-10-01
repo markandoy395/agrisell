@@ -1,4 +1,5 @@
 const { authenticateAdmin } = require('../middleware/authenticateAdmin');
+const { enforceAuthenticatedMutationRateLimit } = require('../middleware/rateLimit');
 const { getRequestPathname, sendJson } = require('../utils/http');
 const { routeAdminRequest } = require('./adminRoutes');
 const { routeAuthRequest } = require('./authRoutes');
@@ -19,7 +20,11 @@ const routeRequest = async (request, response) => {
   }
 
   if (pathname.startsWith('/api/')) {
-    if (!authenticateAdmin(request, response)) {
+    if (!await authenticateAdmin(request, response)) {
+      return;
+    }
+
+    if (!await enforceAuthenticatedMutationRateLimit(request, response, request.admin)) {
       return;
     }
 

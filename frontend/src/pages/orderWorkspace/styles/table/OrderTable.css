@@ -1,0 +1,113 @@
+.order-board {
+  overflow: hidden;
+  border: 1px solid var(--order-line);
+  border-radius: 0 0 10px 10px;
+  background: var(--order-surface);
+  box-shadow: 0 14px 30px var(--order-shadow);
+  box-sizing: border-box;
+}
+
+.order-table-wrap {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.order-table {
+  width: 100%;
+  min-width: 1260px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.order-col-select {
+  width: 44px;
+}
+
+.order-col-tracking {
+  width: 142px;
+}
+
+.order-col-recipient {
+  width: 160px;
+}
+
+.order-col-date {
+  width: 118px;
+}
+
+.order-col-destination {
+  width: 205px;
+}
+
+.order-col-service {
+  width: 105px;
+}
+
+.order-col-courier {
+  width: 150px;
+}
+
+.order-col-arrival {
+  width: 142px;
+}
+
+.order-col-status {
+  width: 126px;
+}
+
+.order-col-action {
+  width: 92px;
+}
+
+.order-table th {
+  height: 36px;
+  padding: 0 8px;
+  color: var(--order-muted);
+  border-bottom: 1px solid var(--order-line);
+  background: var(--order-surface-soft);
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-solid);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.order-table td {
+  height: 70px;
+  padding: 0 8px;
+  color: var(--order-ink);
+  border-bottom: 1px solid var(--order-line);
+  font-size: var(--fs-micro);
+  vertical-align: middle;
+}
+
+.order-table th:first-child,
+.order-table td:first-child {
+  padding-left: 14px;
+}
+
+.order-table th:last-child,
+.order-table td:last-child {
+  padding-right: 10px;
+}
+
+.order-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.order-table tbody tr:hover td {
+  background: var(--order-surface-hover);
+}
+
+.order-checkbox {
+  width: 14px;
+  height: 14px;
+  display: block;
+  margin: 0;
+  accent-color: var(--brand-forest-green);
+}
+
+.order-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}

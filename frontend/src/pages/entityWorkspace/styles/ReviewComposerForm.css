@@ -1,0 +1,122 @@
+.review-compose-form {
+  margin-top: 18px;
+}
+
+.review-compose-form > label {
+  position: relative;
+  display: block;
+}
+
+.review-compose-form textarea {
+  width: 100%;
+  min-height: 104px;
+  display: block;
+  resize: vertical;
+  padding: 13px 14px 28px;
+  color: #2d3b32;
+  border: 1px solid #cfd8d1;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: var(--fs-micro);
+  line-height: var(--lh-small);
+}
+
+.review-compose-dialog--direct .review-compose-form textarea {
+  min-height: 92px;
+}
+
+.review-compose-form textarea:focus {
+  border-color: var(--brand-forest-green);
+  box-shadow: 0 0 0 3px var(--brand-forest-green-soft);
+  outline: 0;
+}
+
+.review-compose-form label > small {
+  position: absolute;
+  right: 12px;
+  bottom: 9px;
+  color: #849087;
+  font-size: var(--fs-nano);
+}
+
+.review-compose-form footer {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.review-public-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #657269;
+  font-size: var(--fs-nano);
+}
+
+.review-compose-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.review-compose-actions button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 16px;
+  color: #233128;
+  border: 1px solid #d3dbd5;
+  border-radius: 8px;
+  background: #fff;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-bold);
+}
+
+.review-compose-actions .review-compose-submit {
+  color: #fff;
+  border-color: var(--brand-forest-green);
+  background: linear-gradient(145deg, #2b9c5a, #087238);
+  box-shadow: 0 8px 18px rgb(23 122 60 / 18%);
+}
+
+.review-compose-submit .icon {
+  transform: rotate(-25deg);
+}
+
+.review-compose-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (max-width: 700px) {
+  .review-compose-form footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 700px) {
+  .review-compose-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .review-compose-actions button {
+    flex: 1;
+  }
+}
+
+.review-compose-error {
+  margin: 0;
+  color: #a33a2f;
+  font-size: var(--fs-xs);
+}
