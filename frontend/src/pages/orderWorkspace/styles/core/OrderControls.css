@@ -17,11 +17,29 @@
   background: #fff;
 }
 
+.dashboard .order-list-controls.dashboard-filter-grid {
+  flex-direction: row;
+  align-items: end;
+}
+
+.dashboard .order-list-controls.dashboard-filter-grid > .dashboard-filter-field {
+  flex: 1 1 170px;
+}
+
 .order-table-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.dashboard .order-table-actions.dashboard-filter-actions {
+  width: auto;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  overflow-x: auto;
 }
 
 .order-search-field {
@@ -157,4 +175,3 @@
       grid-column: 1 / -1;
     }
 }
-

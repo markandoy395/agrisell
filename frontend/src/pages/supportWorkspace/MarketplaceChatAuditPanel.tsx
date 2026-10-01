@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../../components/ui/icon/Icon'
+import type { IconName } from '../../types/icon'
 import type {
   MarketplaceAuditMessage,
   MarketplaceConversationDetail,
@@ -20,12 +21,12 @@ type MarketplaceChatAuditPanelProps = {
   onSendIntervention: (body: string) => Promise<void>
 }
 
-const SCAM_TRIGGER_CHIPS = [
-  { label: '💸 GCash / Bank', query: 'gcash' },
-  { label: '📞 Direct Contact', query: '09' },
-  { label: '🚫 Outside App', query: 'outside' },
-  { label: '💰 Transfer Direct', query: 'transfer' },
-  { label: '⚠️ Cancel Order', query: 'cancel' },
+const SCAM_TRIGGER_CHIPS: { label: string; query: string; icon: IconName }[] = [
+  { label: 'GCash / Bank', query: 'gcash', icon: 'card' },
+  { label: 'Direct Contact', query: '09', icon: 'phone' },
+  { label: 'Outside App', query: 'outside', icon: 'alert' },
+  { label: 'Transfer Direct', query: 'transfer', icon: 'coins' },
+  { label: 'Cancel Order', query: 'cancel', icon: 'warning' },
 ]
 
 const DEFAULT_WARNINGS = [
@@ -49,7 +50,7 @@ export function MarketplaceChatAuditPanel({
   const [selectedReason, setSelectedReason] = useState<MarketplaceFlagReason | ''>('')
   const [isToolsExpanded, setIsToolsExpanded] = useState(false)
 
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   // Sync initial moderation values when conversation changes
   useEffect(() => {
@@ -65,7 +66,8 @@ export function MarketplaceChatAuditPanel({
 
   // Scroll to bottom on messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const container = messagesContainerRef.current
+    if (container) container.scrollTop = container.scrollHeight
   }, [activeDetail?.messages?.length])
 
   const conversation = activeDetail?.conversation
@@ -200,8 +202,8 @@ export function MarketplaceChatAuditPanel({
             <div className="context-card-body">
               <strong>{conversation.buyer_name}</strong>
               <div className="context-card-meta">
-                {conversation.buyer_email && <span>📧 {conversation.buyer_email}</span>}
-                {conversation.buyer_phone && <span>📞 {conversation.buyer_phone}</span>}
+                {conversation.buyer_email && <span><Icon name="mail" size={12} />{conversation.buyer_email}</span>}
+                {conversation.buyer_phone && <span><Icon name="phone" size={12} />{conversation.buyer_phone}</span>}
               </div>
             </div>
           </div>
@@ -212,9 +214,9 @@ export function MarketplaceChatAuditPanel({
             <div className="context-card-body">
               <strong>{conversation.farmer_name}</strong>
               <div className="context-card-meta">
-                <span>🏡 {conversation.farm_name}</span>
-                <span>📍 {conversation.farm_location}</span>
-                {conversation.farmer_phone && <span>📞 {conversation.farmer_phone}</span>}
+                <span><Icon name="home" size={12} />{conversation.farm_name}</span>
+                <span><Icon name="route" size={12} />{conversation.farm_location}</span>
+                {conversation.farmer_phone && <span><Icon name="phone" size={12} />{conversation.farmer_phone}</span>}
               </div>
             </div>
           </div>
@@ -239,7 +241,7 @@ export function MarketplaceChatAuditPanel({
                         <span>₱{Number(conversation.price_per_unit).toFixed(2)} / {conversation.unit_type || 'unit'}</span>
                       )}
                       {conversation.client_order_id && (
-                        <span>📦 Order #{conversation.client_order_id} ({conversation.order_status})</span>
+                        <span><Icon name="basket" size={12} />Order #{conversation.client_order_id} ({conversation.order_status})</span>
                       )}
                     </div>
                   </div>
@@ -275,7 +277,8 @@ export function MarketplaceChatAuditPanel({
                 onClick={handleToggleSuspend}
                 disabled={isModerating}
               >
-                {isSuspended ? '🔓 Unsuspend Messaging' : '🔒 Suspend Conversation'}
+                <Icon name={isSuspended ? 'checkCircle' : 'lock'} size={14} />
+                {isSuspended ? 'Unsuspend Messaging' : 'Suspend Conversation'}
               </button>
             </div>
           </div>
@@ -369,7 +372,7 @@ export function MarketplaceChatAuditPanel({
               onClick={() => setTranscriptSearch('')}
               title="Clear search"
             >
-              ✕
+              <Icon name="close" size={14} />
             </button>
           )}
         </div>
@@ -385,6 +388,7 @@ export function MarketplaceChatAuditPanel({
                 className={`quick-trigger-chip ${isActive ? 'active' : ''}`}
                 onClick={() => handleApplyQuickSearch(chip.query)}
               >
+                <Icon name={chip.icon} size={13} />
                 {chip.label}
               </button>
             )
@@ -399,7 +403,7 @@ export function MarketplaceChatAuditPanel({
       </div>
 
       {/* 4. Complete Chronological Messages Transcript */}
-      <div className="support-messages-container marketplace-messages-container">
+      <div ref={messagesContainerRef} className="support-messages-container marketplace-messages-container">
         {isSuspended && (
           <div className="suspended-conversation-banner">
             <Icon name="shield" size={18} />
@@ -465,7 +469,6 @@ export function MarketplaceChatAuditPanel({
             )
           })
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* 5. Official Administrative Warning & Intervention Composer */}

@@ -1,8 +1,9 @@
 import { Icon } from '../../components/ui/icon/Icon'
 import { label } from '../../utils/delivery'
 import type { DeliveryDataState } from './useDeliveryData'
+import { downloadDeliveries } from './deliveryWorkspace.utils'
 
-export function DeliveryFilters({ data }: { data: DeliveryDataState }) {
+export function DeliveryFilters({ data, onCreate }: { data: DeliveryDataState; onCreate: () => void }) {
   return (
     <div className="order-list-controls delivery-filters dashboard-filter-grid" onChange={() => data.setPage(1)}>
       <label className="delivery-list-search dashboard-filter-field">
@@ -75,6 +76,45 @@ export function DeliveryFilters({ data }: { data: DeliveryDataState }) {
           />
           <span className="sr-only">Overdue only</span>
         </label>
+        <button
+          className="order-sort-button"
+          type="button"
+          onClick={() => data.setSortDirection((value) => (value === 'desc' ? 'asc' : 'desc'))}
+          aria-label={`Sort deliveries ${data.sortDirection === 'desc' ? 'oldest first' : 'newest first'}`}
+        >
+          <Icon name="calendar" size={15} />
+          {data.sortDirection === 'desc' ? 'Newest first' : 'Oldest first'}
+          <Icon name="chevron" size={14} />
+        </button>
+        <button
+          className="order-download-button"
+          type="button"
+          aria-label="Download CSV"
+          disabled={!data.filtered.length}
+          onClick={() => downloadDeliveries(data.filtered)}
+        >
+          Download <Icon name="download" size={15} />
+        </button>
+        <button
+          type="button"
+          className="delivery-primary delivery-add-button"
+          aria-label="Add delivery"
+          disabled={data.loading || Boolean(data.error)}
+          onClick={onCreate}
+        >
+          <Icon name="plus" size={17} />
+          Add Delivery
+        </button>
+        <button
+          className="delivery-header-refresh"
+          type="button"
+          disabled={data.loading}
+          onClick={() => void data.refresh()}
+          aria-label="Refresh"
+          title="Refresh deliveries"
+        >
+          <Icon name="refresh" size={16} />
+        </button>
       </div>
     </div>
   )

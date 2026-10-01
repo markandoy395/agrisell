@@ -8,7 +8,6 @@ import { DeliveryConfirmationOverlays } from './DeliveryConfirmationOverlays'
 import { DeliveryCreateForm } from './DeliveryCreateForm'
 import { DeliveryDetailOverlays } from './DeliveryDetailOverlays'
 import { DeliveryFilters } from './DeliveryFilters'
-import { DeliveryHeader } from './DeliveryHeader'
 import { DeliverySummary } from './DeliverySummary'
 import { DeliveryTable } from './DeliveryTable'
 import { useDeliveryActions } from './useDeliveryActions'
@@ -103,9 +102,8 @@ export function DeliveryWorkspace({
   return (
     <section
       className="user-workspace delivery-workspace order-workspace"
-      aria-labelledby="deliveries-title"
+      aria-label="Delivery management"
     >
-      <DeliveryHeader data={data} onCreate={() => setCreating(true)} />
       <DeliverySummary data={data} />
       <div className="delivery-view-tabs" aria-label="Delivery views">
         <button
@@ -176,7 +174,7 @@ export function DeliveryWorkspace({
             </div>
           )}
           {creating && <DeliveryCreateForm data={data} onClose={() => setCreating(false)} />}
-          <DeliveryFilters data={data} />
+          <DeliveryFilters data={data} onCreate={() => setCreating(true)} />
           <DeliveryTable actions={actions} data={data} farmerRequests={farmerRequests} />
           <DeliveryActionMenu actions={actions} />
           <DeliveryDetailOverlays

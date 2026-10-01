@@ -13,16 +13,31 @@
 
 .dashboard .delivery-filters.order-list-controls.dashboard-filter-grid {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   align-items: end;
-  gap: 18px;
+  gap: 10px;
   padding: 0 0 16px;
   border: 0;
   background: transparent;
 }
 
 .delivery-filters.dashboard-filter-grid > .dashboard-filter-field {
-  flex: 1 1 150px;
+  flex: 1 1 120px;
   min-width: 0;
+}
+
+.dashboard .delivery-filters .dashboard-filter-actions {
+  max-width: 100%;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  overflow-x: auto;
+}
+
+.dashboard .delivery-filters .delivery-header-refresh {
+  width: 42px;
+  flex: 0 0 42px;
+  padding: 0;
 }
 
 .delivery-filters.dashboard-filter-grid .delivery-list-search,

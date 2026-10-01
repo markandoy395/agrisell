@@ -9,13 +9,22 @@
 }
 
 .dashboard--table .support-workspace {
+  flex: 1 0 auto;
   min-height: 0;
+}
+
+.dashboard--table .page-content:has(.support-workspace) {
+  overflow-y: auto;
 }
 
 .dashboard--table .support-main-layout {
   flex: 1;
-  min-height: 0;
+  min-height: 680px;
   max-height: none;
+}
+
+.dashboard--table .support-main-layout:has(.marketplace-moderation-drawer) {
+  min-height: 900px;
 }
 
 .dashboard--table :is(.support-inbox-pane, .support-chat-pane, .marketplace-audit-pane, .support-inbox-list, .support-messages-container, .marketplace-messages-container) {
@@ -28,7 +37,12 @@
 
 @media (max-width: 1024px) {
   .dashboard--table .support-main-layout {
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(300px, 1fr) minmax(680px, 2fr);
+    min-height: 980px;
+  }
+
+  .dashboard--table .support-main-layout:has(.marketplace-moderation-drawer) {
+    min-height: 1200px;
   }
 }
 
@@ -448,6 +462,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.support-inline-icon .icon,
+.last-sender-tag .icon {
+  vertical-align: -2px;
+  margin-right: 5px;
 }
 
 .support-ticket-snippet {
@@ -1252,6 +1272,17 @@
   color: #4b5563;
 }
 
+.context-card-meta > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+
+.context-card-meta .icon {
+  flex-shrink: 0;
+}
+
 .context-product-inline {
   display: flex;
   align-items: center;
@@ -1299,6 +1330,9 @@
 }
 
 .suspend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: var(--fs-caption);
@@ -1400,6 +1434,8 @@
 }
 
 .transcript-search-clear {
+  display: inline-flex;
+  align-items: center;
   border: none;
   background: transparent;
   color: #94a3b8;
@@ -1422,6 +1458,9 @@
 }
 
 .quick-trigger-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: 4px 9px;
   border-radius: 12px;
   border: 1px solid #e2e8f0;

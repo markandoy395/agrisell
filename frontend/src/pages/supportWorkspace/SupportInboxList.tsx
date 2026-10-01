@@ -238,23 +238,24 @@ export function SupportInboxList({
 
                 <div className="support-ticket-subject">
                   {chat.commodity_name ? (
-                    <span>🌾 {chat.commodity_name} {chat.price_per_unit ? `(₱${Number(chat.price_per_unit).toFixed(2)})` : ''}</span>
+                    <span className="support-inline-icon"><Icon name="sprout" size={14} />{chat.commodity_name} {chat.price_per_unit ? `(₱${Number(chat.price_per_unit).toFixed(2)})` : ''}</span>
                   ) : chat.client_order_id ? (
-                    <span>📦 Order #{chat.client_order_id}</span>
+                    <span className="support-inline-icon"><Icon name="basket" size={14} />Order #{chat.client_order_id}</span>
                   ) : (
-                    <span>💬 Direct Farmer Inquiry ({chat.farm_name})</span>
+                    <span className="support-inline-icon"><Icon name="message" size={14} />Direct Farmer Inquiry ({chat.farm_name})</span>
                   )}
                 </div>
 
                 {chat.last_message_body && (
                   <div className="support-ticket-snippet">
                     <span className="last-sender-tag">
+                      {chat.last_message_sender === 'admin' && <Icon name="shield" size={13} />}
                       {chat.last_message_sender === 'buyer'
                         ? 'Buyer: '
                         : chat.last_message_sender === 'farmer'
                         ? 'Farmer: '
                         : chat.last_message_sender === 'admin'
-                        ? '🛡️ Admin: '
+                        ? 'Admin: '
                         : ''}
                     </span>
                     {chat.last_message_body}
