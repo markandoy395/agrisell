@@ -2,9 +2,6 @@ import type { ReactNode } from 'react'
 import { useSmallScreenAccessBlock } from '../../hooks/useSmallScreenAccessBlock'
 import './SmallScreenAccessGuard.css'
 
-// Temporarily disabled while fixing small-screen issues. Set to true to restore the block.
-const SMALL_SCREEN_ACCESS_BLOCK_ENABLED = false
-
 type SmallScreenAccessGuardProps = {
   children: ReactNode
 }
@@ -12,7 +9,7 @@ type SmallScreenAccessGuardProps = {
 export function SmallScreenAccessGuard({ children }: SmallScreenAccessGuardProps) {
   const shouldBlockAccess = useSmallScreenAccessBlock()
 
-  if (SMALL_SCREEN_ACCESS_BLOCK_ENABLED && shouldBlockAccess) {
+  if (shouldBlockAccess) {
     return (
       <main className="small-screen-access-notice" aria-labelledby="small-screen-access-title">
         <section className="small-screen-access-card">
