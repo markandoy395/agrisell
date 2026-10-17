@@ -1,15 +1,8 @@
 import {
   ApiRequestError,
-  getEdgeAuthSession,
-  getResponseCode,
-  getResponseMessage,
   isRecord,
-  parseJsonResponse,
   requestAdminApi,
   saveEdgeAuthSession,
-  SUPABASE_PUBLISHABLE_KEY,
-  SUPABASE_URL,
-  usesSupabaseEdgeAuth,
 } from './adminApiClient'
 
 export type SecurityEvent = {
@@ -101,61 +94,30 @@ export const revokeOtherAdminSessions = async () => {
   await requestAdminApi('/api/admin/security/sessions/revoke-others', { method: 'POST' })
 }
 
-const mfaRequest = async (path: string, options: RequestInit = {}) => {
-  if (!usesSupabaseEdgeAuth) throw new ApiRequestError('MFA requires Supabase authentication.', 409)
-  const token = getEdgeAuthSession()?.accessToken
-  if (!token) throw new ApiRequestError('Sign in again before changing MFA.', 401)
-  const response = await fetch(`${SUPABASE_URL}/auth/v1${path}`, {
-    ...options,
-    headers: {
-      apikey: SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  })
-  const body = await parseJsonResponse(response)
-  if (!response.ok)
-    throw new ApiRequestError(
-      getResponseMessage(body, 'MFA could not be updated.'),
-      response.status,
-      getResponseCode(body),
-    )
-  return body
-}
-
 export const beginMfaEnrollment = async () => {
-  const body = await mfaRequest('/factors', {
-    body: JSON.stringify({ factor_type: 'totp', friendly_name: 'Agrisell Admin' }),
-    method: 'POST',
-  })
-  if (!isRecord(body) || typeof body.id !== 'string' || !isRecord(body.totp)) {
-    throw new ApiRequestError('Supabase returned invalid MFA enrollment details.', 500)
+  const body = await requestAdminApi('/api/admin/security/mfa/enroll', { method: 'POST' })
+  if (!isRecord(body) || typeof body.factorId !== 'string') {
+    throw new ApiRequestError('The server returned invalid MFA enrollment details.', 500)
   }
   return {
-    factorId: body.id,
-    qrCode: typeof body.totp.qr_code === 'string' ? body.totp.qr_code : '',
-    secret: typeof body.totp.secret === 'string' ? body.totp.secret : '',
+    factorId: body.factorId,
+    qrCode: typeof body.qrCode === 'string' ? body.qrCode : '',
+    secret: typeof body.secret === 'string' ? body.secret : '',
   }
 }
 
 export const verifyMfaEnrollment = async (factorId: string, code: string) => {
-  const challenge = await mfaRequest(`/factors/${encodeURIComponent(factorId)}/challenge`, {
-    body: '{}',
+  const verified = await requestAdminApi('/api/admin/security/mfa/verify', {
+    body: JSON.stringify({ factorId, code }),
     method: 'POST',
   })
-  if (!isRecord(challenge) || typeof challenge.id !== 'string') {
-    throw new ApiRequestError('MFA verification challenge could not be created.', 500)
-  }
-  const verified = await mfaRequest(`/factors/${encodeURIComponent(factorId)}/verify`, {
-    body: JSON.stringify({ challenge_id: challenge.id, code }),
-    method: 'POST',
-  })
-  if (isRecord(verified) && typeof verified.access_token === 'string') {
-    saveEdgeAuthSession(verified.access_token)
+  if (isRecord(verified) && typeof verified.accessToken === 'string') {
+    saveEdgeAuthSession(verified.accessToken)
   }
 }
 
 export const removeMfaFactor = async (factorId: string) => {
-  await mfaRequest(`/factors/${encodeURIComponent(factorId)}`, { method: 'DELETE' })
+  await requestAdminApi(`/api/admin/security/mfa/factors/${encodeURIComponent(factorId)}`, {
+    method: 'DELETE',
+  })
 }

@@ -7,8 +7,8 @@ import { createManualRecord, getPreferences, savePreferences } from "../services
 import { createApiError } from "../value.ts";
 import { requirePermission } from "./permission.ts";
 import {
-  changePassword, revokeOtherSessions, securityOverview, setAdministratorEnabled,
-  submitAdminRequest,
+  changePassword, enrollMfa, revokeOtherSessions, securityOverview, setAdministratorEnabled,
+  submitAdminRequest, unenrollMfa, verifyMfa,
 } from "../services/security.ts";
 
 export const handleAdminWorkspaceRoutes = async (
@@ -16,6 +16,16 @@ export const handleAdminWorkspaceRoutes = async (
 ): Promise<HandlerResult | null> => {
   if (request.method === "GET" && pathname === "/api/admin/security") {
     return { status: 200, body: await securityOverview(request, admin) };
+  }
+  if (request.method === "POST" && pathname === "/api/admin/security/mfa/enroll") {
+    return { status: 200, body: await enrollMfa(request, admin) };
+  }
+  if (request.method === "POST" && pathname === "/api/admin/security/mfa/verify") {
+    return { status: 200, body: await verifyMfa(request, admin, (await request.json().catch(() => ({}))) as Record<string, unknown>) };
+  }
+  const mfaFactor = pathname.match(/^\/api\/admin\/security\/mfa\/factors\/([^/]+)$/);
+  if (request.method === "DELETE" && mfaFactor) {
+    return { status: 200, body: await unenrollMfa(request, admin, decodeURIComponent(mfaFactor[1])) };
   }
   if (request.method === "POST" && pathname === "/api/admin/security/password") {
     return { status: 200, body: await changePassword(request, admin, (await request.json().catch(() => ({}))) as Record<string, unknown>) };

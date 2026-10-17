@@ -83,6 +83,7 @@ export function AdminDashboardDialogs({ admin, state }: AdminDashboardDialogsPro
       <VerificationReviewModal
         entity={state.verificationTarget?.entity ?? null}
         entityType={state.verificationTarget?.type ?? 'farmer'}
+        initialDecision={state.verificationTarget?.initialDecision}
         onClose={() => state.setVerificationTarget(null)}
         onReview={async (input) => {
           if (!state.verificationTarget?.entity.entityId) return
@@ -146,4 +147,3 @@ export function AdminDashboardDialogs({ admin, state }: AdminDashboardDialogsPro
     </>
   )
 }
-

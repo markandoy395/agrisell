@@ -100,15 +100,13 @@ invalidation RPC so Node sessions cannot retain stale access.
 
 ## 3. Configure the GitHub Pages frontend
 
-In the environment used to build the frontend, set only these public variables:
+In the environment used to build the frontend, set only the API endpoint variable:
 
 ```text
 VITE_API_BASE_URL=https://YOUR_PROJECT_REF.supabase.co/functions/v1/admin-api
-VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_PUBLIC_KEY
 ```
 
-Build and deploy the `frontend` directory to GitHub Pages. Administrators can then sign in using their Supabase Auth credentials. Login is proxied through the Edge Function so per-IP and per-account limits are applied before Supabase Auth is called. The browser stores the returned short-lived access token and sends it to the Edge Function; the function validates the token and checks the `users` and `admins` database records before responding.
+Database URLs, API keys, and service keys must never be exposed to the client. Build and deploy the `frontend` directory to GitHub Pages. Administrators can then sign in using their Supabase Auth credentials. Login, MFA verification, and session management are handled entirely through server-side endpoints on the Edge Function so credentials and keys remain strictly server-side. The browser stores only the returned short-lived access token and sends it to the Edge Function; the function validates the token and checks the `users` and `admins` database records before responding.
 
 ## 4. Add administrators
 

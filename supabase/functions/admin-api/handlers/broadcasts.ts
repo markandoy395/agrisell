@@ -4,7 +4,9 @@ import {
   getAudienceCounts,
   listBroadcastHistory,
 } from "../services/broadcasts.ts";
-import { requirePermission } from "./permission.ts";
+import { requireAdminRole, requireAnyPermission } from "./permission.ts";
+
+const BROADCAST_PERMISSIONS = ["support:manage", "users:manage"];
 
 export const handleBroadcastRoutes = async (
   request: Request,
@@ -12,6 +14,8 @@ export const handleBroadcastRoutes = async (
   admin: Admin,
 ): Promise<HandlerResult | null> => {
   if (pathname === "/api/admin/broadcasts/audience-counts" && request.method === "GET") {
+    requireAdminRole(admin);
+    requireAnyPermission(admin.permissions, BROADCAST_PERMISSIONS);
     const counts = await getAudienceCounts();
     return {
       status: 200,
@@ -20,6 +24,8 @@ export const handleBroadcastRoutes = async (
   }
 
   if (pathname === "/api/admin/broadcasts" && request.method === "GET") {
+    requireAdminRole(admin);
+    requireAnyPermission(admin.permissions, BROADCAST_PERMISSIONS);
     const url = new URL(request.url);
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit")) || 50));
     const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
@@ -31,15 +37,8 @@ export const handleBroadcastRoutes = async (
   }
 
   if (pathname === "/api/admin/broadcasts" && request.method === "POST") {
-    const hasPermission =
-      admin.permissions.includes("admin:manage") ||
-      admin.permissions.includes("support:manage") ||
-      admin.permissions.includes("users:manage");
-
-    if (!hasPermission) {
-      requirePermission(admin.permissions, "admin:manage");
-    }
-
+    requireAdminRole(admin);
+    requireAnyPermission(admin.permissions, BROADCAST_PERMISSIONS);
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const result = await broadcastAnnouncement(admin.email, body);
     return {

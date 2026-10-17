@@ -56,7 +56,7 @@ const notifyProfileOwner = async (profile, entityType, decision) => {
   const recipientAuthId = text(profile.auth_user_id ?? profile.auth_id);
   if (!recipientAuthId || decision.action === 'profile_updated') return;
   const descriptions = {
-    verified: `Your ${entityType} verification was approved.`,
+    verified: decision.message || `Your ${entityType} verification was approved.`,
     rejected: `Your ${entityType} verification was rejected: ${decision.reason}`,
     needs_information: decision.message,
     suspended: `Your ${entityType} account was suspended: ${decision.reason}`,

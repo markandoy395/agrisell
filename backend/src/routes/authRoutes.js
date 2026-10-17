@@ -6,9 +6,19 @@ const {
   requestPasswordResetCode,
 } = require('../controllers/authController');
 
+const { sendJson } = require('../utils/http');
+
 const routeAuthRequest = async (request, response, pathname) => {
   if (pathname === '/api/auth/login' && request.method === 'POST') {
     await loginAdmin(request, response);
+    return true;
+  }
+
+  if (pathname === '/api/auth/mfa/verify' && request.method === 'POST') {
+    sendJson(response, 400, {
+      code: 'MFA_NOT_SUPPORTED',
+      message: 'MFA verification requires Supabase authentication.',
+    });
     return true;
   }
 

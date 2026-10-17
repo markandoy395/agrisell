@@ -51,3 +51,52 @@ test('preflight headers are secured and do not authorize an unknown origin', () 
   }
   assert.equal(headers.has('access-control-allow-origin'), false)
 })
+
+test('Edge RBAC role helpers validate admin roles vs user roles', async () => {
+  const { ROLES, isAdminRole, isUserRole, isValidRole } =
+    await import('../../supabase/functions/admin-api/roles.ts')
+  const { requireAdminRole, requirePermission, requireSuperAdminRole } =
+    await import('../../supabase/functions/admin-api/handlers/permission.ts')
+
+  assert.equal(isAdminRole(ROLES.ADMIN), true)
+  assert.equal(isAdminRole(ROLES.SUPER_ADMIN), true)
+  assert.equal(isAdminRole(ROLES.USER), false)
+  assert.equal(isAdminRole(ROLES.FARMER), false)
+  assert.equal(isAdminRole(ROLES.RIDER), false)
+  assert.equal(isUserRole(ROLES.USER), true)
+  assert.equal(isValidRole(ROLES.USER), true)
+
+  // Unauthenticated caller
+  assert.throws(
+    () => requireAdminRole(null),
+    (error) => error.status === 401 && error.code === 'AUTHENTICATION_REQUIRED',
+  )
+
+  // Authenticated user with role 'user'
+  assert.throws(
+    () => requireAdminRole({ role: 'user' }),
+    (error) => error.status === 403 && error.code === 'ADMIN_ROLE_REQUIRED',
+  )
+
+  // Authenticated admin
+  assert.doesNotThrow(() => requireAdminRole({ role: 'admin' }))
+  assert.doesNotThrow(() => requireAdminRole({ role: 'super_admin' }))
+
+  // Granular permission check
+  assert.throws(
+    () => requirePermission(['overview:view'], 'orders:manage'),
+    (error) => error.status === 403 && error.code === 'ADMIN_PRIVILEGE_REQUIRED',
+  )
+  assert.doesNotThrow(() => requirePermission(['orders:manage'], 'orders:manage'))
+  assert.doesNotThrow(() => requirePermission(['admin:manage'], 'orders:manage'))
+
+  // Super admin role check
+  assert.throws(
+    () => requireSuperAdminRole({ permissions: ['overview:view'], role: 'admin' }),
+    (error) => error.status === 403 && error.code === 'SUPER_ADMIN_REQUIRED',
+  )
+  assert.doesNotThrow(
+    () => requireSuperAdminRole({ permissions: ['admin:manage'], role: 'super_admin' }),
+  )
+})
+

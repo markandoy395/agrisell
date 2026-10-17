@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { EntityRecord } from '../../types/dashboard'
 import { Icon } from '../../components/ui/icon/Icon'
@@ -10,26 +10,31 @@ import {
   ridersPerPage,
 } from './logisticsWorkspace.utils'
 import { useLogisticsWorkspace } from './useLogisticsWorkspace'
+import { RiderProfileModal } from './RiderProfileModal'
+import { EditRiderModal } from './EditRiderModal'
+import { ApproveRiderModal } from './ApproveRiderModal'
+import { RejectRiderModal } from './RejectRiderModal'
+import { AssignDeliveryToRiderModal } from './AssignDeliveryToRiderModal'
 import './LogisticsWorkspace.css'
 
 type LogisticsWorkspaceProps = {
   created: EntityRecord[]
   onAdd: () => void
-  onApproveRider: (rider: EntityRecord) => Promise<void>
+  onApproveRider: (rider: EntityRecord, message: string) => Promise<void>
   onOpen: (record: EntityRecord) => void
   records: EntityRecord[]
   search: string
-  onEditRider?: (rider: EntityRecord) => void
-  onAssignDelivery?: (rider: EntityRecord) => void
-  onChangeAvailability?: (rider: EntityRecord, status: string) => void
+  onRiderSaved?: () => Promise<void>
+  onDeliveryAssigned?: (rider: EntityRecord, orderId: number) => Promise<void>
+  onRejectRider: (rider: EntityRecord, reason: string) => Promise<void>
   onDeleteRider?: (rider: EntityRecord) => void
 }
 
 const getAvailabilityClass = (status: string) => {
   const s = status.toLowerCase()
   if (s.includes('offline')) return 'is-offline'
-  if (s.includes('available')) return 'is-available'
-  if (s.includes('delivery')) return 'is-ondelivery'
+  if (s.includes('online') || s.includes('available')) return 'is-available'
+  if (s.includes('busy') || s.includes('delivery')) return 'is-ondelivery'
   return 'is-offline'
 }
 
@@ -48,14 +53,18 @@ export function LogisticsWorkspace({
   onOpen,
   records,
   search,
-  onEditRider,
-  onAssignDelivery,
-  onChangeAvailability,
+  onRiderSaved,
+  onDeliveryAssigned,
+  onRejectRider,
   onDeleteRider,
 }: LogisticsWorkspaceProps) {
+  const [profileRider, setProfileRider] = useState<EntityRecord | null>(null)
+  const [editRider, setEditRider] = useState<EntityRecord | null>(null)
+  const [approvalRider, setApprovalRider] = useState<EntityRecord | null>(null)
+  const [rejectionRider, setRejectionRider] = useState<EntityRecord | null>(null)
+  const [assignmentRider, setAssignmentRider] = useState<EntityRecord | null>(null)
   const workspace = useLogisticsWorkspace({
     created,
-    onApproveRider,
     records,
     search,
   })
@@ -130,7 +139,9 @@ export function LogisticsWorkspace({
 
   return (
     <section className="riders-workspace" aria-labelledby="riders-title">
-      <h1 className="riders-visually-hidden" id="riders-title">Riders</h1>
+      <h1 className="riders-visually-hidden" id="riders-title">
+        Riders
+      </h1>
 
       {/* Summary Cards */}
       <div className="riders-stats-grid" aria-label="Riders summary statistics">
@@ -267,6 +278,12 @@ export function LogisticsWorkspace({
                 const isSelected = selected.has(recordKey)
                 const isMenuOpen = openMenuKey === recordKey
                 const rowIndex = (activePage - 1) * ridersPerPage + index + 1
+                const isPending = /pending/i.test(rider.approvalStatus ?? '')
+                const isApproved = /^(approved|active)$/i.test(rider.approvalStatus ?? 'Approved')
+                const isOnline = /^(online|available)$/i.test(rider.status)
+                const availabilityReason = /break/i.test(rider.status)
+                  ? 'Rider is on break'
+                  : 'Rider is offline'
 
                 return (
                   <tr key={recordKey} className={isSelected ? 'is-selected' : undefined}>
@@ -343,7 +360,7 @@ export function LogisticsWorkspace({
                                 role="menuitem"
                                 onClick={() => {
                                   closeMenu()
-                                  onOpen(rider)
+                                  setProfileRider(rider)
                                 }}
                               >
                                 <Icon name="eye" size={16} />
@@ -356,68 +373,96 @@ export function LogisticsWorkspace({
                                 role="menuitem"
                                 onClick={() => {
                                   closeMenu()
-                                  if (onEditRider) {
-                                    onEditRider(rider)
-                                  } else {
-                                    onOpen(rider)
-                                  }
+                                  setEditRider(rider)
                                 }}
                               >
                                 <Icon name="edit" size={16} />
                                 <span>Edit rider</span>
                               </button>
 
-                              <button
-                                type="button"
-                                className="riders-dropdown-item"
-                                role="menuitem"
-                                onClick={() => {
-                                  closeMenu()
-                                  onAssignDelivery?.(rider)
-                                }}
-                              >
-                                <Icon name="truck" size={16} />
-                                <span>Assign delivery</span>
-                              </button>
-
-                              <div
-                                className="riders-submenu-container"
-                                onMouseEnter={() => setSubmenuOpen(true)}
-                                onMouseLeave={() => setSubmenuOpen(false)}
-                              >
-                                <button
-                                  type="button"
-                                  className="riders-dropdown-item riders-dropdown-item--has-submenu"
-                                  role="menuitem"
-                                  onClick={() => setSubmenuOpen(!submenuOpen)}
-                                >
-                                  <Icon name="refresh" size={16} />
-                                  <span>Change availability</span>
-                                  <span className="riders-submenu-chevron">›</span>
-                                </button>
-
-                                {submenuOpen && (
-                                  <div className="riders-dropdown-submenu" role="menu">
-                                    {['Available', 'On delivery', 'Offline'].map((status) => (
-                                      <button
-                                        key={status}
-                                        type="button"
-                                        className={`riders-dropdown-subitem ${rider.status === status ? 'is-active' : ''}`}
-                                        role="menuitem"
-                                        onClick={() => {
-                                          updateRiderStatus(recordKey, status)
-                                          onChangeAvailability?.(rider, status)
-                                        }}
-                                      >
-                                        <span
-                                          className={`riders-subitem-dot ${getAvailabilityClass(status)}`}
-                                        />
-                                        <span>{status}</span>
-                                      </button>
-                                    ))}
+                              {isApproved ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="riders-dropdown-item riders-dropdown-item--assignment"
+                                    role="menuitem"
+                                    disabled={!isOnline}
+                                    onClick={() => {
+                                      closeMenu()
+                                      setAssignmentRider(rider)
+                                    }}
+                                  >
+                                    <Icon name="truck" size={16} />
+                                    <span>
+                                      Assign delivery
+                                      {!isOnline && <small>{availabilityReason}</small>}
+                                    </span>
+                                  </button>
+                                  <div className="riders-submenu-container">
+                                    <button
+                                      type="button"
+                                      className="riders-dropdown-item"
+                                      role="menuitem"
+                                      aria-expanded={submenuOpen}
+                                      onClick={() => setSubmenuOpen(!submenuOpen)}
+                                    >
+                                      <Icon name="refresh" size={16} />
+                                      <span>Change availability</span>
+                                      <Icon name="chevronRight" size={14} />
+                                    </button>
+                                    {submenuOpen && (
+                                      <div className="riders-dropdown-submenu" role="menu">
+                                        {['Online', 'Offline', 'On Break'].map((status) => (
+                                          <button
+                                            key={status}
+                                            type="button"
+                                            className="riders-dropdown-subitem"
+                                            role="menuitem"
+                                            aria-current={
+                                              rider.status.toLowerCase() === status.toLowerCase()
+                                                ? 'true'
+                                                : undefined
+                                            }
+                                            onClick={() => updateRiderStatus(recordKey, status)}
+                                          >
+                                            <span
+                                              className={`riders-subitem-dot ${getAvailabilityClass(status)}`}
+                                            />
+                                            {status}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                              </div>
+                                </>
+                              ) : isPending ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="riders-dropdown-item is-approve"
+                                    role="menuitem"
+                                    onClick={() => {
+                                      closeMenu()
+                                      setApprovalRider(rider)
+                                    }}
+                                  >
+                                    <Icon name="checkCircle" size={16} />
+                                    <span>Approve rider</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="riders-dropdown-item"
+                                    role="menuitem"
+                                    onClick={() => {
+                                      closeMenu()
+                                      setRejectionRider(rider)
+                                    }}
+                                  >
+                                    <Icon name="close" size={16} />
+                                    <span>Reject application</span>
+                                  </button>
+                                </>
+                              ) : null}
 
                               <div className="riders-dropdown-divider" />
 
@@ -491,6 +536,44 @@ export function LogisticsWorkspace({
           </nav>
         </div>
       </div>
+      {profileRider && (
+        <RiderProfileModal
+          rider={profileRider}
+          onClose={() => setProfileRider(null)}
+          onReview={() => {
+            setProfileRider(null)
+            onOpen(profileRider)
+          }}
+        />
+      )}
+      {editRider && (
+        <EditRiderModal
+          rider={editRider}
+          onClose={() => setEditRider(null)}
+          onSaved={onRiderSaved}
+        />
+      )}
+      {approvalRider && (
+        <ApproveRiderModal
+          rider={approvalRider}
+          onClose={() => setApprovalRider(null)}
+          onApprove={(message) => onApproveRider(approvalRider, message)}
+        />
+      )}
+      {rejectionRider && (
+        <RejectRiderModal
+          rider={rejectionRider}
+          onClose={() => setRejectionRider(null)}
+          onReject={(reason) => onRejectRider(rejectionRider, reason)}
+        />
+      )}
+      {assignmentRider && (
+        <AssignDeliveryToRiderModal
+          rider={assignmentRider}
+          onClose={() => setAssignmentRider(null)}
+          onAssigned={(orderId) => onDeliveryAssigned?.(assignmentRider, orderId)}
+        />
+      )}
     </section>
   )
 }

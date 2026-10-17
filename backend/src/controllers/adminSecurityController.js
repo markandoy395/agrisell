@@ -72,4 +72,25 @@ const updateAdministratorStatus = async (request, response, userId) => {
   sendJson(response, 200, result);
 };
 
-module.exports = { password, revokeOthers, securityOverview, submitRequest, updateAdministratorStatus };
+const enrollMfa = async (_request, response) => {
+  sendJson(response, 409, { code: 'MFA_UNAVAILABLE', message: 'MFA requires Supabase authentication.' });
+};
+
+const verifyMfa = async (_request, response) => {
+  sendJson(response, 409, { code: 'MFA_UNAVAILABLE', message: 'MFA requires Supabase authentication.' });
+};
+
+const unenrollMfa = async (_request, response) => {
+  sendJson(response, 409, { code: 'MFA_UNAVAILABLE', message: 'MFA requires Supabase authentication.' });
+};
+
+module.exports = {
+  enrollMfa,
+  password,
+  revokeOthers,
+  securityOverview,
+  submitRequest,
+  unenrollMfa,
+  updateAdministratorStatus,
+  verifyMfa,
+};

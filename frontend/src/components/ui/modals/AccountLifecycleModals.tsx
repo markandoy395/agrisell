@@ -199,6 +199,7 @@ export function UserAccountModal(props: UserModalProps) {
 type VerificationModalProps = {
   entity: EntityRecord | null
   entityType: 'farmer' | 'rider'
+  initialDecision?: VerificationReviewInput['action']
   onClose: () => void
   onReview: (input: VerificationReviewInput) => Promise<void>
 }
@@ -214,11 +215,12 @@ const missingChoices = [
 function VerificationReviewModalInner({
   entity,
   entityType,
+  initialDecision,
   onClose,
   onReview,
 }: VerificationModalProps & { entity: EntityRecord }) {
   const [detail, setDetail] = useState<VerificationDetail | null>(null)
-  const [decision, setDecision] = useState<VerificationReviewInput['action']>('profile_updated')
+  const [decision, setDecision] = useState<VerificationReviewInput['action']>(initialDecision ?? 'profile_updated')
   const [reason, setReason] = useState('')
   const [message, setMessage] = useState('')
   const [missing, setMissing] = useState<string[]>([])

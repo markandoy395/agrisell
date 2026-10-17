@@ -1,7 +1,8 @@
 const { config } = require('../config/environment');
+const { isAdminRole } = require('../config/roles');
 const { parseCookies } = require('../utils/cookies');
 const { getHeaderValue, sendJson } = require('../utils/http');
-const { verifyAdminSession } = require('../services/sessionService');
+const { verifySession } = require('../services/sessionService');
 
 const getBearerToken = (request) => {
   const authorization = getHeaderValue(request.headers.authorization);
@@ -20,9 +21,9 @@ const getSessionToken = (request) => {
 };
 
 const authenticateAdmin = async (request, response) => {
-  const admin = await verifyAdminSession(getSessionToken(request));
+  const session = await verifySession(getSessionToken(request));
 
-  if (!admin) {
+  if (!session) {
     sendJson(response, 401, {
       code: 'AUTHENTICATION_REQUIRED',
       message: 'A valid admin session is required.',
@@ -30,16 +31,17 @@ const authenticateAdmin = async (request, response) => {
     return null;
   }
 
-  if (admin.role !== 'admin') {
+  if (!isAdminRole(session.role)) {
     sendJson(response, 403, {
-      code: 'ADMIN_PERMISSION_REQUIRED',
-      message: 'Admin permission is required.',
+      code: 'ADMIN_ROLE_REQUIRED',
+      message: 'Access denied. Administrator role is required for this action.',
     });
     return null;
   }
 
-  request.admin = admin;
-  return admin;
+  request.admin = session;
+  request.user = session;
+  return session;
 };
 
 module.exports = { authenticateAdmin, getSessionToken };

@@ -145,14 +145,7 @@ export function ContactCallingModal({
   const handleSendToMobile = () => {
     const nextState = !showMobileDrawer
     setShowMobileDrawer(nextState)
-    // Also trigger native tel link so desktop dialer / Phone Link can activate if present
-    try {
-      const cleanPhone = contactNumber.replace(/[\s\-()]/g, '')
-      window.location.href = `tel:${cleanPhone}`
-    } catch {
-      // Ignored
-    }
-    showToast(nextState ? 'Scan QR with phone camera or use dialer' : 'Dialer triggered')
+    showToast(nextState ? 'Scan QR with phone camera to call' : 'Mobile drawer closed')
   }
 
   // Scroll to and focus contact notes
@@ -405,6 +398,8 @@ export function ContactCallingModal({
                   <a
                     href={`tel:${cleanPhone}`}
                     className="contact-mobile-dial-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Launch laptop dialer ({cleanPhone})
                   </a>
@@ -412,6 +407,8 @@ export function ContactCallingModal({
                   <a
                     href={`sms:${cleanPhone}`}
                     className="contact-mobile-dial-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Send SMS
                   </a>

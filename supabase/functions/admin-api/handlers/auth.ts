@@ -29,6 +29,71 @@ export const handleAuthRoutes = async (
   request: Request,
   pathname: string,
 ): Promise<HandlerResult | null> => {
+  if (pathname === "/api/auth/mfa/verify" && request.method === "POST") {
+    if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+      return {
+        status: 415,
+        body: { code: "UNSUPPORTED_MEDIA_TYPE", message: "Verification requests must use application/json." },
+      };
+    }
+    const raw = await request.text();
+    let body: Row | null = null;
+    try {
+      body = JSON.parse(raw) as Row;
+    } catch {
+      body = null;
+    }
+    const accessToken = text(body?.accessToken);
+    const challengeId = text(body?.challengeId);
+    const factorId = text(body?.factorId);
+    const code = text(body?.code).trim();
+    if (!accessToken || !challengeId || !factorId || !code) {
+      return {
+        status: 400,
+        body: { code: "INVALID_MFA_PAYLOAD", message: "A valid authentication code and challenge are required." },
+      };
+    }
+    const limited = await enforceAuthenticationRateLimit(request, "mfa", factorId);
+    if (limited) return limited;
+
+    const verifyResponse = await fetch(
+      `${SUPABASE_URL}/auth/v1/factors/${encodeURIComponent(factorId)}/verify`,
+      {
+        body: JSON.stringify({ challenge_id: challengeId, code }),
+        headers: {
+          apikey: SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      },
+    );
+    const verifyBody = await verifyResponse.json().catch(() => null) as Row | null;
+    const newAccessToken = text(verifyBody?.access_token);
+    if (!verifyResponse.ok || !newAccessToken) {
+      return {
+        status: 401,
+        body: {
+          code: "INVALID_MFA_CODE",
+          message: text(verifyBody?.msg, text(verifyBody?.message, "The authentication code is invalid.")),
+        },
+      };
+    }
+    const admin = await getAdmin(authorizedRequest(request, newAccessToken));
+    if (!admin) {
+      await recordSecurityEvent("admin", "sign_in_failed", "ADMIN_PERMISSION_REQUIRED");
+      return {
+        status: 403,
+        body: {
+          code: "ADMIN_PERMISSION_REQUIRED",
+          message: "This account is not authorized to access the admin platform.",
+        },
+      };
+    }
+    await recordSecurityEvent(admin.email, "signed_in", "Administrator signed in with MFA.");
+    return { status: 200, body: { accessToken: newAccessToken, admin, authenticated: true } };
+  }
+
   if (pathname !== "/api/auth/login" || request.method !== "POST") return null;
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
     return {

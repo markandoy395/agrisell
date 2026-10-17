@@ -30,7 +30,7 @@ export const getVerification = async (type: VerificationType, entityId: string) 
 
 const notificationDescription = (
   type: VerificationType, action: string, reason: string, message: string,
-) => action === "verified" ? `Your ${type} verification was approved.`
+) => action === "verified" ? message || `Your ${type} verification was approved.`
   : action === "rejected" ? `Your ${type} verification was rejected: ${reason}`
   : action === "needs_information" ? message
   : action === "reactivated" ? `Your ${type} account was reactivated.`

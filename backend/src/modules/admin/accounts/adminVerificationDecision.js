@@ -60,11 +60,11 @@ const getProfileEdits = (entityType, input, profile) => {
     );
   }
   if (entityType === 'rider' && (
-    Object.hasOwn(edits, 'first_name') || Object.hasOwn(edits, 'last_name')
+    Object.hasOwn(edits, 'first_name') || Object.hasOwn(edits, 'middle_name') || Object.hasOwn(edits, 'last_name')
   )) {
     edits.full_name = [
       edits.first_name ?? profile.first_name,
-      profile.middle_name,
+      Object.hasOwn(edits, 'middle_name') ? edits.middle_name : profile.middle_name,
       edits.last_name ?? profile.last_name,
     ].map((part) => text(part)).filter(Boolean).join(' ');
   }

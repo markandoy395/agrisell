@@ -118,3 +118,84 @@ export const revokeOtherSessions = async (request: Request, admin: Admin) => {
   await recordSecurityEvent(admin.email, "sessions_revoked", "Other sessions revoked.");
   return { revoked: true };
 };
+
+export const enrollMfa = async (request: Request, _admin: Admin) => {
+  const token = bearer(request);
+  if (!token) throw createApiError("AUTHENTICATION_REQUIRED", "Sign in again before changing MFA.", 401);
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/factors`, {
+    body: JSON.stringify({ factor_type: "totp", friendly_name: "Agrisell Admin" }),
+    headers: {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+  const body = await response.json().catch(() => ({})) as Row;
+  if (!response.ok || !text(body.id) || typeof body.totp !== "object" || body.totp === null) {
+    throw createApiError("MFA_ENROLLMENT_FAILED", text(body.msg, text(body.message, "MFA enrollment could not be started.")), response.status || 500);
+  }
+  const totp = body.totp as Row;
+  return {
+    factorId: text(body.id),
+    qrCode: text(totp.qr_code),
+    secret: text(totp.secret),
+  };
+};
+
+export const verifyMfa = async (request: Request, admin: Admin, payload: Row) => {
+  const token = bearer(request);
+  if (!token) throw createApiError("AUTHENTICATION_REQUIRED", "Sign in again before changing MFA.", 401);
+  const factorId = text(payload.factorId);
+  const code = text(payload.code).trim();
+  if (!factorId || !code) {
+    throw createApiError("INVALID_MFA_PAYLOAD", "Factor ID and verification code are required.", 400);
+  }
+  const challengeResponse = await fetch(`${SUPABASE_URL}/auth/v1/factors/${encodeURIComponent(factorId)}/challenge`, {
+    body: "{}",
+    headers: {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+  const challenge = await challengeResponse.json().catch(() => ({})) as Row;
+  const challengeId = text(challenge.id);
+  if (!challengeResponse.ok || !challengeId) {
+    throw createApiError("MFA_CHALLENGE_FAILED", "MFA verification challenge could not be created.", challengeResponse.status || 500);
+  }
+  const verifyResponse = await fetch(`${SUPABASE_URL}/auth/v1/factors/${encodeURIComponent(factorId)}/verify`, {
+    body: JSON.stringify({ challenge_id: challengeId, code }),
+    headers: {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+  const verified = await verifyResponse.json().catch(() => ({})) as Row;
+  if (!verifyResponse.ok) {
+    throw createApiError("INVALID_MFA_CODE", text(verified.msg, text(verified.message, "The authentication code is invalid.")), verifyResponse.status || 401);
+  }
+  await recordSecurityEvent(admin.email, "mfa_enabled", "Two-factor authentication enabled.");
+  return { accessToken: text(verified.access_token), success: true };
+};
+
+export const unenrollMfa = async (request: Request, admin: Admin, factorId: string) => {
+  const token = bearer(request);
+  if (!token) throw createApiError("AUTHENTICATION_REQUIRED", "Sign in again before changing MFA.", 401);
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/factors/${encodeURIComponent(factorId)}`, {
+    headers: {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${token}`,
+    },
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({})) as Row;
+    throw createApiError("MFA_REMOVAL_FAILED", text(body.msg, text(body.message, "MFA could not be removed.")), response.status || 500);
+  }
+  await recordSecurityEvent(admin.email, "mfa_disabled", "Two-factor authentication disabled.");
+  return { success: true };
+};

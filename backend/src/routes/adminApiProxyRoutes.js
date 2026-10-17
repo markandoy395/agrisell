@@ -1,7 +1,7 @@
 const { config } = require('../config/environment');
 const { requestSupabaseAuth } = require('../services/supabaseService');
 const { readJsonBody, sendJson } = require('../utils/http');
-const { requirePermission } = require('./adminRoutePermission');
+const { requirePermission, requireAnyPermission } = require('./adminRoutePermission');
 
 const getProxyInput = async (request, pathname) => ({
   actor: request.admin.email,
@@ -22,6 +22,7 @@ const sendProxyError = (response, error, code) =>
 
 const routePaymentRequest = async (request, response, pathname) => {
   if (!/^\/api\/admin\/payments(?:\/|$)/.test(pathname)) return false;
+  if (!requireAnyPermission(request, response, ['payments:view', 'payments:manage'])) return true;
   try {
     const { paymentRequest } = await import('../../../supabase/functions/admin-api/payments.ts');
     sendProxyResult(

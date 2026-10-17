@@ -11,6 +11,16 @@ const routeAdminSecurity = async (request, response, pathname) => {
   if (pathname === '/api/admin/security/sessions/revoke-others' && request.method === 'POST') {
     await controller.revokeOthers(request, response); return true;
   }
+  if (pathname === '/api/admin/security/mfa/enroll' && request.method === 'POST') {
+    await controller.enrollMfa(request, response); return true;
+  }
+  if (pathname === '/api/admin/security/mfa/verify' && request.method === 'POST') {
+    await controller.verifyMfa(request, response); return true;
+  }
+  const mfaFactorMatch = pathname.match(/^\/api\/admin\/security\/mfa\/factors\/([^/]+)$/);
+  if (mfaFactorMatch && request.method === 'DELETE') {
+    await controller.unenrollMfa(request, response, decodeURIComponent(mfaFactorMatch[1])); return true;
+  }
   if (pathname === '/api/admin/requests' && request.method === 'POST') {
     await controller.submitRequest(request, response); return true;
   }

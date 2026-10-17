@@ -67,11 +67,5 @@ export const saveDelivery = async (body: Record<string, unknown>) =>
   await requestAdminApi('/api/admin/deliveries', { method: 'POST', body: JSON.stringify(body) })
 export const proofImageUrl = (path: string) => {
   if (/^https:\/\/[^/]+\/storage\/v1\/object\/sign\/delivery-proofs\//.test(path)) return path
-  if (
-    !path.startsWith('/object/sign/delivery-proofs/') &&
-    !path.startsWith('/storage/v1/object/sign/delivery-proofs/')
-  )
-    return ''
-  const origin = (import.meta.env.VITE_SUPABASE_URL ?? '').replace(/\/$/, '')
-  return origin ? `${origin}${path.startsWith('/storage/') ? '' : '/storage/v1'}${path}` : ''
+  return ''
 }

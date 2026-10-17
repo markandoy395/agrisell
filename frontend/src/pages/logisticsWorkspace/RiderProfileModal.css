@@ -1,0 +1,240 @@
+.rider-profile-backdrop {
+  z-index: 40;
+  background: rgb(12 22 36 / 56%);
+}
+.rider-profile-dialog {
+  width: min(736px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  border-radius: 12px;
+  background: #fff;
+  color: #0c2141;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 25%);
+}
+.rider-profile-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 14px;
+}
+.rider-profile-heading h2 {
+  margin: 0;
+  font-size: 25px;
+}
+.rider-profile-x {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: #30415b;
+  cursor: pointer;
+}
+.rider-profile-summary {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) 140px 140px;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 24px 24px;
+}
+.rider-profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: #c9f4dd;
+  color: #075c37;
+  font-size: 26px;
+  font-weight: 700;
+}
+.rider-profile-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: 13px;
+  color: #415371;
+}
+.rider-profile-identity h3 {
+  margin: 0 0 3px;
+  color: #0c2141;
+  font-size: 21px;
+}
+.rider-profile-identity > span:not(.rider-profile-approved) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+.rider-profile-approved {
+  color: #08743d;
+  font-weight: 700;
+}
+.rider-profile-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  border-left: 1px solid #e5eaf0;
+  text-align: center;
+}
+.rider-profile-metric strong {
+  font-size: 23px;
+}
+.rider-profile-metric span {
+  margin-top: 4px;
+  color: #536482;
+  font-size: 12px;
+}
+.rider-profile-tabs {
+  display: flex;
+  gap: 18px;
+  margin: 0 24px;
+  border-bottom: 1px solid #e5eaf0;
+  overflow-x: auto;
+}
+.rider-profile-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 0 auto;
+  justify-content: center;
+  padding: 12px 8px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #40516e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rider-profile-tabs button.active {
+  border-bottom-color: #128044;
+  color: #08743d;
+}
+.rider-profile-content {
+  padding: 16px 24px;
+  min-height: 290px;
+}
+.rider-profile-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+}
+.rider-profile-card {
+  min-width: 0;
+  padding: 15px 16px;
+  border: 1px solid #e3e9f0;
+  border-radius: 10px;
+}
+.rider-profile-card h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+.rider-profile-card p {
+  color: #52627e;
+  font-size: 13px;
+}
+.rider-profile-status {
+  padding: 5px 11px;
+  border-radius: 9px;
+  background: #d9f7e9;
+  color: #066d39;
+  font-size: 12px;
+}
+.rider-profile-row {
+  display: grid;
+  grid-template-columns: 18px minmax(110px, 1fr) minmax(90px, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin: 13px 0;
+  color: #425574;
+  font-size: 13px;
+}
+.rider-profile-row strong {
+  color: #0c2141;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.rider-profile-document {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #e5eaf0;
+}
+.rider-profile-document span {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  text-transform: capitalize;
+}
+.rider-profile-document small,
+.rider-profile-action span {
+  color: #536482;
+}
+.rider-profile-document a {
+  color: #08743d;
+  font-weight: 600;
+}
+.rider-profile-action {
+  padding: 12px 0;
+  border-top: 1px solid #e5eaf0;
+  text-transform: capitalize;
+}
+.rider-profile-action span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  text-transform: none;
+}
+.rider-profile-error {
+  margin: 8px 24px 0;
+  color: #a52b2b;
+  font-size: 13px;
+}
+.rider-profile-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5eaf0;
+}
+.rider-profile-footer button {
+  padding: 9px 20px;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #0c2141;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rider-profile-footer button:first-child {
+  margin-right: auto;
+  color: #08743d;
+}
+@media (max-width: 680px) {
+  .rider-profile-summary {
+    grid-template-columns: 62px 1fr;
+  }
+  .rider-profile-avatar {
+    width: 62px;
+    height: 62px;
+  }
+  .rider-profile-metric {
+    min-height: 56px;
+    border-top: 1px solid #e5eaf0;
+    border-left: 0;
+  }
+  .rider-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,6 @@
 import {
   approveFarmerProfile,
-  approveRiderProfile,
+  reviewVerification,
   moderateReview,
   requestFarmerInformation,
   respondToReview,
@@ -71,10 +71,15 @@ export function DashboardEntityWorkspace({ data, state }: DashboardEntityWorkspa
           []
         }
         search={state.search}
-        onAdd={() => state.setAddSection(state.activeNav === 'Logistics Companies' ? 'Riders' : state.activeNav)}
-        onApproveRider={async (rider) => {
+        onAdd={() =>
+          state.setAddSection(
+            state.activeNav === 'Logistics Companies' ? 'Riders' : state.activeNav,
+          )
+        }
+        onApproveRider={async (rider, message) => {
           try {
-            await approveRiderProfile(rider.entityId ?? '')
+            if (!rider.entityId) throw new Error('This rider has no saved profile to approve.')
+            await reviewVerification('rider', rider.entityId, { action: 'verified', message })
             await state.database.refresh()
             state.notifyUpdate(
               'Rider approved',
@@ -88,22 +93,30 @@ export function DashboardEntityWorkspace({ data, state }: DashboardEntityWorkspa
           }
         }}
         onOpen={(rider) => state.setVerificationTarget({ entity: rider, type: 'rider' })}
-        onEditRider={(rider) => state.openRecord(rider)}
-        onAssignDelivery={(rider) => {
-          state.navigate('Deliveries')
-          state.showToast(`Selected ${rider.primary} for delivery dispatch.`)
+        onRejectRider={async (rider, reason) => {
+          try {
+            if (!rider.entityId) throw new Error('This rider has no saved profile to reject.')
+            await reviewVerification('rider', rider.entityId, { action: 'rejected', reason })
+            await state.database.refresh()
+            state.notifyUpdate('Rider rejected', `${rider.primary}'s application was rejected.`)
+          } catch (error) {
+            state.showToast(getApiErrorMessage(error, 'The rider rejection could not be saved.'))
+            throw error
+          }
         }}
-        onChangeAvailability={(rider, newStatus) => {
+        onRiderSaved={async () => {
+          await state.database.refresh()
+          state.showToast('Rider profile updated.')
+        }}
+        onDeliveryAssigned={async (rider, orderId) => {
+          await state.database.refresh()
           state.notifyUpdate(
-            'Availability updated',
-            `${rider.primary} is now marked as ${newStatus}.`,
+            'Delivery assigned',
+            `Order ORD-${orderId} was assigned to ${rider.primary}.`,
           )
         }}
         onDeleteRider={(rider) => {
-          state.notifyUpdate(
-            'Rider removed',
-            `${rider.primary} was removed from active roster.`,
-          )
+          state.notifyUpdate('Rider removed', `${rider.primary} was removed from active roster.`)
         }}
       />
     )

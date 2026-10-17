@@ -1,7 +1,7 @@
 import {
   ApiRequestError, clearEdgeAuthSession, getAdminApiUrl, getEdgeAuthSession, getResponseCode,
   getResponseMessage, isRecord, parseJsonResponse, requestAdminApi,
-  saveEdgeAuthSession, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, usesSupabaseEdgeAuth,
+  saveEdgeAuthSession, usesSupabaseEdgeAuth,
 } from './adminApiClient'
 
 export { ApiRequestError, requestAdminApi } from './adminApiClient'
@@ -17,7 +17,7 @@ export type AuthenticatedAdmin = {
   avatarUrl?: string
   email: string
   name: string
-  role: 'admin'
+  role: 'admin' | 'super_admin'
   permissions: string[]
 }
 
@@ -33,7 +33,7 @@ const parseAdminSession = (body: unknown): AdminSession => {
   if (
     !isRecord(admin) ||
     typeof admin.email !== 'string' ||
-    admin.role !== 'admin' ||
+    (admin.role !== 'admin' && admin.role !== 'super_admin') ||
     !Array.isArray(admin.permissions) ||
     !admin.permissions.every((permission) => typeof permission === 'string')
   ) {
@@ -52,7 +52,7 @@ const parseAdminSession = (body: unknown): AdminSession => {
               .replace(/[._-]+/g, ' ')
               .replace(/\b\w/g, (letter) => letter.toUpperCase()),
       permissions: admin.permissions,
-      role: admin.role,
+      role: admin.role as 'admin' | 'super_admin',
     },
     authenticated: true,
   }
@@ -129,20 +129,22 @@ export const completeAdminMfa = async (code: string) => {
   ) {
     throw new ApiRequestError('Start the sign-in process again.', 401, 'MFA_CHALLENGE_EXPIRED')
   }
-  const response = await fetch(
-    `${SUPABASE_URL}/auth/v1/factors/${encodeURIComponent(pending.factorId)}/verify`,
-    {
-      body: JSON.stringify({ challenge_id: pending.challengeId, code }),
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${pending.accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
+  const response = await fetch(getAdminApiUrl('/api/auth/mfa/verify'), {
+    body: JSON.stringify({
+      accessToken: pending.accessToken,
+      challengeId: pending.challengeId,
+      code,
+      factorId: pending.factorId,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
     },
-  )
+    method: 'POST',
+  })
   const body = await parseJsonResponse(response)
-  if (!response.ok || !isRecord(body) || typeof body.access_token !== 'string') {
+  const token =
+    isRecord(body) && (typeof body.accessToken === 'string' ? body.accessToken : typeof body.access_token === 'string' ? body.access_token : null)
+  if (!response.ok || !token) {
     throw new ApiRequestError(
       getResponseMessage(body, 'The authentication code is invalid.'),
       response.status || 401,
@@ -150,25 +152,20 @@ export const completeAdminMfa = async (code: string) => {
     )
   }
   sessionStorage.removeItem(MFA_CHALLENGE_KEY)
-  saveEdgeAuthSession(body.access_token)
+  saveEdgeAuthSession(token)
   return getAdminSession()
 }
 
 export const logoutAdmin = async () => {
-  if (!usesSupabaseEdgeAuth) {
-    await requestAdminApi('/api/auth/logout', { method: 'POST' })
-    return
-  }
   const session = getEdgeAuthSession()
   clearEdgeAuthSession()
-  if (session) {
-    await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
-      headers: {
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${session.accessToken}`,
-      },
+  try {
+    await requestAdminApi('/api/auth/logout', {
+      headers: session ? { Authorization: `Bearer ${session.accessToken}` } : {},
       method: 'POST',
     })
+  } catch {
+    // Session state has already been cleared locally
   }
 }
 

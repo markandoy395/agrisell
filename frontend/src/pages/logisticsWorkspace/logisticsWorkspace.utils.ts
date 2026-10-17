@@ -28,8 +28,8 @@ export type RiderSummaryCard = {
 }
 
 export const createLogisticsSummaryCards = (riders: EntityRecord[]): RiderSummaryCard[] => {
-  const available = riders.filter((rider) => /available/i.test(rider.status))
-  const onDelivery = riders.filter((rider) => /on delivery/i.test(rider.status))
+  const available = riders.filter((rider) => /^(online|available)$/i.test(rider.status))
+  const onDelivery = riders.filter((rider) => /^(busy|on delivery)$/i.test(rider.status))
   const independent = riders.filter(
     (rider) =>
       rider.category === 'Independent' ||

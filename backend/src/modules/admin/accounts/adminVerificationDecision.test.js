@@ -34,6 +34,15 @@ test('only includes editable profile fields', () => {
   }, {}), { first_name: 'Ana' });
 });
 
+test('rebuilds a rider full name when the middle name changes', () => {
+  assert.deepEqual(getProfileEdits('rider', {
+    profileUpdates: { middle_name: '' },
+  }, { first_name: 'Mark', middle_name: 'Luis', last_name: 'Andoy' }), {
+    middle_name: null,
+    full_name: 'Mark Andoy',
+  });
+});
+
 test('derives farmer and rider statuses from decisions', () => {
   assert.deepEqual(getStatusUpdates('farmer', 'verified', {}), {
     account_status: 'active',

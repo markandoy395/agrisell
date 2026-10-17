@@ -25,38 +25,71 @@ const tokenClaims = (accessToken: string) => {
   return JSON.parse(atob(value.padEnd(Math.ceil(value.length / 4) * 4, "="))) as Row;
 };
 
-export const getAdmin = async (request: Request): Promise<Admin | null> => {
+export type AuthenticatedActorResult = {
+  status: "unauthenticated" | "authenticated_user" | "authenticated_admin";
+  admin: Admin | null;
+  actor: { email: string; userId: string; role: string; name: string } | null;
+};
+
+export const getAuthenticatedActor = async (request: Request): Promise<AuthenticatedActorResult> => {
   const authorization = request.headers.get("authorization") ?? "";
-  if (!authorization.startsWith("Bearer ")) return null;
+  if (!authorization.startsWith("Bearer ")) {
+    return { status: "unauthenticated", admin: null, actor: null };
+  }
   const accessToken = authorization.slice(7).trim();
-  if (!accessToken) return null;
+  if (!accessToken) {
+    return { status: "unauthenticated", admin: null, actor: null };
+  }
+
   const authResult = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
     headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${accessToken}` },
   });
   const authUser = await authResult.json().catch(() => null) as Row | null;
   const email = text(authUser?.email).toLowerCase();
-  if (!authResult.ok || !email) return null;
+  if (!authResult.ok || !email) {
+    return { status: "unauthenticated", admin: null, actor: null };
+  }
+
+  const users = await getTable("users", { email: `eq.${email}` });
+  const userId = id(users[0]?.user_id);
+  if (!userId || text(users[0]?.account_status).toLowerCase() !== "active") {
+    return { status: "unauthenticated", admin: null, actor: null };
+  }
+
+  const userName = name(users[0], display(email.split("@")[0], "User"));
+  const userRole = text(users[0]?.account_role || users[0]?.role).toLowerCase() || "user";
+
+  const admins = await getTable("admins", { user_id: `eq.${userId}` });
+  const role = text(admins[0]?.admin_role).toLowerCase();
+
+  if (!['admin', 'super_admin'].includes(role)) {
+    return {
+      status: "authenticated_user",
+      admin: null,
+      actor: { email, userId, role: userRole, name: userName },
+    };
+  }
+
   const verifiedFactors = Array.isArray(authUser?.factors)
     ? (authUser.factors as Row[]).some((factor) => text(factor.status) === "verified") : false;
   if (verifiedFactors) {
     try {
       const claims = tokenClaims(accessToken);
-      if (text(claims.aal) !== "aal2") return null;
-    } catch { return null; }
+      if (text(claims.aal) !== "aal2") {
+        return { status: "unauthenticated", admin: null, actor: null };
+      }
+    } catch {
+      return { status: "unauthenticated", admin: null, actor: null };
+    }
   }
-  const users = await getTable("users", { email: `eq.${email}` });
-  const userId = id(users[0]?.user_id);
-  if (!userId) return null;
-  if (text(users[0]?.account_status).toLowerCase() !== "active") return null;
-  const admins = await getTable("admins", { user_id: `eq.${userId}` });
-  const role = text(admins[0]?.admin_role).toLowerCase();
-  if (!['admin', 'super_admin'].includes(role)) return null;
+
   const roles = await getTable("admin_roles", { user_id: `eq.${userId}` });
   const stored = Array.isArray(admins[0]?.permissions)
     ? admins[0].permissions.filter((permission): permission is string =>
       typeof permission === "string" && ADMIN_PERMISSIONS.includes(permission))
     : permissionsFromRole(roles[0]);
-  return {
+
+  const admin: Admin = {
     avatarUrl: await signProfileImage(users[0]?.profile_photo_url) || undefined,
     email,
     name: name(users[0], display(email.split("@")[0], "Administrator")),
@@ -65,6 +98,17 @@ export const getAdmin = async (request: Request): Promise<Admin | null> => {
     role: "admin",
     userId,
   };
+
+  return {
+    status: "authenticated_admin",
+    admin,
+    actor: { email, userId, role, name: admin.name },
+  };
+};
+
+export const getAdmin = async (request: Request): Promise<Admin | null> => {
+  const result = await getAuthenticatedActor(request);
+  return result.admin;
 };
 
 export { permissionsFromRole, regularAdminPermissions };

@@ -7,20 +7,11 @@ const {
   updateAdminProfile,
   updateAdministratorPrivileges,
 } = require('../controllers/adminDashboardController');
-const { sendJson } = require('../utils/http');
-const { requirePermission } = require('./adminRoutePermission');
-
-const requireSuperAdmin = (request, response, action) => {
-  if (request.admin.permissions.includes('admin:manage')) return true;
-  sendJson(response, 403, {
-    code: 'SUPER_ADMIN_REQUIRED',
-    message: `Only a super administrator can ${action}.`,
-  });
-  return false;
-};
+const { requireAdminRole, requirePermission, requireSuperAdmin } = require('./adminRoutePermission');
 
 const routeAdminWorkspace = async (request, response, pathname) => {
   if (pathname === '/api/admin/profile' && request.method === 'PATCH') {
+    if (!requireAdminRole(request, response)) return true;
     await updateAdminProfile(request, response);
     return true;
   }
@@ -40,6 +31,7 @@ const routeAdminWorkspace = async (request, response, pathname) => {
     return true;
   }
   if (pathname === '/api/admin/dashboard' && request.method === 'GET') {
+    if (!requireAdminRole(request, response)) return true;
     await getAdminDashboard(request, response);
     return true;
   }

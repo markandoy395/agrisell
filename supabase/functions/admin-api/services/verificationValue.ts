@@ -44,8 +44,8 @@ export const profileChanges = (
       (Object.hasOwn(edits, "last_name") && !edits.last_name)) {
     throw createApiError("INVALID_PROFILE", "First and last name cannot be empty.", 400);
   }
-  if (entityType === "rider" && (Object.hasOwn(edits, "first_name") || Object.hasOwn(edits, "last_name"))) {
-    edits.full_name = [edits.first_name ?? profile.first_name, profile.middle_name,
+  if (entityType === "rider" && (Object.hasOwn(edits, "first_name") || Object.hasOwn(edits, "middle_name") || Object.hasOwn(edits, "last_name"))) {
+    edits.full_name = [edits.first_name ?? profile.first_name, Object.hasOwn(edits, "middle_name") ? edits.middle_name : profile.middle_name,
       edits.last_name ?? profile.last_name].map((part) => text(part)).filter(Boolean).join(" ");
   }
   const verification = ["verified", "rejected", "needs_information"].includes(action)

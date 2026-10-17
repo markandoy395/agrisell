@@ -20,6 +20,7 @@ type Policy = { key: string; limit: number; scope: string; windowSeconds: number
 
 const AUTH_POLICIES = {
   login: { accountLimit: 5, ipLimit: 20, windowSeconds: 15 * 60 },
+  mfa: { accountLimit: 10, ipLimit: 30, windowSeconds: 15 * 60 },
   passwordResetConfirm: { accountLimit: 5, ipLimit: 15, windowSeconds: 15 * 60 },
   passwordResetRequest: { accountLimit: 3, ipLimit: 10, windowSeconds: 60 * 60 },
 } as const;

@@ -7,7 +7,6 @@ import {
   ridersPerPage,
 } from './logisticsWorkspace.utils'
 
-
 export type MenuPosition = {
   top?: number
   bottom?: number
@@ -17,23 +16,16 @@ export type MenuPosition = {
 
 type UseLogisticsWorkspaceParams = {
   created: EntityRecord[]
-  onApproveRider: (rider: EntityRecord) => Promise<void>
   records: EntityRecord[]
   search: string
 }
 
-export function useLogisticsWorkspace({
-  created,
-  onApproveRider,
-  records,
-  search,
-}: UseLogisticsWorkspaceParams) {
+export function useLogisticsWorkspace({ created, records, search }: UseLogisticsWorkspaceParams) {
   const [query, setQuery] = useState('')
   const [companyFilter, setCompanyFilter] = useState(allCompanies)
   const [availabilityFilter, setAvailabilityFilter] = useState(allAvailability)
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const [currentPage, setCurrentPage] = useState(1)
-  const [approvingRiderId, setApprovingRiderId] = useState<string | null>(null)
   const [openMenuKey, setOpenMenuKey] = useState<string | null>(null)
   const [menuPosition, setMenuPosition] = useState<MenuPosition | null>(null)
   const [submenuOpen, setSubmenuOpen] = useState(false)
@@ -41,22 +33,16 @@ export function useLogisticsWorkspace({
   const [deletedKeys, setDeletedKeys] = useState<Set<string>>(() => new Set())
 
   const rawRiders = useMemo(() => [...created, ...records], [created, records])
-  const allRiders = useMemo(() => {
-    return rawRiders
-      .filter((rider) => !deletedKeys.has(getRiderRecordKey(rider)))
-      .map((rider) => {
-        const key = getRiderRecordKey(rider)
-        if (statusOverrides.has(key)) {
-          const newStatus = statusOverrides.get(key)!
-          return {
-            ...rider,
-            status: newStatus,
-            tone: newStatus === 'Available' ? 'green' : newStatus === 'Offline' ? 'blue' : 'orange',
-          }
-        }
-        return rider
-      })
-  }, [rawRiders, deletedKeys, statusOverrides])
+  const allRiders = useMemo(
+    () =>
+      rawRiders
+        .filter((rider) => !deletedKeys.has(getRiderRecordKey(rider)))
+        .map((rider) => ({
+          ...rider,
+          status: statusOverrides.get(getRiderRecordKey(rider)) ?? rider.status,
+        })),
+    [rawRiders, deletedKeys, statusOverrides],
+  )
 
   const companies = useMemo(
     () => [allCompanies, ...Array.from(new Set(allRiders.map((rider) => rider.category))).sort()],
@@ -107,18 +93,6 @@ export function useLogisticsWorkspace({
       return next
     })
   }
-  const approveRider = async (rider: EntityRecord) => {
-    if (!rider.entityId || rider.approvalStatus === 'Approved') return
-    setApprovingRiderId(rider.entityId)
-    try {
-      await onApproveRider(rider)
-    } catch {
-      // The page-level handler gives the administrator feedback for failures.
-    } finally {
-      setApprovingRiderId(null)
-    }
-  }
-
   const toggleMenu = (recordKey: string, triggerElement?: HTMLElement | null) => {
     if (openMenuKey === recordKey) {
       closeMenu()
@@ -150,12 +124,8 @@ export function useLogisticsWorkspace({
     setSubmenuOpen(false)
   }
 
-  const updateRiderStatus = (recordKey: string, newStatus: string) => {
-    setStatusOverrides((prev) => {
-      const next = new Map(prev)
-      next.set(recordKey, newStatus)
-      return next
-    })
+  const updateRiderStatus = (recordKey: string, status: string) => {
+    setStatusOverrides((current) => new Map(current).set(recordKey, status))
     closeMenu()
   }
 
@@ -173,7 +143,6 @@ export function useLogisticsWorkspace({
     activePage,
     allRiders,
     allVisibleSelected,
-    approvingRiderId,
     availabilityFilter,
     availabilityOptions,
     closeMenu,
@@ -191,7 +160,6 @@ export function useLogisticsWorkspace({
     submenuOpen,
     toggleMenu,
     totalPages,
-    approveRider,
     setCurrentPage,
     toggleAllVisible,
     toggleRiderSelection,

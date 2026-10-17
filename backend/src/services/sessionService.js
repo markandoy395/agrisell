@@ -7,9 +7,15 @@ const {
   signSupabaseProfileImage,
   updateSupabaseRows,
 } = require('./supabaseService');
+const {
+  ADMIN_ROLES,
+  ROLES,
+  isAdminRole,
+  isValidRole,
+} = require('../config/roles');
 const { safeCompare } = require('./passwordService');
 
-const ADMIN_ROLE = 'admin';
+const ADMIN_ROLE = ROLES.ADMIN;
 const ADMIN_PERMISSIONS = [
   'overview:view', 'users:manage', 'farmers:manage', 'logistics:manage',
   'orders:manage', 'payments:view', 'payments:manage', 'sales:manage',
@@ -46,6 +52,7 @@ const getPublicAdmin = (admin) => {
     : legacy ? DEFAULT_ADMIN_PERMISSIONS : normalizeAdminPermissions(supplied);
   const email = normalizeEmail(String(admin.email ?? ''));
   const emailName = email.split('@')[0].replace(/[._-]+/g, ' ').trim();
+  const role = admin.role === 'super_admin' ? 'super_admin' : ADMIN_ROLE;
   return {
     avatarUrl: typeof admin.avatarUrl === 'string' && admin.avatarUrl.trim()
       ? admin.avatarUrl.trim() : undefined,
@@ -54,7 +61,7 @@ const getPublicAdmin = (admin) => {
       ? admin.name.trim()
       : emailName.replace(/\b\w/g, (letter) => letter.toUpperCase()) || 'Administrator',
     permissions,
-    role: ADMIN_ROLE,
+    role,
   };
 };
 
@@ -87,6 +94,7 @@ const loadCurrentAdmin = async (email) => {
       permissions: getPermissionsForAdminRole(
         storedRole, permissionsFromRole(administrator, roles[0]),
       ),
+      role: storedRole,
     }),
     sessionVersion: Number(administrator.session_version) || 1,
     userId,
@@ -103,7 +111,9 @@ const readSignedSession = (token) => {
     const payload = decodePayload(encodedPayload);
     const now = Math.floor(Date.now() / 1000);
     if (
-      typeof payload.sub !== 'string' || payload.role !== ADMIN_ROLE ||
+      typeof payload.sub !== 'string' ||
+      typeof payload.role !== 'string' ||
+      !isValidRole(payload.role) ||
       typeof payload.jti !== 'string' || typeof payload.iat !== 'number' ||
       typeof payload.exp !== 'number' || typeof payload.ver !== 'number' ||
       payload.exp <= now
@@ -128,7 +138,7 @@ const createAdminSession = async (admin) => {
     exp: now + config.sessionTtlSeconds,
     iat: now,
     jti: crypto.randomUUID(),
-    role: ADMIN_ROLE,
+    role: current.role || ADMIN_ROLE,
     sub: current.email,
     ver: current.sessionVersion,
   };
@@ -148,31 +158,108 @@ const createAdminSession = async (admin) => {
   return `${encodedPayload}.${sign(encodedPayload)}`;
 };
 
-const verifyAdminSession = async (token) => {
+const createUserSession = async (user) => {
+  const normalizedEmail = normalizeEmail(user.email);
+  const now = Math.floor(Date.now() / 1000);
+  const role = user.role || ROLES.USER;
+  const payload = {
+    exp: now + config.sessionTtlSeconds,
+    iat: now,
+    jti: crypto.randomUUID(),
+    role,
+    sub: normalizedEmail,
+    ver: 1,
+  };
+  const userData = {
+    email: normalizedEmail,
+    name: user.name || normalizedEmail.split('@')[0],
+    permissions: [],
+    role,
+    userId: user.userId || user.user_id,
+  };
+  if (config.hasSupabaseAdminAccess) {
+    await insertSupabaseRow('admin_sessions', {
+      admin_email: normalizedEmail,
+      admin_user_id: userData.userId || 'user-unknown',
+      expires_at: new Date(payload.exp * 1_000).toISOString(),
+      issued_at: new Date(payload.iat * 1_000).toISOString(),
+      session_id: payload.jti,
+      session_version: payload.ver,
+    }).catch(() => null);
+  } else {
+    localSessions.set(payload.jti, { user: userData, ...payload });
+  }
+  const encodedPayload = encodePayload(payload);
+  return `${encodedPayload}.${sign(encodedPayload)}`;
+};
+
+const createSession = async (account, role = ROLES.ADMIN) => {
+  if (isAdminRole(role)) {
+    return createAdminSession({ ...account, role });
+  }
+  return createUserSession({ ...account, role });
+};
+
+const verifySession = async (token) => {
   const payload = readSignedSession(token);
   if (!payload) return null;
+
   if (!config.hasSupabaseAdminAccess) {
     const stored = localSessions.get(payload.jti);
     if (!stored || stored.sub !== payload.sub || stored.exp !== payload.exp ||
-      stored.ver !== payload.ver || (localSessionVersions.get(payload.sub) ?? 1) !== payload.ver) {
+      stored.ver !== payload.ver) {
+      return null;
+    }
+    if (!isAdminRole(payload.role)) {
+      return {
+        email: stored.user?.email || stored.sub,
+        name: stored.user?.name || 'User',
+        permissions: [],
+        role: payload.role,
+        session: { expiresAt: payload.exp, id: payload.jti, issuedAt: payload.iat },
+        userId: stored.user?.userId,
+      };
+    }
+    if ((localSessionVersions.get(payload.sub) ?? 1) !== payload.ver) {
       return null;
     }
     return {
-      ...getPublicAdmin(stored.admin),
+      ...getPublicAdmin(stored.admin || stored),
       session: { expiresAt: payload.exp, id: payload.jti, issuedAt: payload.iat },
     };
   }
-  const rows = await getSupabaseRows('admin_sessions', { session_id: `eq.${payload.jti}` });
-  const stored = rows.length === 1 ? rows[0] : null;
-  if (!stored || stored.revoked_at || normalizeEmail(String(stored.admin_email ?? '')) !==
-      normalizeEmail(payload.sub) || Number(stored.session_version) !== payload.ver ||
-      new Date(String(stored.expires_at)).getTime() <= Date.now()) return null;
-  const current = await loadCurrentAdmin(payload.sub);
-  if (!current || current.sessionVersion !== payload.ver) return null;
+
+  if (isAdminRole(payload.role)) {
+    const rows = await getSupabaseRows('admin_sessions', { session_id: `eq.${payload.jti}` });
+    const stored = rows.length === 1 ? rows[0] : null;
+    if (!stored || stored.revoked_at || normalizeEmail(String(stored.admin_email ?? '')) !==
+        normalizeEmail(payload.sub) || Number(stored.session_version) !== payload.ver ||
+        new Date(String(stored.expires_at)).getTime() <= Date.now()) return null;
+    const current = await loadCurrentAdmin(payload.sub);
+    if (!current || current.sessionVersion !== payload.ver) return null;
+    return {
+      ...getPublicAdmin(current),
+      session: { expiresAt: payload.exp, id: payload.jti, issuedAt: payload.iat },
+    };
+  }
+
+  const users = await getSupabaseRows('users', { email: `eq.${normalizeEmail(payload.sub)}` });
+  const user = users[0];
+  if (!user || String(user.account_status ?? '').trim().toLowerCase() !== 'active') return null;
   return {
-    ...getPublicAdmin(current),
+    email: normalizeEmail(payload.sub),
+    name: [user.first_name, user.last_name].filter(Boolean).join(' ') || 'User',
+    permissions: [],
+    role: payload.role,
     session: { expiresAt: payload.exp, id: payload.jti, issuedAt: payload.iat },
+    userId: String(user.user_id ?? ''),
   };
+};
+
+const verifyAdminSession = async (token) => {
+  const session = await verifySession(token);
+  if (!session || !isAdminRole(session.role)) return null;
+  return session;
 };
 
 const getAdminSessions = async (email, currentSessionId) => {
@@ -255,14 +342,20 @@ const invalidateAdminSessions = async (email) => {
 module.exports = {
   ADMIN_PERMISSIONS,
   ADMIN_ROLE,
+  ADMIN_ROLES,
   DEFAULT_ADMIN_PERMISSIONS,
+  ROLES,
   SUPER_ADMIN_PERMISSIONS,
   createAdminSession,
-  getPermissionsForAdminRole,
+  createSession,
+  createUserSession,
   getAdminSessions,
+  getPermissionsForAdminRole,
   getPublicAdmin,
   invalidateAdminSessions,
+  isAdminRole,
   revokeAdminSession,
   revokeAdminSessions,
   verifyAdminSession,
+  verifySession,
 };

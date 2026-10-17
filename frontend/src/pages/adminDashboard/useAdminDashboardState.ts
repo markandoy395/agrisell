@@ -44,6 +44,7 @@ export function useAdminDashboardState(admin: AuthenticatedAdmin) {
   const [verificationTarget, setVerificationTarget] = useState<{
     entity: EntityRecord
     type: 'farmer' | 'rider'
+    initialDecision?: 'rejected'
   } | null>(null)
   const [addSection, setAddSection] = useState<string | null>(null)
   const [createUserType, setCreateUserType] = useState<'user' | 'farmer' | null>(null)
