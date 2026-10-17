@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { AdminPayoutRequest } from '../../api/adminPayoutRequestsApi'
 import { Icon } from '../../components/ui/icon/Icon'
+import { PayoutRequestSummary } from './PayoutRequestSummary'
 import './PayoutRequestActionModal.css'
 
 type ModalMode = 'reject' | 'mark_paid' | 'details'
@@ -11,7 +12,7 @@ type PayoutRequestActionModalProps = {
   onClose: () => void
   onSubmitAction: (
     action: 'approve' | 'reject' | 'mark_paid',
-    data: { notes?: string; rejection_reason?: string },
+    data: { notes?: string; rejection_reason?: string; payout_reference?: string },
   ) => Promise<void>
 }
 
@@ -32,13 +33,17 @@ export function PayoutRequestActionModal({
       setError('Please provide a reason for rejection.')
       return
     }
+    if (mode === 'mark_paid' && !notes.trim()) {
+      setError('Enter the reference from the completed GCash or bank transfer.')
+      return
+    }
 
     setIsSubmitting(true)
     try {
       if (mode === 'reject') {
         await onSubmitAction('reject', { rejection_reason: reason.trim() })
       } else if (mode === 'mark_paid') {
-        await onSubmitAction('mark_paid', { notes: notes.trim() })
+        await onSubmitAction('mark_paid', { payout_reference: notes.trim() })
       }
       onClose()
     } catch (err) {
@@ -58,7 +63,10 @@ export function PayoutRequestActionModal({
                 mode === 'reject' ? 'is-danger' : mode === 'mark_paid' ? 'is-success' : 'is-info'
               }`}
             >
-              <Icon name={mode === 'reject' ? 'close' : mode === 'mark_paid' ? 'check' : 'card'} size={18} />
+              <Icon
+                name={mode === 'reject' ? 'close' : mode === 'mark_paid' ? 'check' : 'card'}
+                size={18}
+              />
             </span>
             <div>
               <h3>
@@ -68,7 +76,10 @@ export function PayoutRequestActionModal({
                     ? 'Disburse Payout / Mark as Paid'
                     : 'Payout Request Details'}
               </h3>
-              <small>ID: {request.request_id.slice(0, 8)}... · {request.requester_name} ({request.user_role})</small>
+              <small>
+                ID: {request.request_id.slice(0, 8)}... · {request.requester_name} (
+                {request.user_role})
+              </small>
             </div>
           </div>
           <button type="button" className="payout-modal-close" onClick={onClose} aria-label="Close">
@@ -79,52 +90,7 @@ export function PayoutRequestActionModal({
         <div className="payout-modal-body">
           {error && <div className="payout-modal-alert is-error">{error}</div>}
 
-          <div className="payout-summary-box">
-            <div className="payout-summary-row">
-              <span>Amount:</span>
-              <strong>₱{request.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
-            </div>
-            <div className="payout-summary-row">
-              <span>Method:</span>
-              <strong>{request.payout_method === 'bank_transfer' ? `Bank (${request.bank_name || 'Bank'})` : 'GCash'}</strong>
-            </div>
-            <div className="payout-summary-row">
-              <span>Account Name:</span>
-              <strong>{request.account_name}</strong>
-            </div>
-            <div className="payout-summary-row">
-              <span>Account Number:</span>
-              <strong>{request.account_number}</strong>
-            </div>
-            <div className="payout-summary-row">
-              <span>Current Status:</span>
-              <span className={`payout-status-chip is-${request.status}`}>{request.status.toUpperCase()}</span>
-            </div>
-            {request.requester_phone && (
-              <div className="payout-summary-row">
-                <span>Phone:</span>
-                <strong>{request.requester_phone}</strong>
-              </div>
-            )}
-            {request.requester_email && (
-              <div className="payout-summary-row">
-                <span>Email:</span>
-                <strong>{request.requester_email}</strong>
-              </div>
-            )}
-            {request.rejection_reason && (
-              <div className="payout-summary-row">
-                <span>Rejection Reason:</span>
-                <span className="payout-text-danger">{request.rejection_reason}</span>
-              </div>
-            )}
-            {request.notes && (
-              <div className="payout-summary-row">
-                <span>Notes / Ref:</span>
-                <strong>{request.notes}</strong>
-              </div>
-            )}
-          </div>
+          <PayoutRequestSummary request={request} />
 
           {mode === 'reject' && (
             <div className="payout-form-group">
@@ -141,23 +107,31 @@ export function PayoutRequestActionModal({
 
           {mode === 'mark_paid' && (
             <div className="payout-form-group">
-              <label htmlFor="payout-disbursement-notes">Disbursement Reference / Notes (Optional)</label>
+              <label htmlFor="payout-disbursement-notes">Completed transfer reference *</label>
               <input
                 id="payout-disbursement-notes"
                 type="text"
+                required
+                maxLength={200}
                 placeholder="e.g. GCash Reference No. 1234567890 or Bank Trans ID"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
               <small className="payout-form-hint">
-                Marking as paid notifies the {request.user_role} that their funds have been successfully transferred.
+                Send the funds through GCash or your bank first, then record the reference here.
+                This action records payment and does not transfer money.
               </small>
             </div>
           )}
         </div>
 
         <footer className="payout-modal-footer">
-          <button type="button" className="payout-button-secondary" onClick={onClose} disabled={isSubmitting}>
+          <button
+            type="button"
+            className="payout-button-secondary"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             {mode === 'details' ? 'Close' : 'Cancel'}
           </button>
           {mode !== 'details' && (
@@ -165,7 +139,7 @@ export function PayoutRequestActionModal({
               type="button"
               className={`payout-button-primary ${mode === 'reject' ? 'is-danger' : 'is-success'}`}
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || (mode === 'mark_paid' && request.requires_reconciliation)}
             >
               {isSubmitting
                 ? 'Processing...'

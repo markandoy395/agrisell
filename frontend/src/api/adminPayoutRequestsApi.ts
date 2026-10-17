@@ -17,6 +17,10 @@ export type AdminPayoutRequest = {
   requester_name: string
   requester_email?: string | null
   requester_phone?: string | null
+  payout_reference?: string | null
+  paid_at?: string | null
+  requires_reconciliation: boolean
+  deliveries: { delivery_id: string; amount: number }[]
 }
 
 export type AdminPayoutSummary = {
@@ -59,8 +63,7 @@ export async function fetchAdminPayoutRequests(
     user_role: (item.user_role === 'rider' ? 'rider' : 'farmer') as 'farmer' | 'rider',
     amount: Number(item.amount ?? 0),
     payout_method: (item.payout_method === 'bank_transfer' ? 'bank_transfer' : 'gcash') as
-      | 'gcash'
-      | 'bank_transfer',
+      'gcash' | 'bank_transfer',
     account_name: String(item.account_name ?? ''),
     account_number: String(item.account_number ?? ''),
     bank_name: item.bank_name ? String(item.bank_name) : null,
@@ -74,6 +77,15 @@ export async function fetchAdminPayoutRequests(
     requester_name: String(item.requester_name ?? 'User'),
     requester_email: item.requester_email ? String(item.requester_email) : null,
     requester_phone: item.requester_phone ? String(item.requester_phone) : null,
+    payout_reference: item.payout_reference ? String(item.payout_reference) : null,
+    paid_at: item.paid_at ? String(item.paid_at) : null,
+    requires_reconciliation: item.requires_reconciliation === true,
+    deliveries: Array.isArray(item.deliveries)
+      ? item.deliveries.map((row: Record<string, unknown>) => ({
+          delivery_id: String(row.delivery_id),
+          amount: Number(row.amount),
+        }))
+      : [],
   }))
 
   return { summary, requests }
@@ -84,6 +96,7 @@ export async function updateAdminPayoutRequest(input: {
   action: 'approve' | 'reject' | 'mark_paid'
   notes?: string
   rejection_reason?: string
+  payout_reference?: string
 }): Promise<unknown> {
   return requestAdminApi('/api/admin/payments/payout-requests', {
     method: 'POST',
