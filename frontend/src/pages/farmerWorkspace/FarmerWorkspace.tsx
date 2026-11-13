@@ -5,6 +5,7 @@ import { FarmerTable } from '../../components/ui/farmerWorkspace/FarmerTable'
 import { FarmerFarmDrilldown } from '../../components/ui/farmerFarmDrilldown/FarmerFarmDrilldown'
 import { useFarmerWorkspace } from '../../hooks/useFarmerWorkspace'
 import './FarmerWorkspace.css'
+import '../../styles/CatalogTypography.css'
 
 type FarmerWorkspaceProps = {
   farmers: EntityRecord[]

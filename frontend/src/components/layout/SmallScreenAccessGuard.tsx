@@ -17,10 +17,10 @@ export function SmallScreenAccessGuard({ children }: SmallScreenAccessGuardProps
             <span className="brand-mark" aria-hidden="true" />
           </div>
           <p className="small-screen-access-eyebrow">ADMIN WORKSPACE</p>
-          <h1 id="small-screen-access-title">Desktop access required</h1>
+          <h1 id="small-screen-access-title">Tablet or computer required</h1>
           <p>
-            Agrisell Admin cannot be accessed from mobile devices, tablets, or small screens. Please
-            use a desktop or laptop to continue.
+            Agrisell Admin cannot be accessed from mobile phones. Please use a desktop, laptop,
+            tablet, or iPad to continue.
           </p>
         </section>
       </main>

@@ -59,10 +59,10 @@ export function FarmerTable({
                   aria-label="Select all visible farmers"
                 />
               </th>
-              <th>farmer_user_id / name</th>
+              <th>Farmer / ID</th>
               <th>specialty</th>
-              <th>registered_farms</th>
-              <th>farm_locations</th>
+              <th>Registered farms</th>
+              <th>Farm locations</th>
               <th>commodities</th>
               <th>verification</th>
               <th>Actions</th>

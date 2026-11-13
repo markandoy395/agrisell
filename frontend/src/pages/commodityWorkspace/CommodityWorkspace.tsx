@@ -7,6 +7,7 @@ import { CommodityTable } from './CommodityTable'
 import { useCommoditiesData } from './useCommoditiesData'
 import type { CommodityCreatePayload } from '../../types/commodityWorkspace'
 import './CommodityWorkspace.css'
+import '../../styles/CatalogTypography.css'
 
 type CommodityWorkspaceProps = {
   onNotice: (message: string) => void
@@ -31,7 +32,9 @@ export function CommodityWorkspace({ onNotice }: CommodityWorkspaceProps) {
       className="user-workspace farmer-workspace commodity-workspace"
       aria-labelledby="commodities-title"
     >
-      <h1 className="user-workspace-title" id="commodities-title">Commodities</h1>
+      <h1 className="user-workspace-title" id="commodities-title">
+        Commodities
+      </h1>
       <CommodityHeaderSummary summary={data.summary} />
 
       <CommodityControls
@@ -71,9 +74,7 @@ export function CommodityWorkspace({ onNotice }: CommodityWorkspaceProps) {
           totalPages={data.totalPages}
           onEdit={data.openEdit}
           onPageChange={data.setCurrentPage}
-          onStatusChange={(commodity, status) =>
-            void data.handleStatusChange(commodity, status)
-          }
+          onStatusChange={(commodity, status) => void data.handleStatusChange(commodity, status)}
         />
       )}
 

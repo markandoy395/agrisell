@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { EntityRecord, FarmerFarm } from '../../../types/dashboard'
 import {
   getFarmerCommoditySummary,
@@ -27,6 +28,17 @@ export function FarmerTableRow({
 }: FarmerTableRowProps) {
   const recordKey = getFarmerRecordKey(farmer)
   const isVerified = farmer.status === 'Verified'
+  const [isApproving, setIsApproving] = useState(false)
+  const handleApprove = async () => {
+    setIsApproving(true)
+    try {
+      await onApprove(farmer)
+    } catch {
+      // The workspace reports approval errors to the administrator.
+    } finally {
+      setIsApproving(false)
+    }
+  }
   return (
     <tr>
       <td>
@@ -43,7 +55,7 @@ export function FarmerTableRow({
             {getFarmerInitials(farmer)}
           </span>
           <span>
-            <strong>{farmer.primary}</strong>
+            <strong title={farmer.primary}>{farmer.primary}</strong>
             <small>{farmer.entityId ?? farmer.secondary}</small>
           </span>
         </span>
@@ -72,25 +84,28 @@ export function FarmerTableRow({
       </td>
       <td>
         <div className="farmer-row-actions">
+          {!isVerified && farmer.entityId && (
+            <button
+              className="farmer-row-approve"
+              type="button"
+              disabled={isApproving}
+              aria-label={`Approve ${farmer.primary}`}
+              aria-busy={isApproving}
+              onClick={() => void handleApprove()}
+            >
+              <Icon name="check" size={15} />
+              {isApproving ? 'Approving…' : 'Approve'}
+            </button>
+          )}
           <button
-            className="icon-action-button"
-            type="button"
-            disabled={isVerified || !farmer.entityId}
-            aria-label={isVerified ? `${farmer.primary} is approved` : `Approve ${farmer.primary}`}
-            title={isVerified ? 'Approved' : 'Approve'}
-            onClick={() => void onApprove(farmer).catch(() => undefined)}
-          >
-            <Icon name="check" size={17} />
-          </button>
-          <button
-            className="user-row-action"
+            className="farmer-row-view"
             type="button"
             aria-label={
               farmer.entityId ? `View farms for ${farmer.primary}` : `Open ${farmer.primary}`
             }
             onClick={() => onOpen(farmer)}
           >
-            <Icon name="more" size={18} />
+            {farmer.entityId ? 'View farms' : 'View details'}
           </button>
         </div>
       </td>
